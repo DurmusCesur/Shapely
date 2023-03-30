@@ -1,0 +1,518 @@
+{
+  "Uuid": "4bcfcb84-8ba2-472a-9c64-c1e62e7d0765",
+  "IsCustomNode": true,
+  "Category": "Shapely.Conversion",
+  "Description": "",
+  "Name": "DynamotoShapely",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely.testing import assert_geometries_equal\r\nfrom shapely import normalize, Polygon , BufferCapStyle, BufferJoinStyle\r\n\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = None\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = list(shapely_geometry.coords)\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        \r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry = points\r\n        \r\n    return dynamo_geometry\r\n\r\nif isinstance(IN[0], list):\r\n    shapely_geometries = IN[0]\r\nelse:\r\n    shapely_geometries = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geometry) for geometry in shapely_geometries]\r\n\r\nx_cord = []\r\ny_cord = []\r\n\r\nfor pon in dynamo_geometries[0]:\r\n\t\r\n\tx_cord.append(pon[0])\r\n\ty_cord.append(pon[1])\r\n\r\nOUT = x_cord,y_cord\r\n\r\n",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "643b82a610854859bc863d7c81a09c1a",
+      "Inputs": [
+        {
+          "Id": "63f34360e68648b681c74b87d0bfe890",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "16b537d5a69c4cfcbe02afae527009e1",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "d1e2a8cecffe4b48aa9b6aa3c92d867f",
+      "Inputs": [
+        {
+          "Id": "e2e637d8c03140f6a49ab02987f08789",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e8f357c06f5e4a16bbd01c19619c26d8",
+          "Name": "",
+          "Description": "Valeur de l'expression à la ligne 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0fb5098983df45abaa956f4a63306676",
+          "Name": "",
+          "Description": "Valeur de l'expression à la ligne 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permet de créer le code DesignScript directement"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double",
+      "Id": "2b506e5488bb404dab9fe56276fc4ac6",
+      "Inputs": [
+        {
+          "Id": "9cd2f243a79746c98e5751c62d0aee46",
+          "Name": "x",
+          "Description": "double\nValeur par défaut : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "082476a17ef34fa7a79a116819e6b84a",
+          "Name": "y",
+          "Description": "double\nValeur par défaut : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "88b2296301ff4fb0a72f2033cbe89538",
+          "Name": "z",
+          "Description": "double\nValeur par défaut : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a63ef7ede8b14ca097998f83acba5614",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Former un point en fonction de 3 coordonnées cartésiennes\n\nPoint.ByCoordinates (x: double = 0, y: double = 0, z: double = 0): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Polygon.ByPoints@Autodesk.DesignScript.Geometry.Point[]",
+      "Id": "78c880139aba4279b9ddc7bb128bbd0d",
+      "Inputs": [
+        {
+          "Id": "1da095cea9a24719ac306419a1eb8073",
+          "Name": "points",
+          "Description": "Point[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "27d57f18cd4a49aeacf61ecd5e81c650",
+          "Name": "Polygon",
+          "Description": "Polygon",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Créer une courbe de polygone en reliant les points.\n\nPolygon.ByPoints (points: Point[]): Polygon"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "_Polygon",
+      "Id": "a20afa7ac17247068434b27597b50805",
+      "Inputs": [
+        {
+          "Id": "97af914eb1e9401d827bba0197f0eb76",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shpolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "9ed894fb7fa944b0acdaef4c009d2f91",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c74ecbc2f9324f11b0c40cedc2f94ac5",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "_Point",
+      "Id": "c24f8211d68b4979b67e2ba36bfb0aa1",
+      "Inputs": [
+        {
+          "Id": "268ce6e00ca54709b173b4ba06eaca48",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.PolyCurve.ByPoints@Autodesk.DesignScript.Geometry.Point[],bool",
+      "Id": "6336320d29344dc88a6925bbec897ce3",
+      "Inputs": [
+        {
+          "Id": "2fd465e74370477cae409c00c8aef0ba",
+          "Name": "points",
+          "Description": "Points de création de polycourbe\n\nPoint[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9c2056866c71454594a90b5067af596c",
+          "Name": "connectLastToFirst",
+          "Description": "fermer ou ouvrir la polycourbe\n\nbool\nValeur par défaut : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "58dc4d66397544d0a76dd9fb0ae1850a",
+          "Name": "PolyCurve",
+          "Description": "PolyCurve",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Créer une PolyCurve en reliant des points. Définir l'entrée 'connectLastToFirst' sur vrai pour fermer la PolyCurve.\n\nPolyCurve.ByPoints (points: Point[], connectLastToFirst: bool = false): PolyCurve"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "_PolyCurve",
+      "Id": "da4b8dfa14ae4b76bef26326093f4ebb",
+      "Inputs": [
+        {
+          "Id": "2f885709250340879433bb75beba305f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.PruneDuplicates@Autodesk.DesignScript.Geometry.Point[],double",
+      "Id": "24eb1546551345b1ac8aaf4824a416d7",
+      "Inputs": [
+        {
+          "Id": "3a5896ad48224a048521422376a00e7f",
+          "Name": "points",
+          "Description": "Points à réduire\n\nPoint[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1fc968489b934138a7709d21ca0cf550",
+          "Name": "tolerance",
+          "Description": "Tolérance pour la réduction\n\ndouble\nValeur par défaut : 0.001",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e8f9df8c4817453f818b3850dc5fa9c4",
+          "Name": "Point[]",
+          "Description": "Point[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Réduire les points pour exclure les doublons dans la marge de tolérance des points inclus\n\nPoint.PruneDuplicates (points: Point[], tolerance: double = 0.001): Point[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "16b537d5a69c4cfcbe02afae527009e1",
+      "End": "e2e637d8c03140f6a49ab02987f08789",
+      "Id": "c33b014a271f4b6ea6d22d245a0331d9"
+    },
+    {
+      "Start": "e8f357c06f5e4a16bbd01c19619c26d8",
+      "End": "9cd2f243a79746c98e5751c62d0aee46",
+      "Id": "bc0278d644e84642ae30c4961a7676f6"
+    },
+    {
+      "Start": "0fb5098983df45abaa956f4a63306676",
+      "End": "082476a17ef34fa7a79a116819e6b84a",
+      "Id": "79b685dae6f34081ac8996d44d9aadec"
+    },
+    {
+      "Start": "a63ef7ede8b14ca097998f83acba5614",
+      "End": "1da095cea9a24719ac306419a1eb8073",
+      "Id": "3ad1854a7520475084b5f7d94901c615"
+    },
+    {
+      "Start": "a63ef7ede8b14ca097998f83acba5614",
+      "End": "268ce6e00ca54709b173b4ba06eaca48",
+      "Id": "e5959a639eea4ca58d59f6df91423565"
+    },
+    {
+      "Start": "a63ef7ede8b14ca097998f83acba5614",
+      "End": "3a5896ad48224a048521422376a00e7f",
+      "Id": "3e637fff336142d19b69fcaee03ba332"
+    },
+    {
+      "Start": "27d57f18cd4a49aeacf61ecd5e81c650",
+      "End": "97af914eb1e9401d827bba0197f0eb76",
+      "Id": "217fcd36d17d4e36b177add86bc341af"
+    },
+    {
+      "Start": "c74ecbc2f9324f11b0c40cedc2f94ac5",
+      "End": "63f34360e68648b681c74b87d0bfe890",
+      "Id": "24faefe36550454797c7cd7081eb9a08"
+    },
+    {
+      "Start": "58dc4d66397544d0a76dd9fb0ae1850a",
+      "End": "2f885709250340879433bb75beba305f",
+      "Id": "8389528817a6469a87b611913ecce807"
+    },
+    {
+      "Start": "e8f9df8c4817453f818b3850dc5fa9c4",
+      "End": "2fd465e74370477cae409c00c8aef0ba",
+      "Id": "6503c9f16f744a609513fa3bd7ddb698"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.10.1.3976",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Aperçu en arrière-plan",
+      "EyeX": 379.7593994140625,
+      "EyeY": 3973.234130859375,
+      "EyeZ": 11118.12109375,
+      "LookX": -1382.028564453125,
+      "LookY": -3973.234130859375,
+      "LookZ": -5098.056640625,
+      "UpX": -0.10879945009946823,
+      "UpY": 0.90944367647171021,
+      "UpZ": -0.40134137868881226
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "643b82a610854859bc863d7c81a09c1a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 3.231570280373262
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "d1e2a8cecffe4b48aa9b6aa3c92d867f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 409.22342593544818,
+        "Y": 6.7111116657720231
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Point.ByCoordinates",
+        "Id": "2b506e5488bb404dab9fe56276fc4ac6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 524.13550867878121,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Polygon.ByPoints",
+        "Id": "78c880139aba4279b9ddc7bb128bbd0d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 705.03214537165923,
+        "Y": 2.6963891435262894
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a20afa7ac17247068434b27597b50805",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1256.0031491607483,
+        "Y": 122.94485358204409
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "9ed894fb7fa944b0acdaef4c009d2f91",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -42.285714285714107,
+        "Y": -2.2857142857143344
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "c24f8211d68b4979b67e2ba36bfb0aa1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1268.3047181731708,
+        "Y": 207.65053760248929
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "PolyCurve.ByPoints",
+        "Id": "6336320d29344dc88a6925bbec897ce3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 927.95490664408271,
+        "Y": 278.32215997309572
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "da4b8dfa14ae4b76bef26326093f4ebb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1251.2981394707892,
+        "Y": 283.810433530546
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Point.PruneDuplicates",
+        "Id": "24eb1546551345b1ac8aaf4824a416d7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 686.16572248413513,
+        "Y": 280.17070113639818
+      }
+    ],
+    "Annotations": [],
+    "X": -555.40885343387845,
+    "Y": 222.96246022321438,
+    "Zoom": 1.545620359375
+  }
+}

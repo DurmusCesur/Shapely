@@ -1,0 +1,171 @@
+{
+  "Uuid": "b02d20bf-17aa-46b8-8dbb-0cda5f685722",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry",
+  "Description": "",
+  "Name": "ShapelySimplyGeo",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle , wkt\r\n\r\n\r\ndef simpleply(shapely_geometry1):\r\n    sp = [] \r\n    tt = [sp.append(shp) or shp for shp in shapely_geometry1]\r\n    sm = [tm.convex_hull for tm in tt]\r\n    return list(sm)\r\n\r\n\r\n# Shapely geometrilerine dönüştürme\r\n\r\ndynamo_geometry1 = simpleply(IN[0])\r\n\r\nOUT = dynamo_geometry1\r\n",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "29ff1d01850a44fb93c8dcd22e2b0112",
+      "Inputs": [
+        {
+          "Id": "9e4d77e7825e4627bb6e196500b4b633",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5901c1c46e46458bae7a19dcb491d11c",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "a7120748ede5420b98fc52c19163ac03",
+      "Inputs": [
+        {
+          "Id": "ef0c2f9cba16435eb2d480ee84f1dfff",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shpolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5da5acfa6ecb4389b8046a534b5f42bc",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5901c1c46e46458bae7a19dcb491d11c",
+      "End": "ef0c2f9cba16435eb2d480ee84f1dfff",
+      "Id": "5ee755368ef34aafb155a994769e1bc4"
+    },
+    {
+      "Start": "5da5acfa6ecb4389b8046a534b5f42bc",
+      "End": "9e4d77e7825e4627bb6e196500b4b633",
+      "Id": "f0266f61ec864db9b3dd285334b84c7a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.10.1.3976",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Aperçu en arrière-plan",
+      "EyeX": 379.7593994140625,
+      "EyeY": 3973.234130859375,
+      "EyeZ": 11118.12109375,
+      "LookX": -1382.028564453125,
+      "LookY": -3973.234130859375,
+      "LookZ": -5098.056640625,
+      "UpX": -0.10879945009946823,
+      "UpY": 0.90944367647171021,
+      "UpZ": -0.40134137868881226
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "29ff1d01850a44fb93c8dcd22e2b0112",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 507.02469222863147,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a7120748ede5420b98fc52c19163ac03",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 705.453263657203,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 198.85714285714278,
+        "Y": 17.142857142857054
+      }
+    ],
+    "Annotations": [],
+    "X": 152.57142857142856,
+    "Y": 265.14285714285711,
+    "Zoom": 1.0
+  }
+}
