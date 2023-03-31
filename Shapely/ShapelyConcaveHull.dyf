@@ -1,29 +1,50 @@
 {
-  "Uuid": "b02d20bf-17aa-46b8-8dbb-0cda5f685722",
+  "Uuid": "731dee0f-0396-4cf6-bbdc-3b659ff19689",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry",
   "Description": "",
-  "Name": "ShapelySimplyGeo",
+  "Name": "ShapelyGeometrySettings",
   "ElementResolver": {
-    "ResolutionMap": {
-      "Autodesk.Point": {
-        "Key": "Autodesk.DesignScript.Geometry.Point",
-        "Value": "ProtoGeometry.dll"
-      }
-    }
+    "ResolutionMap": {}
   },
   "Inputs": [],
   "Outputs": [],
   "Nodes": [
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shgeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "78154756f17f464d9a79aa8c1d59eed1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "583cd6a812b44ac5984631ff67ee496c",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "OUT",
-      "Id": "a7120748ede5420b98fc52c19163ac03",
+      "Id": "39c4b1f7052b491c86afaa076d7d57c3",
       "Inputs": [
         {
-          "Id": "ef0c2f9cba16435eb2d480ee84f1dfff",
+          "Id": "21a92837b1794c0eb0282e7197fbc024",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -40,43 +61,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "_shpolygon",
+        "Name": "_ratio",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": ""
+        "Description": " 0..1"
       },
-      "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+      "Id": "a09f8e33571040d59ace214ede474f73",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "5da5acfa6ecb4389b8046a534b5f42bc",
-          "Name": "",
-          "Description": "Symbole",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "_tolerance",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "cc220d70d5f64e45a7e3d8b983c50fad",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "be0594275dfd48f5961364ed995088bf",
+          "Id": "f2aea915d2d449ad922b13d478076ab9",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -91,13 +86,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle ,simplify\r\n\r\n\r\ndef simpleply(shapely_geometry1,tlr):\r\n    sp = [] \r\n    tt = [sp.append(shp) or shp for shp in shapely_geometry1]\r\n    sm = [simplify(tm,tlr) for tm in tt]\r\n    return list(sm)\r\n\r\ntolerance = IN[1]\r\ndynamo_geometry1 = simpleply(IN[0],tolerance)\r\n\r\nOUT = dynamo_geometry1\r\n",
+      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely import normalize, Polygon , concave_hull ,MultiPoint ,Point , get_type_id\r\n\r\nshapely_geo = IN[0]\r\ntolerance = IN[1]\r\n\r\ndef spolygon(sp1,xm,ym):\r\n\r\n    conva = concave_hull(sp1,xm,ym)\r\n    return conva\r\nshp = []\r\n\r\na = get_type_id(shapely_geo)\r\nif a.all() == 0 :\r\n\r\n    shapely_polygons1 = spolygon([MultiPoint(shapely_geo)],tolerance,False)\r\n    concave = shapely_polygons1\r\nelse:\r\n    concave = [spolygon(shp1,tolerance,False) for shp1 in shapely_geo]\r\n\r\n\r\n\r\nOUT = concave",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "700ce6efd7204eff981ad24b0d3e7a29",
+      "Id": "e3f158df852a48e9a3d87d17f8dc8ff8",
       "Inputs": [
         {
-          "Id": "d67936ac0b3544098db9e1025930bf68",
+          "Id": "53348388d9304c6f946eb34e7cba1532",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -106,7 +101,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "e6e3cbd255924e1ca3018a23c6b6efcc",
+          "Id": "a32186d30cbe4e5b9dc352664648326f",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -117,7 +112,7 @@
       ],
       "Outputs": [
         {
-          "Id": "ecd8b42f2b824fd1beaaa820fe85ede2",
+          "Id": "783c9e627a964d4fbfa3ac19529acdb0",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -132,19 +127,19 @@
   ],
   "Connectors": [
     {
-      "Start": "5da5acfa6ecb4389b8046a534b5f42bc",
-      "End": "d67936ac0b3544098db9e1025930bf68",
-      "Id": "5c255568c2d9459cab05fed874f684c7"
+      "Start": "583cd6a812b44ac5984631ff67ee496c",
+      "End": "53348388d9304c6f946eb34e7cba1532",
+      "Id": "e8dc534ffdc64bc3afcd5164d480610b"
     },
     {
-      "Start": "be0594275dfd48f5961364ed995088bf",
-      "End": "e6e3cbd255924e1ca3018a23c6b6efcc",
-      "Id": "099b9f27de7e4811a0b37ee7acba7676"
+      "Start": "f2aea915d2d449ad922b13d478076ab9",
+      "End": "a32186d30cbe4e5b9dc352664648326f",
+      "Id": "af09019d855c47a2ad26efa33f0545b1"
     },
     {
-      "Start": "ecd8b42f2b824fd1beaaa820fe85ede2",
-      "End": "ef0c2f9cba16435eb2d480ee84f1dfff",
-      "Id": "62a19682a79b40c0810ef1857f378afe"
+      "Start": "783c9e627a964d4fbfa3ac19529acdb0",
+      "End": "21a92837b1794c0eb0282e7197fbc024",
+      "Id": "017c5345a66c4c9780e860c4f631ddd7"
     }
   ],
   "Dependencies": [],
@@ -174,48 +169,48 @@
     "NodeViews": [
       {
         "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "a7120748ede5420b98fc52c19163ac03",
+        "Name": "Input",
+        "Id": "78154756f17f464d9a79aa8c1d59eed1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 705.453263657203,
+        "X": 0.0,
+        "Y": 0.56066402640112756
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "39c4b1f7052b491c86afaa076d7d57c3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 578.26195392395061,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+        "Id": "a09f8e33571040d59ace214ede474f73",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 199.85714285714278,
-        "Y": 18.142857142857054
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "cc220d70d5f64e45a7e3d8b983c50fad",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 196.85714285714278,
-        "Y": 101.14285714285705
+        "X": -1.681992079203269,
+        "Y": 100.35886072579865
       },
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "700ce6efd7204eff981ad24b0d3e7a29",
+        "Id": "e3f158df852a48e9a3d87d17f8dc8ff8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 464.42857142857156,
-        "Y": 23.85714285714289
+        "X": 335.01272348704816,
+        "Y": 29.669075082812071
       }
     ],
     "Annotations": [],
-    "X": 152.57142857142856,
-    "Y": 265.14285714285711,
-    "Zoom": 1.0
+    "X": 512.47151999837138,
+    "Y": 329.08225659980866,
+    "Zoom": 1.7835993623828124
   }
 }

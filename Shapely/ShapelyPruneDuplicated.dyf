@@ -1,9 +1,9 @@
 {
-  "Uuid": "8e24caeb-b05f-4ac3-8a5f-b4c2d8811053",
+  "Uuid": "58ffd9d6-5786-4a67-9111-5ed971b7bc06",
   "IsCustomNode": true,
-  "Category": "Shapely.Analyse",
+  "Category": "Shapely.Geometry",
   "Description": "",
-  "Name": "ShapelyBoundary",
+  "Name": "ShapelyPruneDuplicated",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,15 +13,24 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle\r\n\r\ndynamo_geometry1 = IN[0]\r\n    \r\nif isinstance(IN[0], list):\r\n    dynamo_geometry1 = IN[0]\r\nelse:\r\n    dynamo_geometry1 = [IN[0]]\r\n    \r\ncenter = [geo.boundary for geo in dynamo_geometry1]\r\n\r\nOUT = center\r\n",
+      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely import normalize, Polygon , remove_repeated_points\r\n\r\ndef spolygon(sp1,tlr):\r\n\r\n    rmp = remove_repeated_points(sp1,tlr)\r\n    return rmp\r\n\r\n\r\nif isinstance(IN[0], list):\r\n    shapely_polygons1 = IN[0]\r\nelse:\r\n    shapely_polygons1 = [IN[0]]\r\ntolerance = IN[1]\r\nduplicated = [spolygon(shp1,tolerance) for shp1 in shapely_polygons1]\r\n\r\nOUT = duplicated",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "511ca2182b4d45e9b51a6f532f2fae21",
+      "Id": "15cd0bc7212a4c5380f331f3e1c33899",
       "Inputs": [
         {
-          "Id": "3943fd9f0d024132a7d24a22b390e2a8",
+          "Id": "981b2ff995b54b588e2a664dff814a91",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dcbd715ec7e5413e9814dbdc3736fd42",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -30,7 +39,7 @@
       ],
       "Outputs": [
         {
-          "Id": "8eba4519ebc749f0b205e58b17309c87",
+          "Id": "4e6a63abf01e4ccdaa58157108fa3258",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -46,17 +55,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "_shpolygon",
+        "Name": "_shgeometry",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "bff86527119846809dd130caf075d117",
+      "Id": "7fcc182b149d4d969b8186971158fd81",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "f17df6ffac784f398618c41e29764d32",
+          "Id": "b83beec4135d4c8e84696bd2b3f58426",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -73,10 +82,10 @@
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "OUT",
-      "Id": "dbde23c8dd644cc9a3b5938e97352f64",
+      "Id": "00c3a09d59ed409b99723be3830288c9",
       "Inputs": [
         {
-          "Id": "74e6094cc2324b5c8b1c070be9d5d831",
+          "Id": "40159409dcd44f57a7a6db1d99cd64b7",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -88,22 +97,54 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "98303c550d614381adf74cd008311fa5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a28efb0022014d70a0e25f015facd483",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
     }
   ],
   "Connectors": [
     {
-      "Start": "8eba4519ebc749f0b205e58b17309c87",
-      "End": "74e6094cc2324b5c8b1c070be9d5d831",
-      "Id": "db32b39422104256a3e1f2964a68535f"
+      "Start": "4e6a63abf01e4ccdaa58157108fa3258",
+      "End": "40159409dcd44f57a7a6db1d99cd64b7",
+      "Id": "8fb25f3e104a4117becaf71b8dcd4346"
     },
     {
-      "Start": "f17df6ffac784f398618c41e29764d32",
-      "End": "3943fd9f0d024132a7d24a22b390e2a8",
-      "Id": "9abef2c1e4bd42e295d6fbf57dc2ad86"
+      "Start": "b83beec4135d4c8e84696bd2b3f58426",
+      "End": "981b2ff995b54b588e2a664dff814a91",
+      "Id": "5c7b2ddfba3e44799f64c7d74fbae052"
+    },
+    {
+      "Start": "a28efb0022014d70a0e25f015facd483",
+      "End": "dcbd715ec7e5413e9814dbdc3736fd42",
+      "Id": "32c471db69e8412db91e678ddf6f6ddb"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -129,37 +170,47 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "511ca2182b4d45e9b51a6f532f2fae21",
+        "Id": "15cd0bc7212a4c5380f331f3e1c33899",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
+        "X": 250.0,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "bff86527119846809dd130caf075d117",
+        "Id": "7fcc182b149d4d969b8186971158fd81",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 0.48622044728898572,
+        "Y": 0.48622044728901415
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "dbde23c8dd644cc9a3b5938e97352f64",
+        "Id": "00c3a09d59ed409b99723be3830288c9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
+        "X": 449.0,
         "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "98303c550d614381adf74cd008311fa5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -2.431102236445156,
+        "Y": 99.675191694249719
       }
     ],
     "Annotations": [],
-    "X": 0.0,
-    "Y": 0.0,
-    "Zoom": 1.0
+    "X": 399.06979746216587,
+    "Y": 288.77733314837957,
+    "Zoom": 2.0566802683342771
   }
 }

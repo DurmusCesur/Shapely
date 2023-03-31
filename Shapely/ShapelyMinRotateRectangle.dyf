@@ -1,7 +1,7 @@
 {
   "Uuid": "36535cfc-3277-4bba-8c30-ca9a425db966",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Analyse",
   "Description": "",
   "Name": "ShapelyMinRotateRectangle",
   "ElementResolver": {
@@ -109,7 +109,6 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -121,15 +120,15 @@
     },
     "Camera": {
       "Name": "Aperçu en arrière-plan",
-      "EyeX": 379.7593994140625,
-      "EyeY": 3973.234130859375,
-      "EyeZ": 11118.12109375,
-      "LookX": -1382.028564453125,
-      "LookY": -3973.234130859375,
-      "LookZ": -5098.056640625,
-      "UpX": -0.10879945009946823,
-      "UpY": 0.90944367647171021,
-      "UpZ": -0.40134137868881226
+      "EyeX": 5919.440185546875,
+      "EyeY": 4007.37646484375,
+      "EyeZ": 10946.140625,
+      "LookX": 1249.593505859375,
+      "LookY": -3629.392822265625,
+      "LookZ": -3492.02001953125,
+      "UpX": 0.17854069173336029,
+      "UpY": 0.84804809093475342,
+      "UpZ": -0.49893659353256226
     },
     "NodeViews": [
       {
@@ -139,7 +138,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -149,7 +148,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 448.42857142857156,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -159,13 +158,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -37.658919388982952,
-        "Y": -2.625573082884415
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 289.01527715432888,
-    "Y": 253.53928087210778,
-    "Zoom": 2.370040607913583
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }

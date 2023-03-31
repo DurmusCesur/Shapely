@@ -1,16 +1,11 @@
 {
-  "Uuid": "5916cd88-fb71-4064-8d97-4c996ea4a34b",
+  "Uuid": "4f4a3525-3a15-4237-b4a7-3a3f072a278e",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry.Create",
+  "Category": "Shapely.Geometry",
   "Description": "",
-  "Name": "ShapelyConvexHull",
+  "Name": "ShapelyEnvelope",
   "ElementResolver": {
-    "ResolutionMap": {
-      "Autodesk.Point": {
-        "Key": "Autodesk.DesignScript.Geometry.Point",
-        "Value": "ProtoGeometry.dll"
-      }
-    }
+    "ResolutionMap": {}
   },
   "Inputs": [],
   "Outputs": [],
@@ -25,11 +20,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "3904d47c8d8f4560846314539dbdf3a7",
+      "Id": "d423ace48ab249a8900e1904c9721d4e",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "17a5d57730d3466ebd1af18edf9e6485",
+          "Id": "41a3ca6ce58249cf94984d985bc92afa",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -46,10 +41,10 @@
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "OUT",
-      "Id": "f05c882014c44826b921b886210e4304",
+      "Id": "f9fa7c61130e418799aed715883eec9a",
       "Inputs": [
         {
-          "Id": "96734be655e64518bbfa1218b48c3896",
+          "Id": "5994f56e4ee94dce8b883a5d46c3aea3",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -66,10 +61,10 @@
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
       "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
-      "Id": "0437c95adf3747fa91976bd2873f8670",
+      "Id": "e06769a034b24bfaa76b6c305dde4e40",
       "Inputs": [
         {
-          "Id": "d5c6a91ebbe8427c8c7fc851aea41e2a",
+          "Id": "75b8e694b72b49379a6a6b6267ba0c71",
           "Name": "lists",
           "Description": "Liste des listes à transposer.\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -80,7 +75,7 @@
       ],
       "Outputs": [
         {
-          "Id": "780e91126cbd474ea092ef03272c2aaa",
+          "Id": "159f9b4e42524b9b833c571da2d367d9",
           "Name": "lists",
           "Description": "Liste des listes transposées.",
           "UsingDefaultValue": false,
@@ -96,10 +91,10 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "p.X;\np.Y;",
-      "Id": "ea56a6d23501481caa6ac1542a7c7ceb",
+      "Id": "39aded9f3a4943849c4b65112002466c",
       "Inputs": [
         {
-          "Id": "5060e42ece2f43d4acab54387ebfcbbc",
+          "Id": "458c2e0c01c942728bbf1b7c5d7947e2",
           "Name": "p",
           "Description": "p",
           "UsingDefaultValue": false,
@@ -110,7 +105,7 @@
       ],
       "Outputs": [
         {
-          "Id": "c52219f8d91b4e31ba099ac1e5842c76",
+          "Id": "f6cf570fad0d40d9af499871f06ba9ae",
           "Name": "",
           "Description": "Valeur de l'expression à la ligne 1",
           "UsingDefaultValue": false,
@@ -119,7 +114,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "1c037859ef154aa0a15845e4a7d01835",
+          "Id": "5acf0cc44506440294d9420839f224ec",
           "Name": "",
           "Description": "Valeur de l'expression à la ligne 2",
           "UsingDefaultValue": false,
@@ -135,10 +130,10 @@
       "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
       "VariableInputPorts": true,
       "NodeType": "ExtensionNode",
-      "Id": "952787293ad841afa7105742f06e1ef5",
+      "Id": "26c2b7afc9f2488f8bc6664d43071fb2",
       "Inputs": [
         {
-          "Id": "5fbc5a1e626c4e92934b49f6938735df",
+          "Id": "375d6a59d71e4dee892dfacd131239e2",
           "Name": "item0",
           "Description": "Index de l'élément 0",
           "UsingDefaultValue": false,
@@ -147,7 +142,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "56e26f8dacc74dcb837bebde2fe75f21",
+          "Id": "282d77bb6cc0426da1edc3a9c25e24e5",
           "Name": "item1",
           "Description": "Index de l'élément #1",
           "UsingDefaultValue": false,
@@ -158,7 +153,7 @@
       ],
       "Outputs": [
         {
-          "Id": "01338304254c402b857eeaea59991a12",
+          "Id": "2bfb9c018de44e9c8e2920be122ceb88",
           "Name": "list",
           "Description": "Liste (type: var[]..[])",
           "UsingDefaultValue": false,
@@ -173,41 +168,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.Count@var[]..[]",
-      "Id": "99898dd233c24ab297e68d0be699326a",
-      "Inputs": [
-        {
-          "Id": "50ed48682e05414798d38b88ab26b811",
-          "Name": "list",
-          "Description": "Obtenir le nombre d'éléments de cette liste.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": true,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "da02877eb62e429e8b33fa0d9ebf02f7",
-          "Name": "count",
-          "Description": "Longueur de la liste.",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Renvoie le nombre d'éléments stockés dans la liste indiquée.\n\nList.Count (list: var[]..[]): int"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
       "FunctionSignature": "DSCore.List.Chop@var[]..[],int[]",
-      "Id": "6fbf68df56044a33bb617d2756afd0e7",
+      "Id": "88b57f649df24579a3968a9019b69f02",
       "Inputs": [
         {
-          "Id": "540096dba387471aa2a646cf77e8aa95",
+          "Id": "a4627c008602479c86c74a7a7b53ec22",
           "Name": "list",
           "Description": "Liste à couper en sous-listes\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -216,7 +181,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "cf137847acaf44e5b0c0f7263a215128",
+          "Id": "7f6bc81a62664d6dbc40b8517becd8c3",
           "Name": "lengths",
           "Description": "Longueurs de sous-listes consécutives à créer à partir de la liste d'entrée\n\nint[]",
           "UsingDefaultValue": false,
@@ -227,7 +192,7 @@
       ],
       "Outputs": [
         {
-          "Id": "8cc0818f19794295b6c479c6e30ecc06",
+          "Id": "19cd29b532bc4d32831e360b9b39cc44",
           "Name": "lists",
           "Description": "Sous-listes créées à partir de la liste",
           "UsingDefaultValue": false,
@@ -240,15 +205,45 @@
       "Description": "Couper une liste dans un jeu de sous-listes consécutives avec les longueurs spécifiées. La division de liste commence en haut de la liste.\n\nList.Chop (list: var[]..[], lengths: int[]): var[]..[]"
     },
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle, convex_hull ,MultiLineString\r\n\r\nshapely_polygons = []\r\n\r\ndef spolygon (dynamo_polygons ):\r\n    polygon_parts = []\r\n    \r\n    shapely_geometry1 = sg.MultiPoint([coord for coord in dynamo_polygons])\r\n    shapely_poly = shapely_geometry1\r\n    return shapely_poly\r\n\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_polygons = IN[0]\r\nelse:\r\n    dynamo_polygons = [IN[0]]\r\n\r\ndynamo_geometries = [spolygon(geometry) for geometry in dynamo_polygons]\r\n\r\nhull = [dyn.convex_hull for dyn in dynamo_geometries]\r\nOUT = hull",
-      "Engine": "CPython3",
-      "VariableInputPorts": true,
-      "Id": "db13902113674d4d9f51ece087268858",
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Count@var[]..[]",
+      "Id": "ad0b7596a52f4975a90dca68a9032790",
       "Inputs": [
         {
-          "Id": "bbe59d8b09ad434f92e9d2a7a1500761",
+          "Id": "c379f5029d5b409389ab77822bad74c0",
+          "Name": "list",
+          "Description": "Obtenir le nombre d'éléments de cette liste.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7e8f46778a4a48b5aac4d26604ec09bf",
+          "Name": "count",
+          "Description": "Longueur de la liste.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Renvoie le nombre d'éléments stockés dans la liste indiquée.\n\nList.Count (list: var[]..[]): int"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nimport os\r\nimport clr\r\n\r\nlocalapp = os.getenv(r'LOCALAPPDATA')\r\nsys.path.append(os.path.join(localapp, r'python-3.8.3-embed-amd64\\Lib\\site-packages'))\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle, convex_hull ,MultiLineString\r\n\r\nshapely_polygons = []\r\n\r\ndef spolygon (dynamo_polygons ):\r\n    polygon_parts = []\r\n    \r\n    shapely_geometry1 = sg.MultiPoint([coord for coord in dynamo_polygons])\r\n    shapely_poly = shapely_geometry1\r\n    return shapely_poly\r\n\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_polygons = IN[0]\r\nelse:\r\n    dynamo_polygons = [IN[0]]\r\n\r\ndynamo_geometries = [spolygon(geometry) for geometry in dynamo_polygons]\r\n\r\nenvelope = [dyn.envelope for dyn in dynamo_geometries]\r\nOUT = envelope",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "722875951c5843fcb16852472da1b577",
+      "Inputs": [
+        {
+          "Id": "591b1a29f8904bacbcebece4aa674a2d",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -259,7 +254,7 @@
       ],
       "Outputs": [
         {
-          "Id": "9fb40b19b74f4da994fca5f94986043b",
+          "Id": "edf829a0d2d147eea8524f51d2582c81",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -274,49 +269,49 @@
   ],
   "Connectors": [
     {
-      "Start": "17a5d57730d3466ebd1af18edf9e6485",
-      "End": "5060e42ece2f43d4acab54387ebfcbbc",
-      "Id": "78ef0e6f58754041820fa801835d7ab7"
+      "Start": "41a3ca6ce58249cf94984d985bc92afa",
+      "End": "458c2e0c01c942728bbf1b7c5d7947e2",
+      "Id": "3c17e58f4ef947278bd01276015de874"
     },
     {
-      "Start": "780e91126cbd474ea092ef03272c2aaa",
-      "End": "540096dba387471aa2a646cf77e8aa95",
-      "Id": "66e46a32e3c54a529421d24cd7b20c24"
+      "Start": "159f9b4e42524b9b833c571da2d367d9",
+      "End": "a4627c008602479c86c74a7a7b53ec22",
+      "Id": "48a453d44a83427fa15360184e17d80c"
     },
     {
-      "Start": "c52219f8d91b4e31ba099ac1e5842c76",
-      "End": "5fbc5a1e626c4e92934b49f6938735df",
-      "Id": "66bb87ff8a9a4ee4a4b7caa747c6f6f5"
+      "Start": "f6cf570fad0d40d9af499871f06ba9ae",
+      "End": "375d6a59d71e4dee892dfacd131239e2",
+      "Id": "06d7a581c59643a2b47b49077f075200"
     },
     {
-      "Start": "1c037859ef154aa0a15845e4a7d01835",
-      "End": "56e26f8dacc74dcb837bebde2fe75f21",
-      "Id": "1c2be50d4cd24b059283ca96f69762cf"
+      "Start": "5acf0cc44506440294d9420839f224ec",
+      "End": "282d77bb6cc0426da1edc3a9c25e24e5",
+      "Id": "40e5b76830ee4bee9ae19379a736a98a"
     },
     {
-      "Start": "01338304254c402b857eeaea59991a12",
-      "End": "d5c6a91ebbe8427c8c7fc851aea41e2a",
-      "Id": "c592589175fb4ccfbdf6d920cab84da4"
+      "Start": "2bfb9c018de44e9c8e2920be122ceb88",
+      "End": "75b8e694b72b49379a6a6b6267ba0c71",
+      "Id": "96cff6229377468fb7d6fab9f04ca59c"
     },
     {
-      "Start": "01338304254c402b857eeaea59991a12",
-      "End": "50ed48682e05414798d38b88ab26b811",
-      "Id": "b4ea5d9e82954ba498b7554daa0787ef"
+      "Start": "2bfb9c018de44e9c8e2920be122ceb88",
+      "End": "c379f5029d5b409389ab77822bad74c0",
+      "Id": "bd530b515c9c49279147a6ec28984906"
     },
     {
-      "Start": "da02877eb62e429e8b33fa0d9ebf02f7",
-      "End": "cf137847acaf44e5b0c0f7263a215128",
-      "Id": "bddbbaeffb2445e6be432fe77b9d0eeb"
+      "Start": "19cd29b532bc4d32831e360b9b39cc44",
+      "End": "591b1a29f8904bacbcebece4aa674a2d",
+      "Id": "41d148fc36124dbabbb497f4af22b03f"
     },
     {
-      "Start": "8cc0818f19794295b6c479c6e30ecc06",
-      "End": "bbe59d8b09ad434f92e9d2a7a1500761",
-      "Id": "3d68638106b0466986dacdf6fd85d2ec"
+      "Start": "7e8f46778a4a48b5aac4d26604ec09bf",
+      "End": "7f6bc81a62664d6dbc40b8517becd8c3",
+      "Id": "d6198e6b130544cb888c2a5c445418d3"
     },
     {
-      "Start": "9fb40b19b74f4da994fca5f94986043b",
-      "End": "96734be655e64518bbfa1218b48c3896",
-      "Id": "cc90358fe64e43709cdb06fa0dd6dd81"
+      "Start": "edf829a0d2d147eea8524f51d2582c81",
+      "End": "5994f56e4ee94dce8b883a5d46c3aea3",
+      "Id": "d936a3923b934685873aa11b8e1073a2"
     }
   ],
   "Dependencies": [],
@@ -346,87 +341,87 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "3904d47c8d8f4560846314539dbdf3a7",
+        "Id": "d423ace48ab249a8900e1904c9721d4e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -162.59256765632188,
-        "Y": 141.28733465307971
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "f05c882014c44826b921b886210e4304",
+        "Id": "f9fa7c61130e418799aed715883eec9a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1100.4808341330622,
-        "Y": 168.199207920333
+        "X": 0.0,
+        "Y": 0.0
       },
       {
-        "ShowGeometry": false,
+        "ShowGeometry": true,
         "Name": "List.Transpose",
-        "Id": "0437c95adf3747fa91976bd2873f8670",
+        "Id": "e06769a034b24bfaa76b6c305dde4e40",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 482.16333293587604,
-        "Y": 104.42072494104411
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "ea56a6d23501481caa6ac1542a7c7ceb",
+        "Id": "39aded9f3a4943849c4b65112002466c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 136.14163268872605,
-        "Y": 147.48373850027417
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "List Create",
-        "Id": "952787293ad841afa7105742f06e1ef5",
+        "Id": "26c2b7afc9f2488f8bc6664d43071fb2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 288.3275673627661,
-        "Y": 134.71165748631404
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.Count",
-        "Id": "99898dd233c24ab297e68d0be699326a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 491.57250267674613,
-        "Y": 235.70986853757415
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "List.Chop",
-        "Id": "6fbf68df56044a33bb617d2756afd0e7",
+        "Id": "88b57f649df24579a3968a9019b69f02",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 698.612635570016,
-        "Y": 151.105279949364
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Count",
+        "Id": "ad0b7596a52f4975a90dca68a9032790",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "db13902113674d4d9f51ece087268858",
+        "Id": "722875951c5843fcb16852472da1b577",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 948.60041438493613,
-        "Y": 154.48151563256408
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 1022.4105635447445,
-    "Y": 386.61526943422945,
-    "Zoom": 0.91006380393143882
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }
