@@ -1,6 +1,9 @@
 # Shapely
 
-Shapely is a great Python library that helps us analyse and manipulate geometries. We think it is important to include this library in Dynamo. 
+Shapely is a great Python library that helps us analyse and manipulate geometries. We think it is important to include this library in Dynamo. To use the Dynamoda package, you must first install the "shapely" python library with "pip install shapely". 
+You can find the guide here. "https://github.com/DynamoDS/Dynamo/wiki/Customizing-Dynamo%27s-Python-3-installation" 
+
+When you start dynamo for the first time, the package has not yet been loaded by dynamo and therefore no node belonging to the package will unfortunately not work. Don't panic and change only the "Lacing (@L2/@L1)" values of the node and force the package to run. After a few attempts the packet will work. 
 
 Unlike dynamo, shapely uses its own geometry language. Therefore, transformations must be made between each other without losing data. In this package you will find a dynamo version of shapely geometry. Enjoy the polygons.
 
