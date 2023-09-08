@@ -1,0 +1,171 @@
+{
+  "Uuid": "8f4cb92b-c275-48fa-afbc-033c12457fb7",
+  "IsCustomNode": true,
+  "Category": "Shapely.Conversion",
+  "Description": "",
+  "Name": "ShapelytoNumpy",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shgeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "bd1af7b76c034fa7ba91c02df664506c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3e65bf55d530462585b36dcb9628131e",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "44cd6028a5304bfc8fba354afb6aa32a",
+      "Inputs": [
+        {
+          "Id": "a0436ee16dc847f59717072ea34232fa",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString ,Point\r\nimport numpy as np\r\n\r\nshapely_poly = []\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = []\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = ([shapely_geometry.x,shapely_geometry.y])\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = list(shapely_geometry.coords)\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        \r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry.append(points)\r\n        \r\n    return np.array(dynamo_geometry, dtype=np.float32)\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geo) for geo in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "09a6c9bea5e94019904b0270ecb435f5",
+      "Inputs": [
+        {
+          "Id": "3ed6de9ef9ba4dd58b1ed02fcca5dbe4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "15d094428ae94557b14ceb9077cd376f",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3e65bf55d530462585b36dcb9628131e",
+      "End": "3ed6de9ef9ba4dd58b1ed02fcca5dbe4",
+      "Id": "604b2acb9cd64d729cde85d0e305891a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "15d094428ae94557b14ceb9077cd376f",
+      "End": "a0436ee16dc847f59717072ea34232fa",
+      "Id": "8edb449a1c9341709d1d32f2520f50b6",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 1390.2677001953125,
+      "EyeY": 1736.21484375,
+      "EyeZ": 9135.90234375,
+      "LookX": -1168.9317626953125,
+      "LookY": -3420.716796875,
+      "LookZ": -4582.34765625,
+      "UpX": -0.098562352359294891,
+      "UpY": 0.91706001758575439,
+      "UpZ": -0.38637584447860718
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "bd1af7b76c034fa7ba91c02df664506c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -28.687006390052375,
+        "Y": 5.3484249201792409
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "44cd6028a5304bfc8fba354afb6aa32a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "09a6c9bea5e94019904b0270ecb435f5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 247.91325692609735,
+        "Y": 0.028656510660724166
+      }
+    ],
+    "Annotations": [],
+    "X": 263.12169622160968,
+    "Y": 160.9410627199648,
+    "Zoom": 2.0566802683342771
+  }
+}

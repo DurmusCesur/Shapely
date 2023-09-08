@@ -1,0 +1,176 @@
+{
+  "Uuid": "36535cfc-3277-4bba-8c30-ca9a425db966",
+  "IsCustomNode": true,
+  "Category": "Shapely.Analyse",
+  "Description": "",
+  "Name": "ShapelyMinRotateRectangle",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle, convex_hull\r\n\r\nshapely_polygons = []\r\n\r\ndef spolygon (dynamo_polygons ):\r\n    polygon_parts = []\r\n    \r\n    shapely_geometry1 = sg.Point(dynamo_polygons.X, dynamo_polygons.Y)\r\n    shapely_poly = shapely_geometry1\r\n    return shapely_poly\r\n\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_polygons = IN[0]\r\nelse:\r\n    dynamo_polygons = [IN[0]]\r\n\r\ndynamo_geometries = [spolygon(geometry) for geometry in dynamo_polygons]\r\n\r\nshapely_polygons = sg.MultiPoint(dynamo_geometries)\r\n\r\nOUT = shapely_polygons.minimum_rotated_rectangle",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1dc5006deb284924b25f2d2501651aae",
+      "Inputs": [
+        {
+          "Id": "42e1933849b54dc0bf1892f3b17e8c35",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5ca53086960546d29927f98981434e83",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "254962501119438bb2a3cf249edc141b",
+      "Inputs": [
+        {
+          "Id": "dfbe9fb2a94c48b982063f04569b24c4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_dynpoints",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "18746855b91d4ab9a8239ca25d58349e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c83ccef1cdc14cb19fc9c835a3810792",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5ca53086960546d29927f98981434e83",
+      "End": "dfbe9fb2a94c48b982063f04569b24c4",
+      "Id": "1dd2b6e8160e4c538cb6a34e528e0db6",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c83ccef1cdc14cb19fc9c835a3810792",
+      "End": "42e1933849b54dc0bf1892f3b17e8c35",
+      "Id": "d1f2fbe2071b48ffbbef06c61ca52724",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 5919.440185546875,
+      "EyeY": 4007.37646484375,
+      "EyeZ": 10946.140625,
+      "LookX": 1249.593505859375,
+      "LookY": -3629.392822265625,
+      "LookZ": -3492.02001953125,
+      "UpX": 0.17854069173336029,
+      "UpY": 0.84804809093475342,
+      "UpZ": -0.49893659353256226
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "1dc5006deb284924b25f2d2501651aae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -30.705842924431522,
+        "Y": 204.98224871174637
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "254962501119438bb2a3cf249edc141b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 191.70404636604644,
+        "Y": 213.28112517780892
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "18746855b91d4ab9a8239ca25d58349e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -326.97573276286676,
+        "Y": 209.13168694477775
+      }
+    ],
+    "Annotations": [],
+    "X": 431.00472585074368,
+    "Y": 263.42293714691527,
+    "Zoom": 0.8033215934625979
+  }
+}

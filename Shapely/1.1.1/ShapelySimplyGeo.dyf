@@ -1,0 +1,227 @@
+{
+  "Uuid": "b02d20bf-17aa-46b8-8dbb-0cda5f685722",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry",
+  "Description": "",
+  "Name": "ShapelySimplyGeo",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "a7120748ede5420b98fc52c19163ac03",
+      "Inputs": [
+        {
+          "Id": "ef0c2f9cba16435eb2d480ee84f1dfff",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shpolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5da5acfa6ecb4389b8046a534b5f42bc",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "cc220d70d5f64e45a7e3d8b983c50fad",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "be0594275dfd48f5961364ed995088bf",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle ,simplify\r\n\r\n\r\ndef simpleply(shapely_geometry1,tlr):\r\n    sp = [] \r\n    tt = [sp.append(shp) or shp for shp in shapely_geometry1]\r\n    sm = [simplify(tm,tlr) for tm in tt]\r\n    return list(sm)\r\n\r\ntolerance = IN[1]\r\ndynamo_geometry1 = simpleply(IN[0],tolerance)\r\n\r\nOUT = dynamo_geometry1\r\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "700ce6efd7204eff981ad24b0d3e7a29",
+      "Inputs": [
+        {
+          "Id": "d67936ac0b3544098db9e1025930bf68",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e6e3cbd255924e1ca3018a23c6b6efcc",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ecd8b42f2b824fd1beaaa820fe85ede2",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5da5acfa6ecb4389b8046a534b5f42bc",
+      "End": "d67936ac0b3544098db9e1025930bf68",
+      "Id": "5c255568c2d9459cab05fed874f684c7",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "be0594275dfd48f5961364ed995088bf",
+      "End": "e6e3cbd255924e1ca3018a23c6b6efcc",
+      "Id": "099b9f27de7e4811a0b37ee7acba7676",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ecd8b42f2b824fd1beaaa820fe85ede2",
+      "End": "ef0c2f9cba16435eb2d480ee84f1dfff",
+      "Id": "62a19682a79b40c0810ef1857f378afe",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 5919.440185546875,
+      "EyeY": 4007.37646484375,
+      "EyeZ": 10946.140625,
+      "LookX": 1249.593505859375,
+      "LookY": -3629.392822265625,
+      "LookZ": -3492.02001953125,
+      "UpX": 0.17854069173336029,
+      "UpY": 0.84804809093475342,
+      "UpZ": -0.49893659353256226
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "a7120748ede5420b98fc52c19163ac03",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 705.453263657203,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "f8c30b6b1a154af9b29cafdc20fff323",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 199.85714285714278,
+        "Y": 18.142857142857054
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "cc220d70d5f64e45a7e3d8b983c50fad",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 196.85714285714278,
+        "Y": 101.14285714285705
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "700ce6efd7204eff981ad24b0d3e7a29",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 465.09523809523807,
+        "Y": 23.85714285714289
+      }
+    ],
+    "Annotations": [],
+    "X": 152.57142857142856,
+    "Y": 265.14285714285711,
+    "Zoom": 1.0
+  }
+}

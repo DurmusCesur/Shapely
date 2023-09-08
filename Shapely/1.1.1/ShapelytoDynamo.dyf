@@ -1,0 +1,388 @@
+{
+  "Uuid": "df7d9fd9-2e80-46ad-aa8c-5a747f312d2b",
+  "IsCustomNode": true,
+  "Category": "Shapely.Conversion",
+  "Description": "",
+  "Name": "ShapelytoDynamo",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
+      "Id": "9f4376ff049a4d3cb5e9c30548151e55",
+      "Inputs": [
+        {
+          "Id": "a7cbf3a55a1d41d69fa19c8057c975ea",
+          "Name": "lists",
+          "Description": "Liste de listes à transposer\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "de28901f03b44d3cbf9260782588ad0f",
+          "Name": "lists",
+          "Description": "Liste des listes transposées",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Permute des lignes et des colonnes dans une liste des listes. Si certaines lignes sont plus courtes que d'autres, les valeurs nulles sont insérées en tant qu'espaces réservés dans le réseau obtenu de sorte qu'il est toujours rectangulaire.\n\nList.Transpose (lists: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('DSCoreNodes')\r\nimport DSCore\r\nfrom DSCore import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nimport Autodesk.DesignScript.Geometry as adg\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\napp = DocumentManager.Instance.CurrentUIApplication.Application\r\n\r\ndynamo_geometry1 = IN[0]\r\ngeo = []\r\ny = []\r\nif isinstance(dynamo_geometry1, adg.Point):\r\n    shapely_geometry1 = dynamo_geometry1\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Line):\r\n    shapely_geometry1 = dynamo_geometry1.StartPoint,dynamo_geometry1.EndPoint\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Polygon):\r\n    points = adg.Polygon.Corners(dynamo_geometry1)\r\n    shapely_geometry1 = points\r\n    geo.append(shapely_geometry1)\r\n\r\nelif isinstance(dynamo_geometry1, adg.PolyCurve):\r\n    points = []\r\n    b = PolyCurve.Curves(dynamo_geometry1)\r\n    \r\n    c = [r.StartPoint for r in b ]+[r.EndPoint for r in b ]\r\n    geo.append(c)\r\n    \r\nif isinstance(dynamo_geometry1, adg.Point):\r\n\r\n    t = [p.X for p in geo], [p.Y for p in geo]\r\n    a = zip(t[0],t[1])\r\n\r\nelse :\r\n\r\n    po = [adg.Point.PruneDuplicates(geo[0], 0.001)]\r\n    \r\n    unique_points = []\r\n    for p in po[0]:\r\n        if p not in unique_points:\r\n            unique_points.append(p)\r\n    \r\n    a = [p.X for p in unique_points], [p.Y for p in unique_points]\r\n\r\nOUT = a",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "83a8eb20dc394233bb7af301975da2bd",
+      "Inputs": [
+        {
+          "Id": "3e3c3975e6fb45418cf21a80887c7d28",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "06381c95735f416e9f348af3cf02fcc9",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Chop@var[]..[],int[]",
+      "Id": "645b7de2ba9944fe91af7a2d5cb919da",
+      "Inputs": [
+        {
+          "Id": "8de6f650cc9d48abb837b8c40d20ee03",
+          "Name": "list",
+          "Description": "Liste à couper en sous-listes\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5f9b5ea4de10402296a8517717d9e82f",
+          "Name": "lengths",
+          "Description": "Longueurs de sous-listes consécutives à créer à partir de la liste d'entrée\n\nint[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d142e48240594a97bd497c5da7f283aa",
+          "Name": "lists",
+          "Description": "Sous-listes créées à partir de la liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Couper une liste dans un jeu de sous-listes consécutives avec les longueurs spécifiées. La division de liste commence en haut de la liste.\n\nList.Chop (list: var[]..[], lengths: int[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely import normalize, Polygon , BufferJoinStyle\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString\r\n\r\n\r\ndynamo_point = IN[0]\r\ntype = IN[1]\r\n\r\nshapely_poly = []\r\nshapely_polygons = []\r\ndef spolygon (dynamo_polygons ):\r\n    \r\n    \r\n        \r\n    if isinstance(type, adg.Line):\r\n       shapely_poly = sg.LineString([coord for coord in dynamo_polygons])\r\n       \r\n    elif isinstance(type, adg.Point):\r\n       shapely_poly = sg.Point([coord for coord in dynamo_polygons])\r\n\r\n    elif isinstance(type, adg.Polygon):\r\n        exterior_points = [coord for coord in dynamo_polygons]\r\n        shapely_poly = Polygon(exterior_points)\r\n        \r\n    elif isinstance(type, adg.PolyCurve):\r\n       shapely_poly = sg.LineString([coord for coord in dynamo_polygons])\r\n       \r\n    return shapely_poly\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [spolygon(geometry) for geometry in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1344f8c547c84d6bb8bf55e0a3741387",
+      "Inputs": [
+        {
+          "Id": "8bef341a1c2341cd8f54d7a899c2ce41",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f8418ffd7b5c49a494063d0941a1ef45",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7ea510700d654642940d5c17204c0348",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Count@var[]..[]",
+      "Id": "d11ad9c4e4294e5cafc4b9203c54df9b",
+      "Inputs": [
+        {
+          "Id": "b3d293775e254119b7c5184cf6185aa4",
+          "Name": "list",
+          "Description": "Obtenir le nombre d'éléments de cette liste.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e855f62216ee4b40b465c2fe947659c6",
+          "Name": "int",
+          "Description": "Longueur de la liste.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Renvoie le nombre d'éléments stockés dans la liste indiquée.\n\nList.Count (list: var[]..[]): int"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_dyngeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "13660b7f0e594e1eb627a7aad181e1db",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "31b0d7d1c22148fd8780620c34dcc1b1",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "_shgeometry;",
+      "Id": "feace4342a994ced98d0b59e6bfc00c7",
+      "Inputs": [
+        {
+          "Id": "8aa0b16868a14849a6fcd881a7146dc7",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "de28901f03b44d3cbf9260782588ad0f",
+      "End": "8de6f650cc9d48abb837b8c40d20ee03",
+      "Id": "9e539e494f104c358f98e25e79dd5dfe",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "06381c95735f416e9f348af3cf02fcc9",
+      "End": "a7cbf3a55a1d41d69fa19c8057c975ea",
+      "Id": "95aa180b7cac445d9f263d7d43ebf77c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "06381c95735f416e9f348af3cf02fcc9",
+      "End": "b3d293775e254119b7c5184cf6185aa4",
+      "Id": "dfefbc1ffabb43f291286132a5f82557",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d142e48240594a97bd497c5da7f283aa",
+      "End": "8bef341a1c2341cd8f54d7a899c2ce41",
+      "Id": "5700a2a9d5104b7caad65fc8dc19837c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7ea510700d654642940d5c17204c0348",
+      "End": "8aa0b16868a14849a6fcd881a7146dc7",
+      "Id": "fa9f44ae043b4feb80d6f3282915451d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e855f62216ee4b40b465c2fe947659c6",
+      "End": "5f9b5ea4de10402296a8517717d9e82f",
+      "Id": "13e214a6dfb946a9b27f7a60754bd547",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "31b0d7d1c22148fd8780620c34dcc1b1",
+      "End": "f8418ffd7b5c49a494063d0941a1ef45",
+      "Id": "3a30cce035694c81a32c333117783950",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "31b0d7d1c22148fd8780620c34dcc1b1",
+      "End": "3e3c3975e6fb45418cf21a80887c7d28",
+      "Id": "a6b0bbb153c242e6ad9d01e004a9711e",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "List.Transpose",
+        "ShowGeometry": false,
+        "Id": "9f4376ff049a4d3cb5e9c30548151e55",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1815.1031596388657,
+        "Y": 542.19887484818673
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": false,
+        "Id": "83a8eb20dc394233bb7af301975da2bd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1586.3124019013449,
+        "Y": 655.03956123452281
+      },
+      {
+        "Name": "List.Chop",
+        "ShowGeometry": true,
+        "Id": "645b7de2ba9944fe91af7a2d5cb919da",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2042.4774572702258,
+        "Y": 626.54789241695073
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "1344f8c547c84d6bb8bf55e0a3741387",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2280.6665453967157,
+        "Y": 652.304210758011
+      },
+      {
+        "Name": "List.Count",
+        "ShowGeometry": true,
+        "Id": "d11ad9c4e4294e5cafc4b9203c54df9b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1824.5999603919458,
+        "Y": 730.54894322546932
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "13660b7f0e594e1eb627a7aad181e1db",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1260.13349536482,
+        "Y": 622.26683233280266
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "feace4342a994ced98d0b59e6bfc00c7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2508.9685900004506,
+        "Y": 647.83743202481355
+      }
+    ],
+    "Annotations": [],
+    "X": -518.4649252611357,
+    "Y": 112.40491724450197,
+    "Zoom": 0.80821986639302912
+  }
+}

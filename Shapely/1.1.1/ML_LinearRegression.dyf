@@ -1,0 +1,273 @@
+{
+  "Uuid": "39ad56ea-883b-4224-a5ca-699bbf00dfba",
+  "IsCustomNode": true,
+  "Category": "Shapely.ML.Model",
+  "Description": "",
+  "Name": "ML_LinearRegression",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "79a0335ae28c41f4baa1358c1b890c81",
+      "Inputs": [
+        {
+          "Id": "98ee2e9326264c9c8bc7f2bbcf99339f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport numpy as np\r\nimport pandas as pd\r\nfrom io import StringIO  \r\nimport tensorflow as tf\r\nfrom tensorflow.python.client import device_lib\r\nfrom sklearn.linear_model import LinearRegression\r\n\r\n# Input\r\ncolumn = IN[1]\r\ndata = pd.read_csv(IN[0],usecols=column)\r\nX_train = data.drop(columns=[\"label\"])\r\ny_train = data[\"label\"]\r\nX_test = IN[2]\r\n\r\n# Modeli eğitme\r\nmodel = LinearRegression()\r\nmodel.fit(X_train, y_train)\r\n\r\n# Result\r\ny_test = model.predict(X_test)\r\n\r\n# Score\r\nsys.stdout = StringIO()\r\naccuracy = round(model.score(X_test, y_test)*100,2)\r\n\r\n# Print\r\nprint(\"Model Accuracy: %\", accuracy)\r\nsys.stdout.seek(0)\r\nreaderstdout =  sys.stdout.read()\r\n\r\nOUT = readerstdout, y_test",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "ae1b6565457d4c0f99c41efab827deb7",
+      "Inputs": [
+        {
+          "Id": "2b48638a77d340ff9219422be5e3777b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4d0a9a43fd8b44cf8a785e53b2344274",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7b10361e6bec4d07a2468e934b5707b9",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c334df1c91344b00b13aeddac71107c6",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_Testdata",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "81d411a24b2d4febbe867cef01360a04",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f2846a1806a84a2297b9b78663a99f95",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_Colums",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "72d96d655a0d4549a7d42646811d122a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6a8dc67558224e65b321d8d06fb208b8",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_csv",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1d01d0536a624fe78a490ea838e61a44",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4a50e112e9da43aea5ab07bebffb1816",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c334df1c91344b00b13aeddac71107c6",
+      "End": "98ee2e9326264c9c8bc7f2bbcf99339f",
+      "Id": "1c8718ba02f84f50a8fbee92a1d8e462",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f2846a1806a84a2297b9b78663a99f95",
+      "End": "7b10361e6bec4d07a2468e934b5707b9",
+      "Id": "432baf0d4b3f4c5b99bb7980fe0425d3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "6a8dc67558224e65b321d8d06fb208b8",
+      "End": "4d0a9a43fd8b44cf8a785e53b2344274",
+      "Id": "3fe7a42cc69149b1bb670b7fbcd2f125",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4a50e112e9da43aea5ab07bebffb1816",
+      "End": "2b48638a77d340ff9219422be5e3777b",
+      "Id": "c14c4f524fc24885bc2bfdcc1d5a4e32",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -23.672561645507813,
+      "EyeY": 536.95697021484375,
+      "EyeZ": 361.5350341796875,
+      "LookX": 191.84848022460938,
+      "LookY": -536.95697021484375,
+      "LookZ": -601.5263671875,
+      "UpX": 0.14265184104442596,
+      "UpY": 0.88294750452041626,
+      "UpZ": -0.44727405905723572
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "79a0335ae28c41f4baa1358c1b890c81",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "ae1b6565457d4c0f99c41efab827deb7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "81d411a24b2d4febbe867cef01360a04",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -15.123732819981626,
+        "Y": 89.4953238006338
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "72d96d655a0d4549a7d42646811d122a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -17.123732819981626,
+        "Y": 22.495323800633741
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "1d01d0536a624fe78a490ea838e61a44",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -19.123732819981626,
+        "Y": -55.5046761993662
+      }
+    ],
+    "Annotations": [],
+    "X": 487.8675,
+    "Y": 452.21500000000003,
+    "Zoom": 1.1575
+  }
+}

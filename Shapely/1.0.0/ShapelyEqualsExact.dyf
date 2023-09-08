@@ -1,0 +1,273 @@
+{
+  "Uuid": "c59754f1-14ff-461a-b02c-95c6db9d476e",
+  "IsCustomNode": true,
+  "Category": "Shapely.Analyse",
+  "Description": "",
+  "Name": "ShapelyEqualsExact",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely import normalize, Polygon , equals_exact\r\n\r\ndef spolygon(sp1, sp2,tlr):\r\n\r\n    distane = equals_exact(sp1, sp2,tlr)\r\n    return distane\r\n\r\n\r\nif isinstance(IN[0], list):\r\n    shapely_polygons1 = IN[0]\r\nelse:\r\n    shapely_polygons1 = [IN[0]]\r\n\r\nif isinstance(IN[1], list):\r\n    shapely_polygons2 = IN[1]\r\nelse:\r\n    shapely_polygons2 = [IN[1]]\r\n    \r\ntolerance = IN[2] \r\ndistance = [spolygon(shp1,shp2,tolerance) for (shp1,shp2) in zip(shapely_polygons1,shapely_polygons2)]\r\n\r\nOUT = distance",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "4a986434adfa47dbbd0fe0490537383d",
+      "Inputs": [
+        {
+          "Id": "f115a5fabebd4579a7c407ba761ba839",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1b29afe0243c4f03940de1533e9bd947",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4991e45863c84378a3a534b9814849ee",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "43461b2a400f47e387c51f180e20a043",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shgeometry1",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "c68a6b96e38e4bccb900cec269d09b6e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "879eb562a0ac4aa4a16daaa6fef077d1",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "_shgeometry2",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "13fb3b4fc50941ca93f3ca9db7af0fa2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1781750b1ccc45fdbd4708ee6626874e",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ee01a7ea155349348812521587a30329",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2f46dcdd60ba4d99b28edbda86c8b1a2",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "03326335235c4a00a3006d3acbf859a4",
+      "Inputs": [
+        {
+          "Id": "277dcfe338494b70bfd43239b5facefc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "43461b2a400f47e387c51f180e20a043",
+      "End": "277dcfe338494b70bfd43239b5facefc",
+      "Id": "010ee150435f439bb4c5b2d315439bb5",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "879eb562a0ac4aa4a16daaa6fef077d1",
+      "End": "f115a5fabebd4579a7c407ba761ba839",
+      "Id": "803177e3cd7d4c9a9ab9bbe67439a3a8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "1781750b1ccc45fdbd4708ee6626874e",
+      "End": "1b29afe0243c4f03940de1533e9bd947",
+      "Id": "99cf57cab6594a5aafcb0c820ea02b5a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2f46dcdd60ba4d99b28edbda86c8b1a2",
+      "End": "4991e45863c84378a3a534b9814849ee",
+      "Id": "e17fc42c8f9641b59b25cbe366a599b7",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.17.0.3472",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 3409.57373046875,
+      "EyeY": 2777.674072265625,
+      "EyeZ": 10542.2744140625,
+      "LookX": 879.08251953125,
+      "LookY": -3478.64306640625,
+      "LookZ": -4069.5693359375,
+      "UpX": 0.097495220601558685,
+      "UpY": 0.88701087236404419,
+      "UpZ": -0.45133858919143677
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "4a986434adfa47dbbd0fe0490537383d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 314.0519513084264,
+        "Y": 110.63518862364555
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "c68a6b96e38e4bccb900cec269d09b6e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "13fb3b4fc50941ca93f3ca9db7af0fa2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 150.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "ee01a7ea155349348812521587a30329",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 3.2349470357791006,
+        "Y": 278.64934956385787
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "03326335235c4a00a3006d3acbf859a4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 463.23376695742809,
+        "Y": 111.92916743795723
+      }
+    ],
+    "Annotations": [],
+    "X": 36.088663655092773,
+    "Y": 267.64352767327136,
+    "Zoom": 1.0542982150113263
+  }
+}
