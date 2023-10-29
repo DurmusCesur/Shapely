@@ -1,9 +1,9 @@
 {
-  "Uuid": "9b058c86-9cae-43ef-9a93-b3aca41f6b40",
+  "Uuid": "2dab56fd-1e01-4337-be33-5dc7bbeffb84",
   "IsCustomNode": true,
   "Category": "Shapely.ML.Model",
   "Description": "",
-  "Name": "ML_LinearRegression",
+  "Name": "ML_RandomForest",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -12,15 +12,15 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport numpy as np\r\nimport pandas as pd\r\nfrom io import StringIO  \r\nimport tensorflow as tf\r\nfrom tensorflow.python.client import device_lib\r\nfrom sklearn.linear_model import LinearRegression\r\n\r\n# Input\r\ncolumn = IN[1]\r\ndata = pd.read_csv(IN[0],usecols=column)\r\nX_train = data.drop(columns=[\"label\"])\r\ny_train = data[\"label\"]\r\nX_test = IN[2]\r\n\r\n# Modeli eğitme\r\nmodel = LinearRegression()\r\nmodel.fit(X_train, y_train)\r\n\r\n# Result\r\ny_test = model.predict(X_test)\r\n\r\n# Score\r\nsys.stdout = StringIO()\r\naccuracy = round(model.score(X_test, y_test)*100,2)\r\n\r\n# Print\r\nprint(\"Model Accuracy: %\", accuracy)\r\nsys.stdout.seek(0)\r\nreaderstdout =  sys.stdout.read()\r\n\r\nOUT = readerstdout, y_test",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport tensorflow as tf\r\nfrom tensorflow.python.client import device_lib\r\nfrom sklearn.ensemble import RandomForestClassifier\r\nimport numpy as np\r\nimport pandas as pd\r\nfrom io import StringIO    \r\n\r\n# Input\r\ncolumn = IN[1]\r\ndata = pd.read_csv(IN[0],usecols=column)\r\nX_train = data.drop(columns=[\"label\"])\r\ny_train = data[\"label\"]\r\nX_test = IN[2]\r\n\r\n# Training\r\nmodel = RandomForestClassifier(n_estimators=100, random_state=42)\r\nmodel.fit(X_train, y_train)\r\n\r\n# Result\r\ny_test = model.predict(X_test)\r\n\r\n# Score\r\nsys.stdout = StringIO()\r\naccuracy = round(model.score(X_test, y_test)*100,2)\r\n\r\n# Print\r\nprint(\"Model Accuracy: %\", accuracy)\r\nsys.stdout.seek(0)\r\nreaderstdout =  sys.stdout.read()\r\n\r\nOUT = readerstdout, y_test",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "07c44bd788d947efa78ce31f598ca9fb",
+      "Id": "c7337a65a1a1454496f0c7a685f35e6b",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "02974ab09f9f420aa220d924237f7ae6",
+          "Id": "44263700c06446789141ad4516014de0",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "39f197aea0644f75bf8c40dc5f2de1d9",
+          "Id": "4afb8fa415ff458ba8e16d6ea9b72cd3",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -38,7 +38,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "ebacbc75bbff48318a2db3848e4ae79d",
+          "Id": "6f9a5014964b49a0beba2ea5469393e0",
           "Name": "IN[2]",
           "Description": "Input #2",
           "UsingDefaultValue": false,
@@ -49,9 +49,9 @@
       ],
       "Outputs": [
         {
-          "Id": "935487b1ab0d46c3adf0b1b24311be60",
+          "Id": "9bcbe3555d6d446baf85d62184083c28",
           "Name": "OUT",
-          "Description": "Résultat du script Python",
+          "Description": "Result of the python script",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -62,6 +62,27 @@
       "Description": "Runs an embedded Python script."
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Score",
+      "Id": "5026231068124543a4adf42274913254",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "0f13f82214834bfcad3db273d9dc42ae",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "Parameter": {
         "Name": "_Testdata",
@@ -70,14 +91,14 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "9527446ffc79428d9050265afad9ba36",
+      "Id": "93b01092ce5d4eb8b1a58ac09026baca",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "73e4bedbb29b4513b0a3a460493d4f50",
+          "Id": "9f70d4069eca46b8bf462eec7aae1e02",
           "Name": "",
-          "Description": "Symbole",
+          "Description": "Input Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -96,14 +117,14 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "27796f61b4384450aa7e0f7c352a2296",
+      "Id": "6fb5d24bba1044ec94cb553d90013148",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "98f06e4520524a2ca431dd4b26681ce5",
+          "Id": "da7ef8b616594f3c92467f68293aa519",
           "Name": "",
-          "Description": "Symbole",
+          "Description": "Input Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -122,14 +143,14 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "af30a9245a8047609351996dbe77e1e7",
+      "Id": "6a9e977d9dd0482ca5448718ede4410b",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "b727346aac9c4f979d9d84fd1bf78bf3",
+          "Id": "49b9119e0a7e41c4b6d668f836f56617",
           "Name": "",
-          "Description": "Symbole",
+          "Description": "Input Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -140,54 +161,12 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "ElementResolver": null,
-      "Symbol": "_Data",
-      "Id": "05125b80d6fd497d8de8efb0a7c7faf0",
-      "NodeType": "OutputNode",
-      "Inputs": [
-        {
-          "Id": "5e108aaf1e034133acc5224c7591506e",
-          "Name": "",
-          "Description": "Output Data",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "ElementResolver": null,
-      "Symbol": "_Score",
-      "Id": "def643e139ac4ee8865de6f3bb17fe3d",
-      "NodeType": "OutputNode",
-      "Inputs": [
-        {
-          "Id": "ebe19eb47eef4e3583534b826c21d3e2",
-          "Name": "",
-          "Description": "Output Data",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "Id": "77e482df60df4d52b2f9a08955c915de",
+      "Id": "eb6c0ab3a91348f5baeac0f2002d2274",
       "NodeType": "CodeBlockNode",
       "Inputs": [
         {
-          "Id": "6bcff82d01534685a084c363c1146d9f",
+          "Id": "6753a960c1a54192b3ba62ba05929c3c",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -198,7 +177,7 @@
       ],
       "Outputs": [
         {
-          "Id": "5076d119066a49cd8261dce7bfc2ebf7",
+          "Id": "2717a3ea54474ce386a8bdbb4e38759a",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -207,7 +186,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "8cfc1c2e4c824e94801cbbc28802519e",
+          "Id": "704433bd8f664dbe8ddd641db04cf2fc",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -219,43 +198,64 @@
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly",
       "Code": "x[0];\nx[1];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Data",
+      "Id": "df81536127504dfb98bbb8adff84ad78",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "53522994709e406e898a189d6de42776",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
-      "Start": "935487b1ab0d46c3adf0b1b24311be60",
-      "End": "6bcff82d01534685a084c363c1146d9f",
-      "Id": "4d106b895ab243599710d0627469380c",
+      "Start": "9bcbe3555d6d446baf85d62184083c28",
+      "End": "6753a960c1a54192b3ba62ba05929c3c",
+      "Id": "b708241a7b5040deb0b321bb566308ac",
       "IsHidden": "False"
     },
     {
-      "Start": "73e4bedbb29b4513b0a3a460493d4f50",
-      "End": "ebacbc75bbff48318a2db3848e4ae79d",
-      "Id": "b7dda8a2c7c2438bb3d7e9506b33ed57",
+      "Start": "9f70d4069eca46b8bf462eec7aae1e02",
+      "End": "6f9a5014964b49a0beba2ea5469393e0",
+      "Id": "c8a227a6a949406aad8da3431de11d8c",
       "IsHidden": "False"
     },
     {
-      "Start": "98f06e4520524a2ca431dd4b26681ce5",
-      "End": "39f197aea0644f75bf8c40dc5f2de1d9",
-      "Id": "a4c3ba95066c454a943ca732cc7b3863",
+      "Start": "da7ef8b616594f3c92467f68293aa519",
+      "End": "4afb8fa415ff458ba8e16d6ea9b72cd3",
+      "Id": "9a6eeca1e3ce4168bfefdef7af0c0349",
       "IsHidden": "False"
     },
     {
-      "Start": "b727346aac9c4f979d9d84fd1bf78bf3",
-      "End": "02974ab09f9f420aa220d924237f7ae6",
-      "Id": "4cc20cd1a4ea40908a35b483d2bb0fd3",
+      "Start": "49b9119e0a7e41c4b6d668f836f56617",
+      "End": "44263700c06446789141ad4516014de0",
+      "Id": "06c7301aea534fc49e775d341423d886",
       "IsHidden": "False"
     },
     {
-      "Start": "5076d119066a49cd8261dce7bfc2ebf7",
-      "End": "ebe19eb47eef4e3583534b826c21d3e2",
-      "Id": "1d73eedab60c446f9c941ebfcb2133a7",
+      "Start": "2717a3ea54474ce386a8bdbb4e38759a",
+      "End": "0f13f82214834bfcad3db273d9dc42ae",
+      "Id": "ce04c5a0cc5b4906be80ff96138a548f",
       "IsHidden": "False"
     },
     {
-      "Start": "8cfc1c2e4c824e94801cbbc28802519e",
-      "End": "5e108aaf1e034133acc5224c7591506e",
-      "Id": "2f8b8613dd394927a8c95d3cbd0077c2",
+      "Start": "704433bd8f664dbe8ddd641db04cf2fc",
+      "End": "53522994709e406e898a189d6de42776",
+      "Id": "7481663e84b547cd8f95830474bf86b4",
       "IsHidden": "False"
     }
   ],
@@ -287,79 +287,79 @@
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "07c44bd788d947efa78ce31f598ca9fb",
+        "Id": "c7337a65a1a1454496f0c7a685f35e6b",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 240.07949575694408,
+        "Y": 76.776076315824184
       },
       {
-        "Id": "9527446ffc79428d9050265afad9ba36",
-        "Name": "Input",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -15.123732819981626,
-        "Y": 89.4953238006338
-      },
-      {
-        "Id": "27796f61b4384450aa7e0f7c352a2296",
-        "Name": "Input",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -17.123732819981626,
-        "Y": 22.495323800633741
-      },
-      {
-        "Id": "af30a9245a8047609351996dbe77e1e7",
-        "Name": "Input",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -19.123732819981626,
-        "Y": -55.5046761993662
-      },
-      {
-        "Id": "05125b80d6fd497d8de8efb0a7c7faf0",
+        "Id": "5026231068124543a4adf42274913254",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 671.00833479853486,
-        "Y": 87.530861635824976
+        "X": 646.74892522675714,
+        "Y": 35.368754257851663
       },
       {
-        "Id": "def643e139ac4ee8865de6f3bb17fe3d",
-        "Name": "Output",
+        "Id": "93b01092ce5d4eb8b1a58ac09026baca",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 663.67578818410186,
-        "Y": -47.4742613240233
+        "X": -91.386277176261444,
+        "Y": 254.50838230954452
       },
       {
-        "Id": "77e482df60df4d52b2f9a08955c915de",
+        "Id": "6fb5d24bba1044ec94cb553d90013148",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -88.639131505142643,
+        "Y": 125.90687932822584
+      },
+      {
+        "Id": "6a9e977d9dd0482ca5448718ede4410b",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -86.320755420151613,
+        "Y": -3.7843461512750878
+      },
+      {
+        "Id": "eb6c0ab3a91348f5baeac0f2002d2274",
         "Name": "Code Block",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 463.14842648481886,
-        "Y": -4.8745029118898913
+        "X": 446.22156352747379,
+        "Y": 77.9685126699851
+      },
+      {
+        "Id": "df81536127504dfb98bbb8adff84ad78",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 654.08147184119025,
+        "Y": 170.37387721769983
       }
     ],
     "Annotations": [],
-    "X": 487.8675,
-    "Y": 452.21500000000003,
-    "Zoom": 1.1575
+    "X": 721.66911295833324,
+    "Y": 226.51582912499987,
+    "Zoom": 1.545620359375
   }
 }

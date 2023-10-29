@@ -1,0 +1,235 @@
+{
+  "Uuid": "573c3fb0-0555-41f0-b33a-14995a88e4c4",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Creates",
+  "Description": "",
+  "Name": "ShapelyPolgonize",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "String": {
+        "Key": "DSCore.String",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Autodesk.Line": {
+        "Key": "Autodesk.DesignScript.Geometry.Line",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Line": {
+        "Key": "Autodesk.DesignScript.Geometry.Line",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely.ops import split\r\nfrom shapely.geometry import GeometryCollection , LineString, MultiLineString\r\nfrom shapely import Polygon\r\nimport numpy as np\r\nimport math\r\n\r\ndynamo_polygons = IN[0]\r\nmin_num = 3\r\nquadrat_width = IN[1]\r\n\r\ndef spolygon(sp1):\r\n    sp = [] \r\n    st = []\r\n    tt = [st.append(sh) or sh for sh in sp1]\r\n    pt = sg.MultiPolygon(tt)\r\n    west, south, east, north = pt.bounds\r\n    x_num = math.ceil((east - west) / quadrat_width) + 1\r\n    y_num = math.ceil((north - south) / quadrat_width) + 1\r\n    x_points = np.linspace(west, east, num=max(x_num, min_num))\r\n    y_points = np.linspace(south, north, num=max(y_num, min_num))\r\n    vertical_lines = [LineString([(x, y_points[0]), (x, y_points[-1])]) for x in x_points]\r\n    horizont_lines = [LineString([(x_points[0], y), (x_points[-1], y)]) for y in y_points]\r\n    lines = vertical_lines + horizont_lines\r\n    mull = sg.MultiLineString(lines)\r\n    result = [split(pt,line) for line in lines]\r\n    return result\r\n\r\nspt = spolygon(dynamo_polygons) \r\n\r\nOUT = [sp.geoms for sp in spt]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "862aae5c1bc44b3d834ffd41977afdb5",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "80d3455536c545d7a7e377b33712bf59",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "792ae29c327844c69d6a215653e6cedd",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3de9dc575bfb445997e0bf89e350e3a0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_shpolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "8f0d3d4527db4671abd8f419b95b1fd0",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a7a957091bee4b8eaaf05c61b73c1ec7",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "14f47653febe46719da5eee51c9b357d",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "82e2fd2fa205481daba1abd4d59cedf4",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_quadratwidth",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "664604825109461d857618498be2fd83",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "73afc79429e745069d06570659946076",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3de9dc575bfb445997e0bf89e350e3a0",
+      "End": "82e2fd2fa205481daba1abd4d59cedf4",
+      "Id": "4646f01ac70f4cdcb8524e57f2a8fdcd",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "a7a957091bee4b8eaaf05c61b73c1ec7",
+      "End": "80d3455536c545d7a7e377b33712bf59",
+      "Id": "6c265107f24046128e010b8b7add58bc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "73afc79429e745069d06570659946076",
+      "End": "792ae29c327844c69d6a215653e6cedd",
+      "Id": "bd3eb91212654e419690a11e97b4c77b",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.18.1.5096",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": 4551.2470703125,
+      "EyeY": 3275.747314453125,
+      "EyeZ": 9653.876953125,
+      "LookX": 119.65087890625,
+      "LookY": -3790.034912109375,
+      "LookZ": -2549.22900390625,
+      "UpX": 0.032402798533439636,
+      "UpY": 0.72336888313293457,
+      "UpZ": -0.68970102071762085
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "862aae5c1bc44b3d834ffd41977afdb5",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 487.41315042671795,
+        "Y": 0.0
+      },
+      {
+        "Id": "8f0d3d4527db4671abd8f419b95b1fd0",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 123.99999999999989,
+        "Y": -60.666666666666686
+      },
+      {
+        "Id": "14f47653febe46719da5eee51c9b357d",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 737.07981709338492,
+        "Y": 0.0
+      },
+      {
+        "Id": "664604825109461d857618498be2fd83",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 116.66666666666652,
+        "Y": 95.999999999999773
+      }
+    ],
+    "Annotations": [],
+    "X": 501.33333333333337,
+    "Y": 390.66666666666663,
+    "Zoom": 1.0
+  }
+}

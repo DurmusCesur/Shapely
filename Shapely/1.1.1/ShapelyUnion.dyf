@@ -1,7 +1,7 @@
 {
   "Uuid": "31118f5a-448b-420d-a265-c2667054f795",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Modifiers",
   "Description": "",
   "Name": "ShapelyUnion",
   "ElementResolver": {
@@ -108,7 +108,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -120,15 +119,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 5919.440185546875,
-      "EyeY": 4007.37646484375,
-      "EyeZ": 10946.140625,
-      "LookX": 1249.593505859375,
-      "LookY": -3629.392822265625,
-      "LookZ": -3492.02001953125,
-      "UpX": 0.17854069173336029,
-      "UpY": 0.84804809093475342,
-      "UpZ": -0.49893659353256226
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -139,8 +138,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -55.746023196453166,
-        "Y": 3.2037944365777662
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Output",
@@ -149,7 +148,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.57142857142844,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -159,13 +158,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 245.89254872622917,
-        "Y": 6.9528424348450528
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 265.682160295806,
-    "Y": 338.28310700252388,
-    "Zoom": 1.2777169841077238
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }

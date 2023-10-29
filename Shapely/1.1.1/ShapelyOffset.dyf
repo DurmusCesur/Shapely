@@ -1,7 +1,7 @@
 {
   "Uuid": "c6a682cc-9b13-4e39-8931-bbc781e55f70",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Creates",
   "Description": "",
   "Name": "ShapelyOffset",
   "ElementResolver": {
@@ -236,7 +236,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -248,15 +247,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 379.7593994140625,
-      "EyeY": 3973.234130859375,
-      "EyeZ": 11118.12109375,
-      "LookX": -1382.028564453125,
-      "LookY": -3973.234130859375,
-      "LookZ": -5098.056640625,
-      "UpX": -0.10879945009946823,
-      "UpY": 0.90944367647171021,
-      "UpZ": -0.40134137868881226
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -267,8 +266,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 444.137114546083,
-        "Y": 41.57667632739799
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Output",
@@ -277,8 +276,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 632.85140026036879,
-        "Y": 46.285714285714278
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -287,8 +286,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 50.66082413948223,
-        "Y": 251.42857142857147
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -297,8 +296,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 50.285714285714221,
-        "Y": 78.861163602196669
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -307,8 +306,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 57.517966996625205,
-        "Y": 149.42857142857147
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -317,13 +316,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 77.5179669966252,
-        "Y": -26.285714285714334
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 204.57142857142856,
-    "Y": 290.28571428571428,
+    "X": 0.0,
+    "Y": 0.0,
     "Zoom": 1.0
   }
 }

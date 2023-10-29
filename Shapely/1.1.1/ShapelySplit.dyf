@@ -1,0 +1,222 @@
+{
+  "Uuid": "3d024b0b-5732-4b13-8283-03e81089aff6",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifiers",
+  "Description": "",
+  "Name": "ShapelySplit",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_shpolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "749b5fa986214297a967e22a354ac1df",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e17665e94a82441d9a0b9e94a3f450d2",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_shlinestring",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": " Inputs must be either \"LINESTRING\""
+      },
+      "Id": "0c2e0395e99446eeaca20915ae22c71c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "613be842f2ab4044a6b0797ed2d99e0d",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "6d21badcf7a244198a351b912b267e87",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "612af55ae8844741be3db901d8101625",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nimport Autodesk.DesignScript.Geometry as adg\r\nfrom shapely.ops import split\r\nfrom shapely.geometry import GeometryCollection\r\nfrom shapely import Polygon\r\n\r\ndynamo_polygons = IN[0]\r\npoint = IN[1]\r\ngeometry = []\r\n\r\ndef spolygon(sp1, sp2):\r\n    sp = [] \r\n    st = []\r\n    tt = [st.append(sh) or sh for sh in sp1]\r\n    tp = [sp.append(shp) or shp for shp in sp2]\r\n    sm = [split(d, p) for d,p in zip (tt,tp)]\r\n    return list(sm)\r\n\r\nspt = spolygon(dynamo_polygons,point) \r\n\r\nOUT = [st.geoms for st in spt]\r\n\r\n\r\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "3e2ca60b7f824d0a8e431a64de5a1283",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "4b2fb6b9381f41b19ed479ac4e7f14bd",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0916a0f8f3bc4dd3b367a3c925e30f6e",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3a03bca8a34a437d89a4cf97256d4527",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e17665e94a82441d9a0b9e94a3f450d2",
+      "End": "4b2fb6b9381f41b19ed479ac4e7f14bd",
+      "Id": "280e2f63061f419a8a35945bbcc6c74a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "613be842f2ab4044a6b0797ed2d99e0d",
+      "End": "0916a0f8f3bc4dd3b367a3c925e30f6e",
+      "Id": "a5b8e8e6ad8e426899db747539b9ddb3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3a03bca8a34a437d89a4cf97256d4527",
+      "End": "612af55ae8844741be3db901d8101625",
+      "Id": "3dee4695636549c188a4d2cb26251068",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.18.1.5096",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": 3196.73291015625,
+      "EyeY": 2727.327880859375,
+      "EyeZ": 8104.515625,
+      "LookX": 86.03173828125,
+      "LookY": -2725.114501953125,
+      "LookZ": -1832.94873046875,
+      "UpX": 0.032402798533439636,
+      "UpY": 0.72336888313293457,
+      "UpZ": -0.68970102071762085
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "749b5fa986214297a967e22a354ac1df",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 323.92602984934831,
+        "Y": 17.253050857488631
+      },
+      {
+        "Id": "0c2e0395e99446eeaca20915ae22c71c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 123.35931363104351,
+        "Y": 154.31326271437212
+      },
+      {
+        "Id": "6d21badcf7a244198a351b912b267e87",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 931.33052187084331,
+        "Y": 80.658012758759128
+      },
+      {
+        "Id": "3e2ca60b7f824d0a8e431a64de5a1283",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 701.6977884982125,
+        "Y": 52.49980796377173
+      }
+    ],
+    "Annotations": [],
+    "X": 506.77494530208321,
+    "Y": 362.18856128124992,
+    "Zoom": 1.545620359375
+  }
+}

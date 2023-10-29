@@ -1,7 +1,7 @@
 {
   "Uuid": "f99c0f3f-4289-4fe2-96fa-026e2ca2d954",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Modifiers",
   "Description": "",
   "Name": "ShapelyRotate",
   "ElementResolver": {
@@ -154,7 +154,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -166,15 +165,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 379.7593994140625,
-      "EyeY": 3973.234130859375,
-      "EyeZ": 11118.12109375,
-      "LookX": -1382.028564453125,
-      "LookY": -3973.234130859375,
-      "LookZ": -5098.056640625,
-      "UpX": -0.10879945009946823,
-      "UpY": 0.90944367647171021,
-      "UpZ": -0.40134137868881226
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -185,7 +184,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -195,7 +194,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 448.42857142857156,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -205,8 +204,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -102.85714285714283,
-        "Y": 189.71428571428567
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -215,13 +214,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -102.85714285714283,
-        "Y": 39.714285714285666
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 44.285714285714221,
-    "Y": 289.42857142857139,
+    "X": 0.0,
+    "Y": 0.0,
     "Zoom": 1.0
   }
 }

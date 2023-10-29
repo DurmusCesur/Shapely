@@ -1,7 +1,7 @@
 {
   "Uuid": "58ffd9d6-5786-4a67-9111-5ed971b7bc06",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Modifiers",
   "Description": "",
   "Name": "ShapelyPruneDuplicated",
   "ElementResolver": {
@@ -149,7 +149,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -161,15 +160,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 5919.440185546875,
-      "EyeY": 4007.37646484375,
-      "EyeZ": 10946.140625,
-      "LookX": 1249.593505859375,
-      "LookY": -3629.392822265625,
-      "LookZ": -3492.02001953125,
-      "UpX": 0.17854069173336029,
-      "UpY": 0.84804809093475342,
-      "UpZ": -0.49893659353256226
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -180,7 +179,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 249.4660017978822,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -190,8 +189,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.48622044728898572,
-        "Y": 0.48622044728901415
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Output",
@@ -200,7 +199,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.0,
+        "X": 0.0,
         "Y": 0.0
       },
       {
@@ -210,13 +209,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -2.431102236445156,
-        "Y": 99.675191694249719
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 114.53240667497403,
-    "Y": 347.98724574300803,
-    "Zoom": 1.2484436539722301
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }

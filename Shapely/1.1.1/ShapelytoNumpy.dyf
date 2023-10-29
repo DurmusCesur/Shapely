@@ -1,7 +1,7 @@
 {
-  "Uuid": "8f4cb92b-c275-48fa-afbc-033c12457fb7",
+  "Uuid": "0068f6cc-b29a-4582-825b-122b70c303d7",
   "IsCustomNode": true,
-  "Category": "Shapely.Conversion",
+  "Category": "Shapely.Geometry.Conversion",
   "Description": "",
   "Name": "ShapelytoNumpy",
   "ElementResolver": {
@@ -12,7 +12,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "_shgeometry",
         "TypeName": "var",
@@ -20,11 +19,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "bd1af7b76c034fa7ba91c02df664506c",
+      "Id": "306782f6c2c54ea081a2b33ea95927d5",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "3e65bf55d530462585b36dcb9628131e",
+          "Id": "e9388fcb960e4948a25ea89f37f4a165",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -34,17 +34,17 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "OUT",
-      "Id": "44cd6028a5304bfc8fba354afb6aa32a",
+      "Id": "5d5f936a319b4ee28a53b71b035db203",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "a0436ee16dc847f59717072ea34232fa",
+          "Id": "5b9a578ec7c348469764f5e656fac34e",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -55,19 +55,19 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString ,Point\r\nimport numpy as np\r\n\r\nshapely_poly = []\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = []\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = ([shapely_geometry.x,shapely_geometry.y])\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = list(shapely_geometry.coords)\r\n        dynamo_geometry = points\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        \r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry.append(points)\r\n        \r\n    return np.array(dynamo_geometry, dtype=np.float32)\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geo) for geo in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString ,Point\r\nimport numpy as np\r\n\r\nshapely_poly = []\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = []\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = ([shapely_geometry.x,shapely_geometry.y])\r\n        dynamo_geometry = points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry = list(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry.append(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n#    return np.array(dynamo_geometry, dtype=np.float32)\r\n    return arr[:]\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geo) for geo in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "09a6c9bea5e94019904b0270ecb435f5",
+      "Id": "a611d32081e449399c42c1713b372aae",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "3ed6de9ef9ba4dd58b1ed02fcca5dbe4",
+          "Id": "4a3f7cd2467345e0beefb3552eabbe8c",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -78,9 +78,9 @@
       ],
       "Outputs": [
         {
-          "Id": "15d094428ae94557b14ceb9077cd376f",
+          "Id": "8b7d13c080e14fceb1438b70f1b63ba8",
           "Name": "OUT",
-          "Description": "Résultat du script Python",
+          "Description": "Result of the python script",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -88,20 +88,20 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Exécute un script Python intégré."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
-      "Start": "3e65bf55d530462585b36dcb9628131e",
-      "End": "3ed6de9ef9ba4dd58b1ed02fcca5dbe4",
-      "Id": "604b2acb9cd64d729cde85d0e305891a",
+      "Start": "e9388fcb960e4948a25ea89f37f4a165",
+      "End": "4a3f7cd2467345e0beefb3552eabbe8c",
+      "Id": "d5fcb1564a7a47f4a1915222d871eea7",
       "IsHidden": "False"
     },
     {
-      "Start": "15d094428ae94557b14ceb9077cd376f",
-      "End": "a0436ee16dc847f59717072ea34232fa",
-      "Id": "8edb449a1c9341709d1d32f2520f50b6",
+      "Start": "8b7d13c080e14fceb1438b70f1b63ba8",
+      "End": "5b9a578ec7c348469764f5e656fac34e",
+      "Id": "cbd0e11257264c7292b01409dc60233c",
       "IsHidden": "False"
     }
   ],
@@ -114,58 +114,58 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.17.0.3472",
+      "Version": "2.18.1.5096",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "_Aperçu en arrière-plan",
-      "EyeX": 1390.2677001953125,
-      "EyeY": 1736.21484375,
-      "EyeZ": 9135.90234375,
-      "LookX": -1168.9317626953125,
-      "LookY": -3420.716796875,
-      "LookZ": -4582.34765625,
-      "UpX": -0.098562352359294891,
-      "UpY": 0.91706001758575439,
-      "UpZ": -0.38637584447860718
+      "Name": "_Background Preview",
+      "EyeX": 789.8433837890625,
+      "EyeY": 594.6116943359375,
+      "EyeZ": 4078.969482421875,
+      "LookX": -107.7430419921875,
+      "LookY": -337.5108642578125,
+      "LookZ": 2040.397216796875,
+      "UpX": 0.0027612284757196903,
+      "UpY": 0.99862957000732422,
+      "UpZ": -0.052263390272855759
     },
     "ConnectorPins": [],
     "NodeViews": [
       {
+        "Id": "306782f6c2c54ea081a2b33ea95927d5",
         "Name": "Input",
-        "ShowGeometry": true,
-        "Id": "bd1af7b76c034fa7ba91c02df664506c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -28.687006390052375,
-        "Y": 5.3484249201792409
+        "ShowGeometry": true,
+        "X": -136.0,
+        "Y": 309.99999999999994
       },
       {
+        "Id": "5d5f936a319b4ee28a53b71b035db203",
         "Name": "Output",
-        "ShowGeometry": true,
-        "Id": "44cd6028a5304bfc8fba354afb6aa32a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.0,
-        "Y": 0.0
+        "ShowGeometry": true,
+        "X": 413.33333333333326,
+        "Y": 291.33333333333337
       },
       {
+        "Id": "a611d32081e449399c42c1713b372aae",
         "Name": "Python Script",
-        "ShowGeometry": true,
-        "Id": "09a6c9bea5e94019904b0270ecb435f5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 247.91325692609735,
-        "Y": 0.028656510660724166
+        "ShowGeometry": true,
+        "X": 194.0,
+        "Y": 285.33333333333348
       }
     ],
     "Annotations": [],
-    "X": 263.12169622160968,
-    "Y": 160.9410627199648,
-    "Zoom": 2.0566802683342771
+    "X": 632.66666666666674,
+    "Y": 298.66666666666663,
+    "Zoom": 1.0
   }
 }

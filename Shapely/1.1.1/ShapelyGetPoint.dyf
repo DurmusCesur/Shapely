@@ -1,7 +1,7 @@
 {
   "Uuid": "aa6b9d11-8514-4bca-8e1c-ab553a9bf390",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry.Line",
+  "Category": "Shapely.Geometry.Analyse",
   "Description": "",
   "Name": "ShapelyGetPoint",
   "ElementResolver": {
@@ -149,7 +149,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -161,15 +160,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 5919.440185546875,
-      "EyeY": 4007.37646484375,
-      "EyeZ": 10946.140625,
-      "LookX": 1249.593505859375,
-      "LookY": -3629.392822265625,
-      "LookZ": -3492.02001953125,
-      "UpX": 0.17854069173336029,
-      "UpY": 0.84804809093475342,
-      "UpZ": -0.49893659353256226
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [

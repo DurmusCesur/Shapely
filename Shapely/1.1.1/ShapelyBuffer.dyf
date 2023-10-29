@@ -1,7 +1,7 @@
 {
   "Uuid": "5b78ff52-3401-447d-9511-a1ce38984108",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Creates",
   "Description": "",
   "Name": "ShapelyBuffer",
   "ElementResolver": {
@@ -411,7 +411,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -423,15 +422,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": -2214.8671875,
-      "EyeY": 3332.2197265625,
-      "EyeZ": 11803.603515625,
-      "LookX": 1416.390869140625,
-      "LookY": -3332.2197265625,
-      "LookZ": -5572.64208984375,
-      "UpX": 0.0749528631567955,
-      "UpY": 0.95258557796478271,
-      "UpZ": -0.29489478468894958
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -442,8 +441,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 425.795998652,
-        "Y": 3.231570280373262
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Code Block",
@@ -452,8 +451,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 627.5908531588766,
-        "Y": 1.7587307133910031
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Point.ByCoordinates",
@@ -462,8 +461,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 803.93150733078119,
-        "Y": -4.6666666666666856
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Python Script",
@@ -472,8 +471,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 2.9949936306632026
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Polygon.ByPoints",
@@ -482,8 +481,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1058.1614773569925,
-        "Y": -1.9702775231403962
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Output",
@@ -492,8 +491,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1298.8757630712782,
-        "Y": -2.380952380952408
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -502,8 +501,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -49.183000471558728,
-        "Y": 284.14082112159474
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -512,8 +511,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -45.053461574803237,
-        "Y": 158.18498519535009
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -522,8 +521,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -53.480022630847543,
-        "Y": 28.860422064976973
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -532,13 +531,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -55.878125412558688,
-        "Y": -110.08612918458755
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 499.42857142857133,
-    "Y": 201.14285714285711,
+    "X": 0.0,
+    "Y": 0.0,
     "Zoom": 1.0
   }
 }

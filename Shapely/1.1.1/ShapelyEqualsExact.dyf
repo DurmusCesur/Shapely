@@ -1,7 +1,7 @@
 {
   "Uuid": "c59754f1-14ff-461a-b02c-95c6db9d476e",
   "IsCustomNode": true,
-  "Category": "Shapely.Analyse",
+  "Category": "Shapely.Geometry.Analyse",
   "Description": "",
   "Name": "ShapelyEqualsExact",
   "ElementResolver": {
@@ -190,7 +190,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -202,15 +201,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 3409.57373046875,
-      "EyeY": 2777.674072265625,
-      "EyeZ": 10542.2744140625,
-      "LookX": 879.08251953125,
-      "LookY": -3478.64306640625,
-      "LookZ": -4069.5693359375,
-      "UpX": 0.097495220601558685,
-      "UpY": 0.88701087236404419,
-      "UpZ": -0.45133858919143677
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -221,8 +220,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 314.0519513084264,
-        "Y": 110.63518862364555
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -242,7 +241,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 0.0,
-        "Y": 150.0
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -251,8 +250,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 3.2349470357791006,
-        "Y": 278.64934956385787
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Output",
@@ -261,13 +260,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 463.23376695742809,
-        "Y": 111.92916743795723
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 36.088663655092773,
-    "Y": 267.64352767327136,
-    "Zoom": 1.0542982150113263
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }

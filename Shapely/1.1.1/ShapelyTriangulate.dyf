@@ -1,7 +1,7 @@
 {
   "Uuid": "48ff4498-617a-4f4b-9a00-9fffd1861304",
   "IsCustomNode": true,
-  "Category": "Shapely.Geometry",
+  "Category": "Shapely.Geometry.Creates",
   "Description": "",
   "Name": "ShapelyTriangulate",
   "ElementResolver": {
@@ -332,7 +332,6 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -344,15 +343,15 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": 2769.98291015625,
-      "EyeY": 3478.64306640625,
-      "EyeZ": 9804.9296875,
-      "LookX": 879.08251953125,
-      "LookY": -3478.64306640625,
-      "LookZ": -4069.5693359375,
-      "UpX": 0.097495220601558685,
-      "UpY": 0.88701087236404419,
-      "UpZ": -0.45133858919143677
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -363,8 +362,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1111.4285714285716,
-        "Y": 226.0
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
@@ -373,18 +372,18 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -182.28571428571425,
-        "Y": 218.42857142857139
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "List.Transpose",
-        "ShowGeometry": false,
+        "ShowGeometry": true,
         "Id": "ce5fb9df6c2c4efcac3fd8bec2cac087",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 412.735985961436,
-        "Y": 174.85714285714289
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Code Block",
@@ -393,8 +392,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 66.714285714286,
-        "Y": 217.92015641637295
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "List Create",
@@ -403,8 +402,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 218.90022038832603,
-        "Y": 205.14807540241281
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "List.Chop",
@@ -413,8 +412,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 629.18528859557591,
-        "Y": 221.54169786546277
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "List.Count",
@@ -423,8 +422,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 422.14515570230606,
-        "Y": 306.14628645367293
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "Name": "Python Script",
@@ -433,13 +432,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 910.097806866886,
-        "Y": 222.43685542363278
+        "X": 0.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 75.289047619047778,
-    "Y": 300.75119047619046,
-    "Zoom": 0.8425
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }
