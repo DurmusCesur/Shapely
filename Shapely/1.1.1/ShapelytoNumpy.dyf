@@ -1,5 +1,5 @@
 {
-  "Uuid": "0068f6cc-b29a-4582-825b-122b70c303d7",
+  "Uuid": "479e37ea-7e1d-4c71-9363-523cb5eb5c94",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Conversion",
   "Description": "",
@@ -19,12 +19,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "306782f6c2c54ea081a2b33ea95927d5",
+      "Id": "762d65e2a8514ef495909bd70d3e3f32",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "e9388fcb960e4948a25ea89f37f4a165",
+          "Id": "c5e4ab1d80b44eb2ae2ca776c2a0b0ab",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -40,11 +40,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
       "Symbol": "OUT",
-      "Id": "5d5f936a319b4ee28a53b71b035db203",
+      "Id": "40fd1edf0387462f87a19b63351d576d",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "5b9a578ec7c348469764f5e656fac34e",
+          "Id": "bf25e782fc2f47d582b17cea6bf9c10b",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -59,15 +59,15 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString ,Point\r\nimport numpy as np\r\n\r\nshapely_poly = []\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = []\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = ([shapely_geometry.x,shapely_geometry.y])\r\n        dynamo_geometry = points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry = list(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry.append(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n#    return np.array(dynamo_geometry, dtype=np.float32)\r\n    return arr[:]\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geo) for geo in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
+      "Code": "#Copyright(c) 2023, Durmus Bayryam\r\n# Gıthub : https://github.com/DurmusCesur/Shapely.git\r\nimport clr\r\nimport sys\r\nimport re\r\nimport System\r\n\r\nclr.AddReference('Python.Included')\r\nimport Python.Included as pyInc\r\npath_py3_lib = pyInc.Installer.EmbeddedPythonHome\r\nsys.path.append(path_py3_lib + r'\\Lib\\site-packages')\r\n\r\nimport shapely.geometry as sg\r\nfrom shapely.geometry import Polygon, MultiPolygon ,MultiLineString ,Point\r\nimport numpy as np\r\n\r\nshapely_poly = []\r\n\r\ndef shapely_to_dynamo(shapely_geometry):\r\n    dynamo_geometry = []\r\n    if isinstance(shapely_geometry, sg.Point):\r\n        points = ([shapely_geometry.x,shapely_geometry.y,shapely_geometry.z])\r\n        dynamo_geometry = points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.LineString):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry = list(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n        \r\n    elif isinstance(shapely_geometry, sg.Polygon):\r\n        exterior_points = list(shapely_geometry.exterior.coords)\r\n        dynamo_geometry = exterior_points\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr = dynamo_geometry\r\n    elif isinstance(shapely_geometry, sg.MultiPoint):\r\n        points = shapely_geometry.coords\r\n        dynamo_geometry.append(points)\r\n        arr = np.empty(len(dynamo_geometry), dtype=np.float32)\r\n        arr[:] = dynamo_geometry\r\n#    return np.array(dynamo_geometry, dtype=np.float32)\r\n    return arr[:]\r\n\r\nif isinstance(IN[0], list):\r\n    dynamo_point = IN[0]\r\nelse:\r\n    dynamo_point = [IN[0]]\r\n\r\ndynamo_geometries = [shapely_to_dynamo(geo) for geo in dynamo_point]\r\n\r\nOUT = dynamo_geometries",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "a611d32081e449399c42c1713b372aae",
+      "Id": "b01631bb267d4cff9a19e883e8f24695",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "4a3f7cd2467345e0beefb3552eabbe8c",
+          "Id": "fe2de86844fe4d278350b75f9a1a123a",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -78,7 +78,7 @@
       ],
       "Outputs": [
         {
-          "Id": "8b7d13c080e14fceb1438b70f1b63ba8",
+          "Id": "04b5c24581604f779876e5c73c6f6ad0",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -93,15 +93,15 @@
   ],
   "Connectors": [
     {
-      "Start": "e9388fcb960e4948a25ea89f37f4a165",
-      "End": "4a3f7cd2467345e0beefb3552eabbe8c",
-      "Id": "d5fcb1564a7a47f4a1915222d871eea7",
+      "Start": "c5e4ab1d80b44eb2ae2ca776c2a0b0ab",
+      "End": "fe2de86844fe4d278350b75f9a1a123a",
+      "Id": "882aede8fc50419bb4abfd1350cac7c0",
       "IsHidden": "False"
     },
     {
-      "Start": "8b7d13c080e14fceb1438b70f1b63ba8",
-      "End": "5b9a578ec7c348469764f5e656fac34e",
-      "Id": "cbd0e11257264c7292b01409dc60233c",
+      "Start": "04b5c24581604f779876e5c73c6f6ad0",
+      "End": "bf25e782fc2f47d582b17cea6bf9c10b",
+      "Id": "3190b50cb39347b28479e1f2b97c9a50",
       "IsHidden": "False"
     }
   ],
@@ -133,7 +133,7 @@
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "306782f6c2c54ea081a2b33ea95927d5",
+        "Id": "762d65e2a8514ef495909bd70d3e3f32",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -143,7 +143,7 @@
         "Y": 309.99999999999994
       },
       {
-        "Id": "5d5f936a319b4ee28a53b71b035db203",
+        "Id": "40fd1edf0387462f87a19b63351d576d",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -153,7 +153,7 @@
         "Y": 291.33333333333337
       },
       {
-        "Id": "a611d32081e449399c42c1713b372aae",
+        "Id": "b01631bb267d4cff9a19e883e8f24695",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

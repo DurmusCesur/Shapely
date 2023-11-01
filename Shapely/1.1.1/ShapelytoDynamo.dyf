@@ -1,5 +1,5 @@
 {
-  "Uuid": "a09d7fc2-ec24-4b54-8fed-ce3ffb01de99",
+  "Uuid": "aa1b6df0-bf49-4839-8530-a24f651078c0",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Conversion",
   "Description": "",
@@ -12,11 +12,11 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "Id": "0bbcfbe9da144baead456ab5363d1b41",
+      "Id": "0d9526c00dca465c8103d1b64f09599e",
       "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "3c614fdd45d24c49ba7f109940738fad",
+          "Id": "7ced9fce28c448cfae1fb430e2723157",
           "Name": "lists",
           "Description": "List of lists to be transposed\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -27,7 +27,7 @@
       ],
       "Outputs": [
         {
-          "Id": "4e46310eb17c4ee1a2663e02d9809c4f",
+          "Id": "2873c93d13dd417e955ae91880f35d45",
           "Name": "lists",
           "Description": "List of transposed lists",
           "UsingDefaultValue": false,
@@ -42,15 +42,15 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('DSCoreNodes')\r\nimport DSCore\r\nfrom DSCore import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nimport Autodesk.DesignScript.Geometry as adg\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\napp = DocumentManager.Instance.CurrentUIApplication.Application\r\n\r\ndynamo_geometry1 = IN[0]\r\ngeo = []\r\ny = []\r\nif isinstance(dynamo_geometry1, adg.Point):\r\n    shapely_geometry1 = dynamo_geometry1\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Line):\r\n    shapely_geometry1 = dynamo_geometry1.StartPoint,dynamo_geometry1.EndPoint\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Polygon):\r\n    points = adg.Polygon.Corners(dynamo_geometry1)\r\n    shapely_geometry1 = points\r\n    geo.append(shapely_geometry1)\r\n\r\nelif isinstance(dynamo_geometry1, adg.PolyCurve):\r\n    points = []\r\n    b = PolyCurve.Curves(dynamo_geometry1)\r\n    \r\n    c = [r.StartPoint for r in b ]+[r.EndPoint for r in b ]\r\n    geo.append(c)\r\n    \r\nif isinstance(dynamo_geometry1, adg.Point):\r\n\r\n    t = [p.X for p in geo], [p.Y for p in geo], [p.Z for p in geo]\r\n    a = zip(t[0],t[1])\r\n\r\nelse :\r\n\r\n    po = [adg.Point.PruneDuplicates(geo[0], 0.001)]\r\n    \r\n    unique_points = []\r\n    for p in po[0]:\r\n        if p not in unique_points:\r\n            unique_points.append(p)\r\n    \r\n    a = [p.X for p in unique_points], [p.Y for p in unique_points],[p.Z for p in unique_points]\r\n\r\nOUT = a",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('DSCoreNodes')\r\nimport DSCore\r\nfrom DSCore import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nimport Autodesk.DesignScript.Geometry as adg\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\napp = DocumentManager.Instance.CurrentUIApplication.Application\r\n\r\ndynamo_geometry1 = IN[0]\r\ngeo = []\r\ny = []\r\nif isinstance(dynamo_geometry1, adg.Point):\r\n    shapely_geometry1 = dynamo_geometry1\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Line):\r\n    shapely_geometry1 = dynamo_geometry1.StartPoint,dynamo_geometry1.EndPoint\r\n    geo.append(shapely_geometry1)\r\n    \r\nelif isinstance(dynamo_geometry1, adg.Polygon):\r\n    points = adg.Polygon.Corners(dynamo_geometry1)\r\n    shapely_geometry1 = points\r\n    geo.append(shapely_geometry1)\r\n\r\nelif isinstance(dynamo_geometry1, adg.PolyCurve):\r\n    points = []\r\n    b = PolyCurve.Curves(dynamo_geometry1)\r\n    \r\n    c = [r.StartPoint for r in b ]+[r.EndPoint for r in b ]\r\n    geo.append(c)\r\n    \r\nif isinstance(dynamo_geometry1, adg.Point):\r\n\r\n    t = [p.X for p in geo], [p.Y for p in geo], [p.Z for p in geo]\r\n    a = zip(t[0],t[1],t[2])\r\n\r\nelse :\r\n\r\n    po = [adg.Point.PruneDuplicates(geo[0], 0.001)]\r\n    \r\n    unique_points = []\r\n    for p in po[0]:\r\n        if p not in unique_points:\r\n            unique_points.append(p)\r\n    \r\n    a = [p.X for p in unique_points], [p.Y for p in unique_points],[p.Z for p in unique_points]\r\n\r\nOUT = a",
       "Engine": "IronPython2",
       "EngineName": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "4bb425954958444ead159d4653583500",
+      "Id": "ccd722e5dafa483da02cbd1e6a04a124",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "f0f35284e6a640c7af95bbf771831287",
+          "Id": "cebfacf2cd444ef3883323f2595aca75",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -61,7 +61,7 @@
       ],
       "Outputs": [
         {
-          "Id": "7c36ef224af34c1aace6be53f8ee46b8",
+          "Id": "042088beb07f4a24bb4d2467c0be5951",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -75,11 +75,11 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "Id": "dcf1b82ca3054116b8354abbfac67733",
+      "Id": "cb265e1040594e16ba55f80c20871802",
       "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "b29068a61f284e5694245af68450bb7c",
+          "Id": "6a046b7869c343f0a979ed101772eaca",
           "Name": "list",
           "Description": "List to chop into sublists\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -88,7 +88,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "a6103b10947b468a914d8dffdde5f9e6",
+          "Id": "a526201a9938433eab8311575aced637",
           "Name": "lengths",
           "Description": "Lengths of consecutive sublists to be created from the input list\n\nint[]",
           "UsingDefaultValue": false,
@@ -99,7 +99,7 @@
       ],
       "Outputs": [
         {
-          "Id": "3976a71d86c3439ba71440bd4de0d58e",
+          "Id": "c2fdf32fb6954e1589e1b6f7208f67d2",
           "Name": "lists",
           "Description": "Sublists created from the list",
           "UsingDefaultValue": false,
@@ -118,11 +118,11 @@
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "c8dea785f0de45b5a506623dcaa0e71b",
+      "Id": "8e57ddcf4f7d422cabeab9ece8df239f",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "d38f5e3aacda472eae78f7bf37535bd0",
+          "Id": "46191eca19fb4fd0abdb8f4f8c272ac9",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -131,7 +131,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "7b0da700dc09452598441e316eaaed6f",
+          "Id": "9b8b13dce3ba4d65ab5f265e89394017",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -142,7 +142,7 @@
       ],
       "Outputs": [
         {
-          "Id": "45533d3d690449a38776495ba8f18300",
+          "Id": "e1e6a32505f24edc9b429f3992d0138a",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -156,11 +156,11 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "Id": "043176397ed14fadb49cdc0bb205429a",
+      "Id": "06bc25a8a14a48f6b1582cd199d96e13",
       "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "9f0edd0767db4ed9855059f877d4203f",
+          "Id": "46649a5175ec4641a800d1d7a90c5fbf",
           "Name": "list",
           "Description": "List to get the item count of.\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -171,7 +171,7 @@
       ],
       "Outputs": [
         {
-          "Id": "157a04e5b74b433ba82816c77bf697c4",
+          "Id": "d25adcf0302940fe8410420eaf6aaf28",
           "Name": "int",
           "Description": "List length.",
           "UsingDefaultValue": false,
@@ -193,12 +193,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "0d771b68044742feaf9b22663ad8d3fd",
+      "Id": "033fa0a374024da1b82c85eb732bab47",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "c837adc1d8c941fdbaaf5c1b16800111",
+          "Id": "e381beaafe73455497a07c0d1477d1d6",
           "Name": "",
           "Description": "Données d'entrée",
           "UsingDefaultValue": false,
@@ -214,11 +214,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
       "Symbol": "_shgeometry;",
-      "Id": "5bae0108b4f641fc95f7ab1d08e35978",
+      "Id": "46678884eb69406aba53d9dec3f2fa00",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "6697d72c69f34ec88d412eabe5eb8001",
+          "Id": "f0d859cf357847e79ca53c8397d01572",
           "Name": "",
           "Description": "Données de sortie",
           "UsingDefaultValue": false,
@@ -234,51 +234,51 @@
   ],
   "Connectors": [
     {
-      "Start": "4e46310eb17c4ee1a2663e02d9809c4f",
-      "End": "b29068a61f284e5694245af68450bb7c",
-      "Id": "a255fcf5f6ac418d8c7e49bd355682ee",
+      "Start": "2873c93d13dd417e955ae91880f35d45",
+      "End": "6a046b7869c343f0a979ed101772eaca",
+      "Id": "c6267a7058e04213a6bc7d58c78a7cef",
       "IsHidden": "False"
     },
     {
-      "Start": "7c36ef224af34c1aace6be53f8ee46b8",
-      "End": "3c614fdd45d24c49ba7f109940738fad",
-      "Id": "5bd53a7d48f143058060035fe8d273e8",
+      "Start": "042088beb07f4a24bb4d2467c0be5951",
+      "End": "7ced9fce28c448cfae1fb430e2723157",
+      "Id": "13042e6989ef442582b1f1ff29a71df1",
       "IsHidden": "False"
     },
     {
-      "Start": "7c36ef224af34c1aace6be53f8ee46b8",
-      "End": "9f0edd0767db4ed9855059f877d4203f",
-      "Id": "a14575357ade47eab7dee19a7f500af1",
+      "Start": "042088beb07f4a24bb4d2467c0be5951",
+      "End": "46649a5175ec4641a800d1d7a90c5fbf",
+      "Id": "b1f8c00f5b7c4590afada89189d7d5db",
       "IsHidden": "False"
     },
     {
-      "Start": "3976a71d86c3439ba71440bd4de0d58e",
-      "End": "d38f5e3aacda472eae78f7bf37535bd0",
-      "Id": "956c7734498b447b89a53cb22b680912",
+      "Start": "c2fdf32fb6954e1589e1b6f7208f67d2",
+      "End": "46191eca19fb4fd0abdb8f4f8c272ac9",
+      "Id": "45c20a68abf14c21abd0c8983c3e6bc4",
       "IsHidden": "False"
     },
     {
-      "Start": "45533d3d690449a38776495ba8f18300",
-      "End": "6697d72c69f34ec88d412eabe5eb8001",
-      "Id": "c5c44768ab3046bcb371238e6e2a9373",
+      "Start": "e1e6a32505f24edc9b429f3992d0138a",
+      "End": "f0d859cf357847e79ca53c8397d01572",
+      "Id": "48313e52c63943c7b125df60babf3154",
       "IsHidden": "False"
     },
     {
-      "Start": "157a04e5b74b433ba82816c77bf697c4",
-      "End": "a6103b10947b468a914d8dffdde5f9e6",
-      "Id": "d6739f571f2e49e7a47be3f5448ff7a4",
+      "Start": "d25adcf0302940fe8410420eaf6aaf28",
+      "End": "a526201a9938433eab8311575aced637",
+      "Id": "6b5be3720adb4c07a3e22ead64cd751e",
       "IsHidden": "False"
     },
     {
-      "Start": "c837adc1d8c941fdbaaf5c1b16800111",
-      "End": "7b0da700dc09452598441e316eaaed6f",
-      "Id": "094a8e79323847b98519f4c1f6097f18",
+      "Start": "e381beaafe73455497a07c0d1477d1d6",
+      "End": "9b8b13dce3ba4d65ab5f265e89394017",
+      "Id": "9bca95c6f59f40ac84fa5054fde13e0c",
       "IsHidden": "False"
     },
     {
-      "Start": "c837adc1d8c941fdbaaf5c1b16800111",
-      "End": "f0f35284e6a640c7af95bbf771831287",
-      "Id": "f7f26870c7ba48588a6281947af9265e",
+      "Start": "e381beaafe73455497a07c0d1477d1d6",
+      "End": "cebfacf2cd444ef3883323f2595aca75",
+      "Id": "6fd2dbd66dda4358b7d0d9c4f72dafff",
       "IsHidden": "False"
     }
   ],
@@ -310,7 +310,7 @@
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "0bbcfbe9da144baead456ab5363d1b41",
+        "Id": "0d9526c00dca465c8103d1b64f09599e",
         "Name": "List.Transpose",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -320,7 +320,7 @@
         "Y": -65.333333333333258
       },
       {
-        "Id": "4bb425954958444ead159d4653583500",
+        "Id": "ccd722e5dafa483da02cbd1e6a04a124",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -330,7 +330,7 @@
         "Y": 12.0
       },
       {
-        "Id": "dcf1b82ca3054116b8354abbfac67733",
+        "Id": "cb265e1040594e16ba55f80c20871802",
         "Name": "List.Chop",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -340,7 +340,7 @@
         "Y": 29.333333333333371
       },
       {
-        "Id": "c8dea785f0de45b5a506623dcaa0e71b",
+        "Id": "8e57ddcf4f7d422cabeab9ece8df239f",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -350,7 +350,7 @@
         "Y": 26.0
       },
       {
-        "Id": "043176397ed14fadb49cdc0bb205429a",
+        "Id": "06bc25a8a14a48f6b1582cd199d96e13",
         "Name": "List.Count",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -360,7 +360,7 @@
         "Y": 82.000000000000057
       },
       {
-        "Id": "0d771b68044742feaf9b22663ad8d3fd",
+        "Id": "033fa0a374024da1b82c85eb732bab47",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -370,7 +370,7 @@
         "Y": 38.0
       },
       {
-        "Id": "5bae0108b4f641fc95f7ab1d08e35978",
+        "Id": "46678884eb69406aba53d9dec3f2fa00",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
