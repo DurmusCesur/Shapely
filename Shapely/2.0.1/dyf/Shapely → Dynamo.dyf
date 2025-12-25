@@ -1,0 +1,217 @@
+{
+  "Uuid": "67213d40-841d-4b3d-9a3a-6371f965a4b3",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Conversion",
+  "Description": "Converts Shapely geometry to Dynamo geometry.",
+  "Name": "Shapely → Dynamo",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_DynGeometry",
+      "Id": "1eec4cf0ef0047c6933b2d45128b6463",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "3307b4e1430749c584d5c3eee809b17b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "53997a06fe8b4918807d139d495ff797",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3b92b10979f2413ca50030237a7e7b91",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport sys\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection \r\n    from shapely.geometry.base import BaseGeometry\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\n\r\ndef cleanup_points(coords, is_closed=False, tolerance=0.0001):\r\n    if not coords or len(coords) < 1:\r\n        return []\r\n    \r\n    cleaned = [coords[0]]\r\n    for i in range(1, len(coords)):\r\n        p1 = coords[i-1]\r\n        p2 = coords[i]\r\n        \r\n        dist = sum((a - b)**2 for a, b in zip(p1, p2))**0.5\r\n        \r\n        if dist > tolerance:\r\n            cleaned.append(p2)\r\n            \r\n    if is_closed and len(cleaned) > 1:\r\n        p_first = cleaned[0]\r\n        p_last = cleaned[-1]\r\n        dist_end = sum((a - b)**2 for a, b in zip(p_first, p_last))**0.5\r\n        if dist_end <= tolerance:\r\n            cleaned.pop()\r\n            \r\n    return cleaned\r\n\r\ndef shapely_point_to_dynamo(shp_point, default_z=0):\r\n    if not isinstance(shp_point, ShpPoint):\r\n        return None\r\n    coords = shp_point.coords[0]\r\n    x, y = coords[0], coords[1]\r\n    z = coords[2] if len(coords) > 2 else default_z\r\n    return Point.ByCoordinates(x, y, z)\r\n\r\ndef shapely_linestring_to_dynamo(shp_linestring, default_z=0):\r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    \r\n    coords = cleanup_points(list(shp_linestring.coords), is_closed=False)\r\n    \r\n    if len(coords) < 2:\r\n        return None \r\n    \r\n    points = []\r\n    for coord in coords:\r\n        x, y = coord[0], coord[1]\r\n        z = coord[2] if len(coord) > 2 else default_z\r\n        points.append(Point.ByCoordinates(x, y, z))\r\n    \r\n    if len(points) == 2:\r\n        return Line.ByStartPointEndPoint(points[0], points[1])\r\n    else:\r\n        return PolyCurve.ByPoints(points)\r\n\r\ndef shapely_linearring_to_dynamo(shp_ring, default_z=0):\r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    \r\n    coords = cleanup_points(list(shp_ring.coords), is_closed=True)\r\n    \r\n    if len(coords) < 3: \r\n        return None\r\n    \r\n    points = []\r\n    for coord in coords:\r\n        x, y = coord[0], coord[1]\r\n        z = coord[2] if len(coord) > 2 else default_z\r\n        points.append(Point.ByCoordinates(x, y, z))\r\n    \r\n    return PolyCurve.ByPoints(points, True)\r\n\r\ndef shapely_polygon_to_dynamo_polygon(shp_polygon, default_z=0):\r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    \r\n    exterior_coords = cleanup_points(list(shp_polygon.exterior.coords), is_closed=True)\r\n    \r\n    if len(exterior_coords) < 3:\r\n        return None\r\n    \r\n    points = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in exterior_coords]\r\n    return Polygon.ByPoints(points)\r\n\r\ndef shapely_polygon_to_dynamo_surface(shp_polygon, default_z=0):\r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    \r\n    ext_coords = cleanup_points(list(shp_polygon.exterior.coords), is_closed=True)\r\n    if len(ext_coords) < 3: return None\r\n    \r\n    outer_points = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in ext_coords]\r\n    outer_curve = PolyCurve.ByPoints(outer_points, True)\r\n    \r\n    if len(shp_polygon.interiors) == 0:\r\n        return Surface.ByPatch(outer_curve)\r\n    \r\n    inner_curves = []\r\n    for interior in shp_polygon.interiors:\r\n        int_coords = cleanup_points(list(interior.coords), is_closed=True)\r\n        if len(int_coords) >= 3:\r\n            pts = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in int_coords]\r\n            inner_curves.append(PolyCurve.ByPoints(pts, True))\r\n    \r\n    try:\r\n        main_surface = Surface.ByPatch(outer_curve)\r\n        for hole_curve in inner_curves:\r\n            hole_surface = Surface.ByPatch(hole_curve)\r\n            main_surface = main_surface.Difference(hole_surface)\r\n        return main_surface\r\n    except:\r\n        return Surface.ByPatch(outer_curve)\r\n\r\ndef shapely_multipoint_to_dynamo(shp_multipoint, default_z=0):\r\n    # ShpMultiPoint → List[Dynamo Point]\r\n    \r\n    if not isinstance(shp_multipoint, ShpMultiPoint):\r\n        return None\r\n    \r\n    return [shapely_point_to_dynamo(pt, default_z) for pt in shp_multipoint.geoms]\r\n\r\ndef shapely_multilinestring_to_dynamo(shp_multilinestring, default_z=0):\r\n    # ShpMultiLineString → List[Dynamo PolyCurve]\r\n    \r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n    \r\n    return [shapely_linestring_to_dynamo(ls, default_z) for ls in shp_multilinestring.geoms]\r\n\r\ndef shapely_multipolygon_to_dynamo(shp_multipolygon, default_z=0, as_surface=False):\r\n    # ShpMultiPolygon → List[Dynamo Polygon] \r\n    \r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    if as_surface:\r\n        return [shapely_polygon_to_dynamo_surface(poly, default_z) for poly in shp_multipolygon.geoms]\r\n    else:\r\n        return [shapely_polygon_to_dynamo_polygon(poly, default_z) for poly in shp_multipolygon.geoms]\r\n\r\ndef convert_shapely_to_dynamo(shapely_geometry, default_z=0, polygon_as_surface=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [convert_shapely_to_dynamo(item, default_z, polygon_as_surface) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, ShpGeometryCollection):\r\n        return [convert_shapely_to_dynamo(g, default_z, polygon_as_surface) for g in shapely_geometry.geoms]\r\n        \r\n    if isinstance(shapely_geometry, ShpPoint):\r\n        return shapely_point_to_dynamo(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpLinearRing):\r\n        return shapely_linearring_to_dynamo(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpLineString):\r\n        return shapely_linestring_to_dynamo(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpPolygon):\r\n        if polygon_as_surface:\r\n            return shapely_polygon_to_dynamo_surface(shapely_geometry, default_z)\r\n        else:\r\n            return shapely_polygon_to_dynamo_polygon(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiPoint):\r\n        return shapely_multipoint_to_dynamo(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiLineString):\r\n        return shapely_multilinestring_to_dynamo(shapely_geometry, default_z)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiPolygon):\r\n        return shapely_multipolygon_to_dynamo(shapely_geometry, default_z, polygon_as_surface)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shapely_input = IN[0]\r\n    default_z_value = IN[1] if len(IN) > 1 else 0\r\n    as_surface = IN[2] if len(IN) > 2 else False\r\n    \r\n    dynamo_output = convert_shapely_to_dynamo(shapely_input, default_z_value, as_surface)\r\n    \r\n    OUT = dynamo_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "277f6770bcbc4472a886eb65f101d2dd",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "de69d5978a354e83838324370bff166e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "23d6ab0819184a068b98bc5e6acf8424",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport sys\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection \r\n    from shapely.geometry.base import BaseGeometry\r\nexcept ImportError:\r\n    pass\r\n\r\ndef cleanup_points(coords, is_closed=False, tolerance=0.0001):\r\n    if not coords or len(coords) < 1:\r\n        return []\r\n    \r\n    cleaned = [coords[0]]\r\n    for i in range(1, len(coords)):\r\n        p1 = coords[i-1]\r\n        p2 = coords[i]\r\n        \r\n        dist = sum((a - b)**2 for a, b in zip(p1, p2))**0.5\r\n        \r\n        if dist > tolerance:\r\n            cleaned.append(p2)\r\n            \r\n    if is_closed and len(cleaned) > 1:\r\n        p_first = cleaned[0]\r\n        p_last = cleaned[-1]\r\n        dist_end = sum((a - b)**2 for a, b in zip(p_first, p_last))**0.5\r\n        if dist_end <= tolerance:\r\n            cleaned.pop()\r\n            \r\n    return cleaned\r\n\r\ndef shapely_point_to_dynamo(shp_point, default_z=0):\r\n    if not isinstance(shp_point, ShpPoint):\r\n        return None\r\n    coords = shp_point.coords[0]\r\n    x, y = coords[0], coords[1]\r\n    z = coords[2] if len(coords) > 2 else default_z\r\n    return Point.ByCoordinates(x, y, z)\r\n\r\ndef shapely_linestring_to_dynamo(shp_linestring, default_z=0):\r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    \r\n    coords = cleanup_points(list(shp_linestring.coords), is_closed=False)\r\n    \r\n    if len(coords) < 2: \r\n        return None \r\n    \r\n    points = []\r\n    for coord in coords:\r\n        x, y = coord[0], coord[1]\r\n        z = coord[2] if len(coord) > 2 else default_z\r\n        points.append(Point.ByCoordinates(x, y, z))\r\n    \r\n    try:\r\n        if len(points) == 2:\r\n            return Line.ByStartPointEndPoint(points[0], points[1])\r\n        else:\r\n            return PolyCurve.ByPoints(points)\r\n    except:\r\n        return None\r\n\r\ndef shapely_linearring_to_dynamo(shp_ring, default_z=0):\r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    \r\n    coords = cleanup_points(list(shp_ring.coords), is_closed=True)\r\n    \r\n    if len(coords) < 3: \r\n        return None\r\n    \r\n    points = []\r\n    for coord in coords:\r\n        x, y = coord[0], coord[1]\r\n        z = coord[2] if len(coord) > 2 else default_z\r\n        points.append(Point.ByCoordinates(x, y, z))\r\n    \r\n    try:\r\n        return PolyCurve.ByPoints(points, True)\r\n    except:\r\n        return None\r\n\r\ndef shapely_polygon_to_dynamo_polygon(shp_polygon, default_z=0):\r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    \r\n    exterior_coords = cleanup_points(list(shp_polygon.exterior.coords), is_closed=True)\r\n    \r\n    if len(exterior_coords) < 3:\r\n        return None\r\n    \r\n    points = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in exterior_coords]\r\n    try:\r\n        return Polygon.ByPoints(points)\r\n    except:\r\n        return None\r\n\r\ndef shapely_polygon_to_dynamo_surface(shp_polygon, default_z=0):\r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    \r\n    ext_coords = cleanup_points(list(shp_polygon.exterior.coords), is_closed=True)\r\n    if len(ext_coords) < 3: return None\r\n    \r\n    outer_points = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in ext_coords]\r\n    \r\n    try:\r\n        outer_curve = PolyCurve.ByPoints(outer_points, True)\r\n        \r\n        if len(shp_polygon.interiors) == 0:\r\n            return Surface.ByPatch(outer_curve)\r\n        \r\n        inner_curves = []\r\n        for interior in shp_polygon.interiors:\r\n            int_coords = cleanup_points(list(interior.coords), is_closed=True)\r\n            if len(int_coords) >= 3:\r\n                pts = [Point.ByCoordinates(c[0], c[1], c[2] if len(c)>2 else default_z) for c in int_coords]\r\n                try:\r\n                    inner_curves.append(PolyCurve.ByPoints(pts, True))\r\n                except:\r\n                    pass\r\n        \r\n        main_surface = Surface.ByPatch(outer_curve)\r\n        for hole_curve in inner_curves:\r\n            try:\r\n                hole_surface = Surface.ByPatch(hole_curve)\r\n                main_surface = main_surface.Difference(hole_surface)\r\n            except:\r\n                pass\r\n        return main_surface\r\n    \r\n    except:\r\n        return None\r\n\r\ndef shapely_multipoint_to_dynamo(shp_multipoint, default_z=0):\r\n    if not isinstance(shp_multipoint, ShpMultiPoint):\r\n        return None\r\n    return [shapely_point_to_dynamo(pt, default_z) for pt in shp_multipoint.geoms]\r\n\r\ndef shapely_multilinestring_to_dynamo(shp_multilinestring, default_z=0):\r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n    return [shapely_linestring_to_dynamo(ls, default_z) for ls in shp_multilinestring.geoms]\r\n\r\ndef shapely_multipolygon_to_dynamo(shp_multipolygon, default_z=0, as_surface=False):\r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    if as_surface:\r\n        return [shapely_polygon_to_dynamo_surface(poly, default_z) for poly in shp_multipolygon.geoms]\r\n    else:\r\n        return [shapely_polygon_to_dynamo_polygon(poly, default_z) for poly in shp_multipolygon.geoms]\r\n\r\ndef convert_shapely_to_dynamo(shapely_geometry, default_z=0, polygon_as_surface=False):\r\n    \r\n    if shapely_geometry is None:\r\n        return None\r\n\r\n    if isinstance(shapely_geometry, BaseGeometry):\r\n        \r\n        if isinstance(shapely_geometry, ShpGeometryCollection):\r\n             return [convert_shapely_to_dynamo(g, default_z, polygon_as_surface) for g in shapely_geometry.geoms]\r\n        \r\n        elif isinstance(shapely_geometry, ShpPoint):\r\n            return shapely_point_to_dynamo(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpLinearRing):\r\n            return shapely_linearring_to_dynamo(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpLineString):\r\n            return shapely_linestring_to_dynamo(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpPolygon):\r\n            if polygon_as_surface:\r\n                return shapely_polygon_to_dynamo_surface(shapely_geometry, default_z)\r\n            else:\r\n                return shapely_polygon_to_dynamo_polygon(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpMultiPoint):\r\n            return shapely_multipoint_to_dynamo(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpMultiLineString):\r\n            return shapely_multilinestring_to_dynamo(shapely_geometry, default_z)\r\n        \r\n        elif isinstance(shapely_geometry, ShpMultiPolygon):\r\n            return shapely_multipolygon_to_dynamo(shapely_geometry, default_z, polygon_as_surface)\r\n        \r\n        return None\r\n\r\n    elif hasattr(shapely_geometry, \"__iter__\") and not isinstance(shapely_geometry, str):\r\n        return [convert_shapely_to_dynamo(item, default_z, polygon_as_surface) for item in shapely_geometry]\r\n\r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shapely_input = IN[0]\r\n    default_z_value = IN[1] if len(IN) > 1 else 0\r\n    as_surface = IN[2] if len(IN) > 2 else False\r\n    \r\n    OUT = convert_shapely_to_dynamo(shapely_input, default_z_value, as_surface)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "ac44d49700364fbeaf4aea32d4b89d28",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "6f4cd8fff34942a991d3f41ed6379abd",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "19a0128f692e49bd93e543ed1dbc80c5",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3b92b10979f2413ca50030237a7e7b91",
+      "End": "6f4cd8fff34942a991d3f41ed6379abd",
+      "Id": "a58522bd2f26446892a78d43c93b9d5e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "19a0128f692e49bd93e543ed1dbc80c5",
+      "End": "3307b4e1430749c584d5c3eee809b17b",
+      "Id": "cb48badcdfe34ae58f9ac65955691a20",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 4.840301990509033,
+      "EyeY": 0.1183490976691246,
+      "EyeZ": -45.61140441894531,
+      "LookX": 0.04812812805175781,
+      "LookY": -0.14976148307323456,
+      "LookZ": -0.10718536376953125,
+      "UpX": 0.3224109709262848,
+      "UpY": 0.6171601414680481,
+      "UpZ": -0.7177497744560242
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "1eec4cf0ef0047c6933b2d45128b6463",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 446.64339686924734,
+        "Y": -2.9786577382214148
+      },
+      {
+        "Id": "53997a06fe8b4918807d139d495ff797",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -42.28571428571411,
+        "Y": -2.2857142857143344
+      },
+      {
+        "Id": "277f6770bcbc4472a886eb65f101d2dd",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "ShowGeometry": false,
+        "X": 253.21806539071645,
+        "Y": -243.70604083118127
+      },
+      {
+        "Id": "ac44d49700364fbeaf4aea32d4b89d28",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 246.6647155023942,
+        "Y": -6.693219870185089
+      }
+    ],
+    "Annotations": [],
+    "X": 158.1630893763845,
+    "Y": 428.1280596802362,
+    "Zoom": 0.9155622852812263
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "Uuid": "03fa45e7-508c-4720-b908-3b1173f75236",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "It performs the inverse of the difference function. It subtracts the second geometry from the first geometry, but here the subtracted geometries are applied in reverse.",
+  "Name": "Shp_RevDifference",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "e3e7bfff29d4444e8eacd081e9fb8b3f",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "d7e371fd29d4416a8ccb92b8a0880be6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "504226602cc942b0978ed6202380df6f",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "58447b86d327431e81bae737ca4d021c",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "18a21d473edb4f43baf840bac88cc831",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fc12c06ebee1425587f757ef3e51b06c",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import symmetric_difference \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_sym_diff(g1, g2):\r\n    if isinstance(g1, BaseGeometry) and isinstance(g2, BaseGeometry):\r\n        try:\r\n            return g1.symmetric_difference(g2)\r\n        except:\r\n            return g1\r\n    return g1\r\n\r\ndef get_shapely_sym_diff(a, b):\r\n    if isinstance(a, list) and isinstance(b, list) and len(a) == len(b):\r\n        return [get_shapely_sym_diff(item_a, item_b) for item_a, item_b in zip(a, b)]\r\n    \r\n    elif isinstance(a, list):\r\n        return [get_shapely_sym_diff(item_a, b) for item_a in a]\r\n    \r\n    elif isinstance(b, list):\r\n        return [get_shapely_sym_diff(a, item_b) for item_b in b]\r\n    \r\n    else:\r\n        return safe_sym_diff(a, b)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        output = get_shapely_sym_diff(input_a, input_b)\r\n    else:\r\n        output = input_a\r\n\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "8c2cea480e5041df9fecf4059b5f8cd0",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "b2d8b5fecd994775b2da0a9adb0a2ff3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "589b38155bf840109c647953e71fd4bd",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "304d116648ef4a3e9727039a036160c3",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "58447b86d327431e81bae737ca4d021c",
+      "End": "b2d8b5fecd994775b2da0a9adb0a2ff3",
+      "Id": "e72184d8b8994ec1b6e1886f97f958c5",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "fc12c06ebee1425587f757ef3e51b06c",
+      "End": "589b38155bf840109c647953e71fd4bd",
+      "Id": "d4a329f03c3e4fcba27f2268dca9f901",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "304d116648ef4a3e9727039a036160c3",
+      "End": "d7e371fd29d4416a8ccb92b8a0880be6",
+      "Id": "36feba18a31742f1af1433a9925cf216",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "e3e7bfff29d4444e8eacd081e9fb8b3f",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 292.0,
+        "Y": 6.0
+      },
+      {
+        "Id": "504226602cc942b0978ed6202380df6f",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -372.0,
+        "Y": 6.0
+      },
+      {
+        "Id": "18a21d473edb4f43baf840bac88cc831",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -372.0,
+        "Y": 170.0
+      },
+      {
+        "Id": "8c2cea480e5041df9fecf4059b5f8cd0",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 9.5,
+        "Y": 6.0
+      }
+    ],
+    "Annotations": [],
+    "X": 531.0,
+    "Y": 184.0,
+    "Zoom": 1.0
+  }
+}

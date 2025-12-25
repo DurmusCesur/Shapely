@@ -1,0 +1,170 @@
+{
+  "Uuid": "f9cac2af-a337-456d-b095-5fb58627da0b",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Rotates the smallest circle surrounding a geometry. This circle is calculated to encompass the entire geometry.",
+  "Name": "Shp_BoundingCircle",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d79e8da10fc94ef7bf1c5b89b5ef3c54",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c3e3f4a46e644a09850043235c87a9ba",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "bfdb26d5edcb430499c31c6cba2b62c4",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "52770a1b4f524d049f4a86ba534de769",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import minimum_bounding_circle\r\n\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_mincircle(geom):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return minimum_bounding_circle(geom)\r\n\r\ndef get_shapely_mincircle(shapely_geometry):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_mincircle(item) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_mincircle(g) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_mincircle(shapely_geometry,return_individual)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_mincircle(shapely_geometry)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    \r\n    mincircle_output = get_shapely_mincircle(shp_input)\r\n    \r\n    OUT = mincircle_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "49e182e3c0844bb0bf61d947da0e517c",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "8d545bcdc0604a49a7630a0c96d9f5a0",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5783b0146072432aab3db621248f19a4",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c3e3f4a46e644a09850043235c87a9ba",
+      "End": "8d545bcdc0604a49a7630a0c96d9f5a0",
+      "Id": "56b867d6ce0b43349216790aaada7227",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5783b0146072432aab3db621248f19a4",
+      "End": "52770a1b4f524d049f4a86ba534de769",
+      "Id": "523499320c4c42c7b5b154fba0db1d18",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -25.92086410522461,
+      "EyeY": 9.52209758758545,
+      "EyeZ": 13.012246131896973,
+      "LookX": 7.423044204711914,
+      "LookY": -10.44488525390625,
+      "LookZ": -8.18952751159668,
+      "UpX": 0.4612623453140259,
+      "UpY": 0.7268195152282715,
+      "UpZ": -0.5088913440704346
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "d79e8da10fc94ef7bf1c5b89b5ef3c54",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -135.0,
+        "Y": -14.0
+      },
+      {
+        "Id": "bfdb26d5edcb430499c31c6cba2b62c4",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 526.0,
+        "Y": -14.0
+      },
+      {
+        "Id": "49e182e3c0844bb0bf61d947da0e517c",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 241.5,
+        "Y": -14.0
+      }
+    ],
+    "Annotations": [],
+    "X": 566.0,
+    "Y": 394.0,
+    "Zoom": 1.0
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "Uuid": "21e9ed80-da99-41c0-a57c-d8f668e697e2",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Creates",
+  "Description": "A shapely buffer creates a new geometry extended by a specified distance around a geometry (point, line or polygon). This operation adds a buffer zone around the geometry based on the given distance.",
+  "Name": "Shp_Buffer",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "c226baf6b840475cad1fd59a57229557",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "7a9cad047c4e465d8f774dbab74745c8",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_style",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "# 1:Round, 2:Mitre, 3:Bevel"
+      },
+      "Id": "ff53e6fc69074f0b9f7d0998975c7327",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "731e0a5b9ae74eebb657b44fb892b8aa",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Offset",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "f14153387c2945c9a011771d29106e39",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "22f062e9bd034efbb7c4c39e35e2f42d",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "da5a9defbaee4ffcb413a9452129067c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8a9bb1bf88b144b8b81dc84f9c559b15",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import GeometryCollection as ShpGeometryCollection\r\n    from shapely import BufferJoinStyle\r\n\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_buffer(geom, distance, cap_style=1, join_style=1):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return geom.buffer(\r\n        distance, \r\n        cap_style=cap_style, \r\n        join_style=join_style\r\n    )\r\n\r\ndef shapely_multipolygon_buffer(shp_multipolygon, distance, params, return_individual=False):\r\n    # ShpMultiPolygon -> Buffer\r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    if return_individual:\r\n        return [shapely_generic_buffer(poly, distance, **params) for poly in shp_multipolygon.geoms]\r\n    else:\r\n        return shapely_generic_buffer(shp_multipolygon, distance, **params)\r\n\r\ndef get_shapely_buffer(shapely_geometry, distance, params, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_buffer(item, distance, params, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_buffer(g, distance, **params) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_buffer(shapely_geometry, distance, **params)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_buffer(shapely_geometry, distance, **params)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    dist = IN[1] if IN[1] is not None else 0.0\r\n    \r\n    params = {\r\n        \"cap_style\": 2,  # 1:Round, 2:Flat, 3:Square\r\n        \"join_style\": IN[2] if len(IN) > 2 and IN[2] is not None else 1, # 1:Round, 2:Mitre, 3:Bevel\r\n    }\r\n    \r\n    buffer_output = get_shapely_buffer(shp_input, dist, params)\r\n    OUT = buffer_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "5c3268c38ca348a9a4d143a3e581df91",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "89fdb70e2ae245afacfc797a8c0c2d07",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8e0ee00a070b4a9d8a37c5ad2bcafe1b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d1f5d34028164f8bb279f702a04b671c",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1a1e7b3387cb4658a24814f7779c4e7e",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "731e0a5b9ae74eebb657b44fb892b8aa",
+      "End": "d1f5d34028164f8bb279f702a04b671c",
+      "Id": "5f183fc7c5924341ae846bd8a3f78e87",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "22f062e9bd034efbb7c4c39e35e2f42d",
+      "End": "8e0ee00a070b4a9d8a37c5ad2bcafe1b",
+      "Id": "05ae4da27f81484090c5cd7bcc1995b0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8a9bb1bf88b144b8b81dc84f9c559b15",
+      "End": "89fdb70e2ae245afacfc797a8c0c2d07",
+      "Id": "a0a554e1071742128c6ff143c59b3738",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "1a1e7b3387cb4658a24814f7779c4e7e",
+      "End": "7a9cad047c4e465d8f774dbab74745c8",
+      "Id": "d5891239a4e14bbc928d124f20da3a49",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -22.367294311523438,
+      "EyeY": 24.069435119628906,
+      "EyeZ": 24.702009201049805,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "c226baf6b840475cad1fd59a57229557",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 216.0,
+        "Y": 43.0
+      },
+      {
+        "Id": "ff53e6fc69074f0b9f7d0998975c7327",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -403.0,
+        "Y": 316.0
+      },
+      {
+        "Id": "f14153387c2945c9a011771d29106e39",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -403.0,
+        "Y": 179.5
+      },
+      {
+        "Id": "da5a9defbaee4ffcb413a9452129067c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -403.0,
+        "Y": 43.0
+      },
+      {
+        "Id": "5c3268c38ca348a9a4d143a3e581df91",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -34.0,
+        "Y": 43.0
+      }
+    ],
+    "Annotations": [],
+    "X": 841.0,
+    "Y": 412.0,
+    "Zoom": 1.0
+  }
+}

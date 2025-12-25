@@ -1,0 +1,221 @@
+{
+  "Uuid": "e5017af8-c37e-446f-96bd-2eaa79abd5bd",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "It finds the ‘Best Point' that falls inside a polygon, as far away from the edges as possible.",
+  "Name": "Shp_LabelPoint",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "72eeae39cf6f4ed7a1c1709bf17910fd",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5868fd7422af49c080ada63d584e5f8b",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "b482ec6d98ee4531927b6a6fa4b68b7e",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "067053a0cb5b4532b639e6f6f7b79263",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpPoint",
+      "Id": "e555c217201c4631895405de942f3bca",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "bb58db5f00dd45db94f841a726618ce0",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import polylabel\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_polylabel(geom, tolerance):\r\n    try:\r\n        if isinstance(geom, ShpPolygon):\r\n            return polylabel(geom, tolerance=tolerance)\r\n        return None\r\n    except:\r\n        return None\r\n\r\ndef get_shapely_polylabel(shapely_geometry, tolerance, return_individual=True):\r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_polylabel(item, tolerance, return_individual) for item in shapely_geometry]\r\n    \r\n    if hasattr(shapely_geometry, \"geoms\"):\r\n        \r\n        if isinstance(shapely_geometry, ShpMultiPolygon):\r\n            results = [shapely_generic_polylabel(g, tolerance) for g in shapely_geometry.geoms]\r\n            if return_individual:\r\n                return results\r\n            else:\r\n                try:\r\n                    main_poly = max(shapely_geometry.geoms, key=lambda p: p.area)\r\n                    return shapely_generic_polylabel(main_poly, tolerance)\r\n                except:\r\n                    return results[0] if results else None\r\n        \r\n        else:\r\n            sub_results = []\r\n            for g in shapely_geometry.geoms:\r\n                res = get_shapely_polylabel(g, tolerance, return_individual)\r\n                if res is not None:\r\n                    sub_results.append(res)\r\n            return sub_results if sub_results else None\r\n\r\n    elif isinstance(shapely_geometry, ShpPolygon):\r\n        return shapely_generic_polylabel(shapely_geometry, tolerance)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    tolerance_val = IN[1] if len(IN) > 1 else 0.001\r\n    indiv_mode = IN[2] if len(IN) > 2 else True \r\n    \r\n    polylabel_output = get_shapely_polylabel(shp_input, tolerance_val, indiv_mode)\r\n    \r\n    OUT = polylabel_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "69fe04eb3d864330bf882d24cfee4eff",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "e3a1f43a18894d9388310d8707376137",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c3307a0aa9a34e6f86391e2741f49fd3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "db8d1ee830c440d295df0647f8acead0",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5868fd7422af49c080ada63d584e5f8b",
+      "End": "e3a1f43a18894d9388310d8707376137",
+      "Id": "62faa456a6f64be1811ed2e14bde19f8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "067053a0cb5b4532b639e6f6f7b79263",
+      "End": "c3307a0aa9a34e6f86391e2741f49fd3",
+      "Id": "871e02d90354421ab6e6cb08f29c331e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "db8d1ee830c440d295df0647f8acead0",
+      "End": "bb58db5f00dd45db94f841a726618ce0",
+      "Id": "56b57297b93c49b6809f8ea9334013a5",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -44.796390533447266,
+      "EyeY": 7.810647964477539,
+      "EyeZ": 6.209392547607422,
+      "LookX": 0.01593017578125,
+      "LookY": -8.257579803466797,
+      "LookZ": -1.3255882263183594,
+      "UpX": 0.011878477409482002,
+      "UpY": 0.15851075947284698,
+      "UpZ": -0.987285852432251
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "72eeae39cf6f4ed7a1c1709bf17910fd",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -405.0,
+        "Y": -71.0
+      },
+      {
+        "Id": "b482ec6d98ee4531927b6a6fa4b68b7e",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -405.0,
+        "Y": 68.0
+      },
+      {
+        "Id": "e555c217201c4631895405de942f3bca",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 127.0,
+        "Y": -71.0
+      },
+      {
+        "Id": "69fe04eb3d864330bf882d24cfee4eff",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -95.0,
+        "Y": -71.0
+      }
+    ],
+    "Annotations": [],
+    "X": 534.0,
+    "Y": 292.0,
+    "Zoom": 1.0
+  }
+}

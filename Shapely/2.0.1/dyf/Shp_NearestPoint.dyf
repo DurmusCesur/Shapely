@@ -1,0 +1,226 @@
+{
+  "Uuid": "e8e82f19-218d-42e0-acc6-05fc20d4a210",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "rotates the other geometry closest to a given geometry. This operation is used to find the shortest distance between two geometries.",
+  "Name": "Shp_NearestPoint",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "290f9ae8cf42403498869d6995295fab",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8c4e0a3550f94a49916681f0d546d5bc",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpPoints",
+      "Id": "c59c90dd3ce5403aa5bd683575c2c822",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "1c549d8eea8b4879ab9a7d8003529254",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "2742d61629514cb389aa18ffb4c7739b",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f5db06dbce3f4b10b6cda3fa29f1adc6",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1 - Recursive Nearest Points\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import nearest_points\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_nearest_points(g1, g2):\r\n    if not isinstance(g1, BaseGeometry) or not isinstance(g2, BaseGeometry):\r\n        return None\r\n    \r\n    return list(nearest_points(g1, g2))\r\n\r\ndef get_shapely_nearest_points(geom_a, geom_b):\r\n    if isinstance(geom_a, list):\r\n        return [get_shapely_nearest_points(item, geom_b) for item in geom_a]\r\n    \r\n    if not isinstance(geom_a, list) and isinstance(geom_b, list):\r\n        return [safe_nearest_points(geom_a, b) for b in geom_b]\r\n        \r\n    return safe_nearest_points(geom_a, geom_b)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        output = get_shapely_nearest_points(input_a, input_b)\r\n    else:\r\n        output = None\r\n\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "e4c33adc1aeb4079b0a42b92f13477a0",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "96e97d2cf2e74338b8dd913dd1a7b624",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f8f99476a7f04f72b7945127784596c4",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3d54e7a1959349419850765a6124231e",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8c4e0a3550f94a49916681f0d546d5bc",
+      "End": "f8f99476a7f04f72b7945127784596c4",
+      "Id": "15af755b048b4bb9beffc49a816aa9b0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f5db06dbce3f4b10b6cda3fa29f1adc6",
+      "End": "96e97d2cf2e74338b8dd913dd1a7b624",
+      "Id": "079a732268324361b00867a397a22d27",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3d54e7a1959349419850765a6124231e",
+      "End": "1c549d8eea8b4879ab9a7d8003529254",
+      "Id": "d50d3e855e1b4f5ea710965a1d8bd87a",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "290f9ae8cf42403498869d6995295fab",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -339.0,
+        "Y": 198.0
+      },
+      {
+        "Id": "c59c90dd3ce5403aa5bd683575c2c822",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 221.0,
+        "Y": 4.0
+      },
+      {
+        "Id": "2742d61629514cb389aa18ffb4c7739b",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -339.0,
+        "Y": 4.0
+      },
+      {
+        "Id": "e4c33adc1aeb4079b0a42b92f13477a0",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -33.0,
+        "Y": 2.0
+      }
+    ],
+    "Annotations": [],
+    "X": 541.0,
+    "Y": 248.0,
+    "Zoom": 1.0
+  }
+}

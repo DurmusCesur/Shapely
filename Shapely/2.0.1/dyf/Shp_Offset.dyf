@@ -1,0 +1,226 @@
+{
+  "Uuid": "1815de4c-f7c0-47df-bcfc-f98e744849bf",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "Creates a new geometry by shifting the boundaries of a geometry by the specified distance. This operation is used to shift the boundaries of polygons inwards or outwards.",
+  "Name": "Shp_Offset",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "6b51620d877440b2ad32cb094e5609cb",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "1c0040f29c2b4bfb9b2566f7245c4aa7",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1a326adc122748029cd700a906cf4e91",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e7aeb656c59844a8bd5478596e4a1fa7",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Offset",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "c0d3ad92a3674ae696e20d4dd2ecd73f",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "56f2c41014b544bf9d2858f3c12d4f73",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_logic_offset(geom, distance, side=\"left\", resolution=8, join_style=2, mitre_limit=5.0):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    offset_dist = distance if side == \"left\" else -distance\r\n    if isinstance(geom, (ShpPolygon, ShpMultiPolygon)):\r\n        return geom.buffer(\r\n            offset_dist,\r\n            quad_segs=resolution,\r\n            join_style=join_style,\r\n            mitre_limit=mitre_limit\r\n        )\r\n    elif isinstance(geom, (ShpLineString, ShpLinearRing, ShpMultiLineString)):\r\n        if distance < 0:\r\n            try:\r\n                result = geom.offset_curve(\r\n                    distance,\r\n                    quad_segs=resolution,\r\n                    join_style=join_style,\r\n                    mitre_limit=mitre_limit\r\n                )\r\n                return result\r\n            except:\r\n                return None\r\n        else:\r\n            return geom.buffer(\r\n                offset_dist,\r\n                quad_segs=resolution,\r\n                join_style=join_style,\r\n                mitre_limit=mitre_limit\r\n            )\r\n    return None\r\n\r\ndef get_shapely_offset(shapely_geometry, distance, params):\r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_offset(item, distance, params) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiLineString, ShpMultiPolygon)):\r\n        return [shapely_logic_offset(g, distance, **params) for g in shapely_geometry.geoms]\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_logic_offset(shapely_geometry, distance, **params)\r\n    \r\n    return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    dist = IN[1] if IN[1] is not None else 0.0\r\n    \r\n    params = {\r\n        \"resolution\": 8,\r\n        \"join_style\": 2,\r\n        \"mitre_limit\": 5.0\r\n    }\r\n    \r\n    offset_output = get_shapely_offset(shp_input, dist, params)\r\n    OUT = offset_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "0530cbe32f1d40bf9e83442cddb0d7b5",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "a6c93732ab914991b2b51445d4d5ab9f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "29d85f5c668d4f0288c4eb91765a93f5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "18b2374014e045ed81d9d6c209c134a5",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e7aeb656c59844a8bd5478596e4a1fa7",
+      "End": "a6c93732ab914991b2b51445d4d5ab9f",
+      "Id": "7fb7cb7f73ef46f0b0dac8eaa92f7e1b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "56f2c41014b544bf9d2858f3c12d4f73",
+      "End": "29d85f5c668d4f0288c4eb91765a93f5",
+      "Id": "768c9a55d46c47218c54078c41e68d49",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "18b2374014e045ed81d9d6c209c134a5",
+      "End": "1c0040f29c2b4bfb9b2566f7245c4aa7",
+      "Id": "90a5811b44664a57b8a3b2c02561115d",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -22.367294311523438,
+      "EyeY": 24.069435119628906,
+      "EyeZ": 24.702009201049805,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "6b51620d877440b2ad32cb094e5609cb",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 241.0,
+        "Y": 26.0
+      },
+      {
+        "Id": "1a326adc122748029cd700a906cf4e91",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -403.0,
+        "Y": 26.0
+      },
+      {
+        "Id": "c0d3ad92a3674ae696e20d4dd2ecd73f",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -396.0,
+        "Y": 168.0
+      },
+      {
+        "Id": "0530cbe32f1d40bf9e83442cddb0d7b5",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -31.5,
+        "Y": 26.0
+      }
+    ],
+    "Annotations": [],
+    "X": 691.0,
+    "Y": 259.0,
+    "Zoom": 1.0
+  }
+}

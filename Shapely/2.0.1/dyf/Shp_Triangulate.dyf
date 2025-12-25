@@ -1,0 +1,175 @@
+{
+  "Uuid": "598c5a35-923f-4601-aff3-01fe37066715",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Creates",
+  "Description": "It divides a polygon or a set of points into non-overlapping triangles. This process allows geometry to be broken down into smaller and simpler parts and is widely used in computational geometry.",
+  "Name": "Shp_Triangulate",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "477f3145638d4c5296552a2518ffd1ac",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0faedf636a6846a8b151fa9761b54436",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import triangulate\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_convex_hull(geom):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    return triangulate(geom)\r\n\r\ndef get_shapely_convex_hull(shapely_geometry, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        if all(isinstance(x, ShpPoint) for x in shapely_geometry):\r\n            return shapely_generic_convex_hull(ShpMultiPoint(shapely_geometry))\r\n        \r\n        return [get_shapely_convex_hull(item, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_convex_hull(g) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_convex_hull(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_convex_hull(shapely_geometry)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    indiv_mode = IN[1] if len(IN) > 1 else False\r\n    \r\n    convex_hull_output = get_shapely_convex_hull(shp_input, indiv_mode)\r\n    OUT = convex_hull_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1b01cc6d3c7e4e6aa89123816f66d5a6",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "94bc15f46efe4fdcbd2607a241811ba0",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e4211923c933447eb360a80a41cfeeb4",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "cda3adeab537445787fe1c5eabfcee80",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "8caddcb407b5419db12e4f506904211b",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0faedf636a6846a8b151fa9761b54436",
+      "End": "94bc15f46efe4fdcbd2607a241811ba0",
+      "Id": "423d7f04976341b0a13e8e9e1dc32533",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e4211923c933447eb360a80a41cfeeb4",
+      "End": "8caddcb407b5419db12e4f506904211b",
+      "Id": "e00463e9e4c74dba934754cf721d4fa7",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "477f3145638d4c5296552a2518ffd1ac",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -408.0,
+        "Y": 318.6768562968042
+      },
+      {
+        "Id": "1b01cc6d3c7e4e6aa89123816f66d5a6",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -89.76876356471178,
+        "Y": 318.6768562968042
+      },
+      {
+        "Id": "cda3adeab537445787fe1c5eabfcee80",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 129.46247287057645,
+        "Y": 318.6768562968042
+      }
+    ],
+    "Annotations": [],
+    "X": 669.5408189910777,
+    "Y": -104.2908459727895,
+    "Zoom": 1.3775833525586678
+  }
+}

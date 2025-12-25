@@ -1,0 +1,175 @@
+{
+  "Uuid": "a9791c7c-33a5-4989-a9d0-13e77524948c",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Calculates the length of a line. For line geometry, this operation gives the total length.",
+  "Name": "Shp_Length",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "25ccf56fb25a4b6d8863a60b6d9f9846",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f5049ee44ed34aae957b00de90d4d1e7",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "Length",
+      "Id": "adf70eb028d64ee88e353527a471c94d",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "fa785c31ac604c86a7f509dc028a8c09",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import GeometryCollection as ShpGeometryCollection\r\n    from shapely import get_exterior_ring\r\n\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_point_length(shp_point):\r\n    # ShpPoint → Length \r\n    \r\n    if not isinstance(shp_point, ShpPoint):\r\n        return None\r\n    return shp_point.length\r\n\r\ndef shapely_linestring_length(shp_linestring):\r\n    # ShpLineString → Length \r\n    \r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    return shp_linestring.length\r\n\r\ndef shapely_linearring_length(shp_ring):\r\n    # ShpLinearRing → Length \r\n    \r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    return shp_ring.length\r\n\r\ndef shapely_polygon_length(shp_polygon):\r\n    # ShpPolygon → Length\r\n    \r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    return shp_polygon.length\r\n\r\ndef shapely_multipoint_length(shp_multipoint):\r\n    # ShpMultiPoint → Length \r\n    \r\n    if not isinstance(shp_multipoint, ShpMultiPoint):\r\n        return None\r\n    return shp_multipoint.length\r\n\r\ndef shapely_multilinestring_length(shp_multilinestring):\r\n    # ShpMultiLineString → Length \r\n    \r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n    return shp_multilinestring.length\r\n\r\ndef shapely_multipolygon_length(shp_multipolygon, return_individual=False):\r\n    # ShpMultiPolygon → Length\r\n    \r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    if return_individual:\r\n        return [poly.length for poly in shp_multipolygon.geoms]\r\n    else:\r\n        return shp_multipolygon.length\r\n\r\ndef get_shapely_length(shapely_geometry, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_length(item, return_individual) for item in shapely_geometry]\r\n    \r\n    # Point\r\n    if isinstance(shapely_geometry, ShpPoint):\r\n        return shapely_point_length(shapely_geometry)\r\n    \r\n    # LinearRing\r\n    elif isinstance(shapely_geometry, ShpLinearRing):\r\n        return shapely_linearring_length(shapely_geometry)\r\n    \r\n    # LineString\r\n    elif isinstance(shapely_geometry, ShpLineString):\r\n        return shapely_linestring_length(shapely_geometry)\r\n    \r\n    # Polygon\r\n    elif isinstance(shapely_geometry, ShpPolygon):\r\n        return shapely_polygon_length(shapely_geometry)\r\n    \r\n    # MultiPoint\r\n    elif isinstance(shapely_geometry, ShpMultiPoint):\r\n        return shapely_multipoint_length(shapely_geometry)\r\n    \r\n    # MultiLineString\r\n    elif isinstance(shapely_geometry, ShpMultiLineString):\r\n        return shapely_multilinestring_length(shapely_geometry)\r\n    \r\n    # MultiPolygon\r\n    elif isinstance(shapely_geometry, ShpMultiPolygon):\r\n        return shapely_multipolygon_length(shapely_geometry, return_individual)\r\n    \r\n    # Genel BaseGeometry\r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_geometry.boundary\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shapely_input = IN[0]\r\n    return_individual = IN[1] if len(IN) > 1 else False\r\n    \r\n    boundary_output = get_shapely_length(shapely_input, return_individual)\r\n    \r\n    OUT = boundary_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "cd723fcda5014cd88281a3c69b25714f",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "703361faad6f4e02817e5e6765d7482f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2bfe199ba23047c4aad271bfc5aa403e",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f5049ee44ed34aae957b00de90d4d1e7",
+      "End": "703361faad6f4e02817e5e6765d7482f",
+      "Id": "2c1947b0f8b24b36b11ee390a64cb0ba",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2bfe199ba23047c4aad271bfc5aa403e",
+      "End": "fa785c31ac604c86a7f509dc028a8c09",
+      "Id": "d66780a9a06b40499d1bad820e8279d7",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -24.54258918762207,
+      "EyeY": 29.511737823486328,
+      "EyeZ": 44.33810997009277,
+      "LookX": 21.684537887573242,
+      "LookY": -30.5120792388916,
+      "LookZ": -23.923625946044922,
+      "UpX": 0.46126219630241394,
+      "UpY": 0.726819634437561,
+      "UpZ": -0.5088911056518555
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "25ccf56fb25a4b6d8863a60b6d9f9846",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -361.0,
+        "Y": 1.0
+      },
+      {
+        "Id": "adf70eb028d64ee88e353527a471c94d",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 389.0,
+        "Y": 7.0
+      },
+      {
+        "Id": "cd723fcda5014cd88281a3c69b25714f",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 56.0,
+        "Y": 6.0
+      }
+    ],
+    "Annotations": [],
+    "X": 461.0,
+    "Y": 239.0,
+    "Zoom": 1.0
+  }
+}

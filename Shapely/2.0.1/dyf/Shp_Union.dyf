@@ -1,0 +1,170 @@
+{
+  "Uuid": "c9219c9a-4a37-47a5-a597-5cf57726c338",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "It divides a polygon or a set of points into non-overlapping triangles. This process allows geometry to be broken down into smaller and simpler parts and is widely used in computational geometry.",
+  "Name": "Shp_Union",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "03d03cb69fc7413885fcaa65efb23e3f",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f89fe00e207a43889ab59daa6455c864",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "ee02ec5184194f4b9d2832ceec8d05ea",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "f4a64e5c65d64101b123d57bf1154cc2",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import unary_union, make_valid\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_union_operation(geom_list):\r\n    valid_geoms = [g for g in geom_list if isinstance(g, BaseGeometry)]\r\n    \r\n    if not valid_geoms:\r\n        return None\r\n        \r\n    try:\r\n        result = unary_union(valid_geoms)\r\n        \r\n        if not result.is_valid:\r\n            result = make_valid(result)\r\n            \r\n        return result\r\n    except:\r\n        return None\r\n\r\ndef get_shapely_union(input_data):\r\n    if not isinstance(input_data, list):\r\n        return input_data if isinstance(input_data, BaseGeometry) else None\r\n\r\n    if len(input_data) == 0:\r\n        return []\r\n\r\n    if isinstance(input_data[0], list):\r\n        return [get_shapely_union(sub) for sub in input_data]\r\n    \r\n    return safe_union_operation(input_data)\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    \r\n    output = get_shapely_union(shp_input)\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "c819b938af744ce28a69301e10e52f2d",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "20b45628a97b40f0b3734baa78be2ee4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5505670cd1cd4bfeb4085744e3bac26e",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f89fe00e207a43889ab59daa6455c864",
+      "End": "20b45628a97b40f0b3734baa78be2ee4",
+      "Id": "eb408118ba874c6b9be4eda326a43be6",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5505670cd1cd4bfeb4085744e3bac26e",
+      "End": "f4a64e5c65d64101b123d57bf1154cc2",
+      "Id": "6e14008d23d045f3a8b6c3fe853cdb60",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -24.54258918762207,
+      "EyeY": 29.511737823486328,
+      "EyeZ": 44.33810997009277,
+      "LookX": 21.684537887573242,
+      "LookY": -30.5120792388916,
+      "LookZ": -23.923625946044922,
+      "UpX": 0.46126219630241394,
+      "UpY": 0.726819634437561,
+      "UpZ": -0.5088911056518555
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "03d03cb69fc7413885fcaa65efb23e3f",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -153.0,
+        "Y": 225.0
+      },
+      {
+        "Id": "ee02ec5184194f4b9d2832ceec8d05ea",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 421.0,
+        "Y": 233.0
+      },
+      {
+        "Id": "c819b938af744ce28a69301e10e52f2d",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 181.0,
+        "Y": 227.0
+      }
+    ],
+    "Annotations": [],
+    "X": 466.0,
+    "Y": 231.0,
+    "Zoom": 1.0
+  }
+}

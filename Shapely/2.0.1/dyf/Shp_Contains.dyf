@@ -1,0 +1,226 @@
+{
+  "Uuid": "f96658e3-5aea-4d0f-bdbd-fa17583c6ef7",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "It checks whether one geometry completely encompasses the other. In other words, it checks whether the first geometry contains the second geometry.",
+  "Name": "Shp_Contains",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.String": {
+        "Key": "DSCore.String",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Boolean",
+      "Id": "10c395e106a8425dabbfb1d414d2e2a7",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "523070edaa5743eb9cd7bbaa7737bd9f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpPolygon",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ccc241275e4845ab9ec7946d7c0e9139",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cfe808b181534f1d920c4f2ccc5e827c",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.prepared import prep \r\n    \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\n\r\ndef prepare_geometry(geometry):\r\n    if isinstance(geometry, BaseGeometry):\r\n        return prep(geometry)\r\n    return geometry \r\n\r\ndef check_contains_prepared(prepared_container, other_geometry):\r\n    \r\n    if not hasattr(prepared_container, 'contains'):\r\n        if isinstance(prepared_container, BaseGeometry):\r\n            return prepared_container.contains(other_geometry)\r\n        return False\r\n    if not isinstance(other_geometry, BaseGeometry):\r\n        return False\r\n        \r\n    return prepared_container.contains(other_geometry)\r\n\r\ndef get_shapely_contains_performance(container_input, other_input):\r\n    if isinstance(container_input, BaseGeometry):\r\n        prepared_container = prepare_geometry(container_input)\r\n        \r\n        if isinstance(other_input, list):\r\n            return [check_contains_prepared(prepared_container, other) for other in other_input]\r\n        else:\r\n            return check_contains_prepared(prepared_container, other_input)\r\n            \r\n    elif isinstance(container_input, list):\r\n        prepared_containers = [prepare_geometry(item) for item in container_input if isinstance(item, BaseGeometry)]\r\n        \r\n        if not isinstance(other_input, list):\r\n            return [check_contains_prepared(prep_c, other_input) for prep_c in prepared_containers]\r\n        elif isinstance(other_input, list):\r\n            return [check_contains_prepared(prep_c, other) \r\n                    for prep_c, other in zip(prepared_containers, other_input)]\r\n    return None\r\n\r\nif 'IN' in locals():\r\n    # IN[0] -> Container (Kapsayan Geometri veya Liste)\r\n    # IN[1] -> Other (İçeride aranan Geometri veya Liste)\r\n    \r\n    container_input = IN[0]\r\n    other_input = IN[1] if len(IN) > 1 else None\r\n    \r\n    if container_input is not None and other_input is not None:\r\n        # 🚀 \r\n        contains_output = get_shapely_contains_performance(container_input, other_input)\r\n    else:\r\n        contains_output = False\r\n    \r\n    OUT = contains_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "2f9b84ad1c8b4407a8089483647fc424",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "cdb954e93f564cccb8fd4930c33c35bd",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bab671ff3033408ca95bd7f593a7af94",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b4b7e296b023461a821e8271f0c0ffb1",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "c83890222c214644b661e781d7d47fe1",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "99de77f3ca034abd9111cb6fca397ec5",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cfe808b181534f1d920c4f2ccc5e827c",
+      "End": "cdb954e93f564cccb8fd4930c33c35bd",
+      "Id": "c86a5a54af1a4a4ca9532374375d3a5f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b4b7e296b023461a821e8271f0c0ffb1",
+      "End": "523070edaa5743eb9cd7bbaa7737bd9f",
+      "Id": "70a8fa4e0fbd4bb498b16eea852ebc70",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "99de77f3ca034abd9111cb6fca397ec5",
+      "End": "bab671ff3033408ca95bd7f593a7af94",
+      "Id": "ea669af5bebe4a9e988d6c7c6d4d8d00",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -0.9455270767211914,
+      "EyeY": 17.363292694091797,
+      "EyeZ": 19.134750366210938,
+      "LookX": -3.9487037658691406,
+      "LookY": -17.506092071533203,
+      "LookZ": -13.944526672363281,
+      "UpX": -0.20987114310264587,
+      "UpY": 0.6376994252204895,
+      "UpZ": -0.7411433458328247
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "10c395e106a8425dabbfb1d414d2e2a7",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 197.0,
+        "Y": 79.0
+      },
+      {
+        "Id": "ccc241275e4845ab9ec7946d7c0e9139",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -384.0,
+        "Y": 14.0
+      },
+      {
+        "Id": "2f9b84ad1c8b4407a8089483647fc424",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -28.0,
+        "Y": 78.0
+      },
+      {
+        "Id": "c83890222c214644b661e781d7d47fe1",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -390.0,
+        "Y": 162.0
+      }
+    ],
+    "Annotations": [],
+    "X": 665.0,
+    "Y": 325.0,
+    "Zoom": 1.0
+  }
+}

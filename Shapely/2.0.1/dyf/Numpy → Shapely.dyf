@@ -1,0 +1,170 @@
+{
+  "Uuid": "f1070654-80a9-46f9-ba99-37c79263cdde",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Conversion",
+  "Description": "Converts Numpy standards to Shapely geometry.",
+  "Name": "Numpy → Shapely",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Numpy",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "7e5f880121b94e249191d9df8c0ec8db",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9fda6dacbfa540ccad3e712a0ab7797a",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "cb2cb94991e84293bcf9c5873822ca90",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "1bf24f81b1d24cf299436e4766c75733",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport numpy as np\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\nTOLERANCE = 1e-6\r\n\r\ndef coords_equal(coord1, coord2, tolerance=TOLERANCE):\r\n    \r\n    if len(coord1) != len(coord2):\r\n        return False\r\n    for a, b in zip(coord1, coord2):\r\n        if abs(a - b) > tolerance:\r\n            return False\r\n    return True\r\n\r\ndef is_closed_coords(coords, tolerance=TOLERANCE):\r\n    \r\n    if len(coords) < 3:\r\n        return False\r\n    return coords_equal(coords[0], coords[-1], tolerance)\r\n\r\ndef is_coordinate(data):\r\n    \r\n    if isinstance(data, list):\r\n        if len(data) in [2, 3]:\r\n            return all(isinstance(x, (int, float)) for x in data)\r\n    return False\r\n\r\ndef is_coordinate_list(data):\r\n    \r\n    if isinstance(data, list) and len(data) > 0:\r\n        return all(is_coordinate(item) for item in data)\r\n    return False\r\n\r\ndef list_point_to_shapely(list_point):\r\n    \r\n    if not is_coordinate(list_point):\r\n        return None\r\n    \r\n    if len(list_point) == 2:\r\n        return ShpPoint(list_point[0], list_point[1])\r\n    elif len(list_point) >= 3:\r\n        return ShpPoint(list_point[0], list_point[1], list_point[2])\r\n    \r\n    return None\r\n\r\ndef list_to_shapely_linestring(list_coords):\r\n    \r\n    if not is_coordinate_list(list_coords):\r\n        return None\r\n    \r\n    if len(list_coords) < 2:\r\n        return None\r\n    \r\n    coords = [tuple(coord) for coord in list_coords]\r\n    \r\n    return ShpLineString(coords)\r\n\r\ndef list_to_shapely_linearring(list_coords):\r\n    \r\n    if not is_coordinate_list(list_coords):\r\n        return None\r\n    \r\n    if len(list_coords) < 3:\r\n        return None\r\n    \r\n    coords = [tuple(coord) for coord in list_coords]\r\n    \r\n    if not is_closed_coords(coords):\r\n        coords.append(coords[0])\r\n    \r\n    return ShpLinearRing(coords)\r\n\r\ndef list_to_shapely_polygon(list_data):\r\n    \r\n    if isinstance(list_data, dict):\r\n        if 'exterior' not in list_data:\r\n            return None\r\n        \r\n        exterior = list_data['exterior']\r\n        if not is_coordinate_list(exterior):\r\n            return None\r\n        \r\n        exterior_coords = [tuple(coord) for coord in exterior]\r\n        \r\n        if not is_closed_coords(exterior_coords):\r\n            exterior_coords.append(exterior_coords[0])\r\n        \r\n        interior_coords_list = []\r\n        if 'interiors' in list_data and list_data['interiors']:\r\n            for interior in list_data['interiors']:\r\n                if is_coordinate_list(interior):\r\n                    int_coords = [tuple(coord) for coord in interior]\r\n                    if not is_closed_coords(int_coords):\r\n                        int_coords.append(int_coords[0])\r\n                    interior_coords_list.append(int_coords)\r\n        \r\n        if interior_coords_list:\r\n            return ShpPolygon(exterior_coords, interior_coords_list)\r\n        else:\r\n            return ShpPolygon(exterior_coords)\r\n    \r\n    if is_coordinate_list(list_data):\r\n        if len(list_data) < 3:\r\n            return None\r\n        \r\n        coords = [tuple(coord) for coord in list_data]\r\n        \r\n        if not is_closed_coords(coords):\r\n            coords.append(coords[0])\r\n        \r\n        return ShpPolygon(coords)\r\n    \r\n    return None\r\n\r\ndef list_to_shapely_multipoint(list_coords):\r\n    \r\n    if not is_coordinate_list(list_coords):\r\n        return None\r\n    \r\n    if len(list_coords) < 1:\r\n        return None\r\n    \r\n    points = [ShpPoint(tuple(coord)) for coord in list_coords]\r\n    \r\n    return ShpMultiPoint(points)\r\n\r\ndef list_to_shapely_multilinestring(list_of_lists):\r\n    \r\n    if not isinstance(list_of_lists, list):\r\n        return None\r\n    \r\n    if len(list_of_lists) < 1:\r\n        return None\r\n    \r\n    linestrings = []\r\n    for list_coords in list_of_lists:\r\n        if is_coordinate_list(list_coords) and len(list_coords) >= 2:\r\n            coords = [tuple(coord) for coord in list_coords]\r\n            linestrings.append(ShpLineString(coords))\r\n    \r\n    if not linestrings:\r\n        return None\r\n    \r\n    return ShpMultiLineString(linestrings)\r\n\r\ndef list_to_shapely_multipolygon(list_of_lists):\r\n    \r\n    if not isinstance(list_of_lists, list):\r\n        return None\r\n    \r\n    if len(list_of_lists) < 1:\r\n        return None\r\n    \r\n    polygons = []\r\n    for list_data in list_of_lists:\r\n        poly = list_to_shapely_polygon(list_data)\r\n        if poly is not None:\r\n            polygons.append(poly)\r\n    \r\n    if not polygons:\r\n        return None\r\n    \r\n    return ShpMultiPolygon(polygons)\r\n\r\ndef detect_geometry_type(list_data):\r\n    if isinstance(list_data, dict):\r\n        return 'polygon'\r\n    \r\n    if is_coordinate(list_data):\r\n        return 'point'\r\n    \r\n    if is_coordinate_list(list_data):\r\n        num_points = len(list_data)\r\n        \r\n        if num_points < 2:\r\n            return None\r\n        \r\n        if num_points == 2:\r\n            return 'linestring'\r\n        \r\n        if is_closed_coords(list_data):\r\n            return 'polygon'\r\n        else:\r\n            return 'multipoint'\r\n    \r\n    if isinstance(list_data, list) and len(list_data) > 0:\r\n        if all(is_coordinate_list(item) for item in list_data):\r\n            all_closed = all(is_closed_coords(item) for item in list_data)\r\n            if all_closed:\r\n                return 'multipolygon'\r\n            else:\r\n                return 'multilinestring'\r\n        \r\n        if all(isinstance(item, dict) for item in list_data):\r\n            return 'multipolygon'\r\n    \r\n    return None\r\n\r\ndef convert_list_to_shapely(list_data, geometry_type='auto'):\r\n    \r\n    if geometry_type == 'point':\r\n        return list_point_to_shapely(list_data)\r\n    \r\n    elif geometry_type == 'linestring':\r\n        return list_to_shapely_linestring(list_data)\r\n    \r\n    elif geometry_type == 'linearring':\r\n        return list_to_shapely_linearring(list_data)\r\n    \r\n    elif geometry_type == 'polygon':\r\n        return list_to_shapely_polygon(list_data)\r\n    \r\n    elif geometry_type == 'multipoint':\r\n        return list_to_shapely_multipoint(list_data)\r\n    \r\n    elif geometry_type == 'multilinestring':\r\n        return list_to_shapely_multilinestring(list_data)\r\n    \r\n    elif geometry_type == 'multipolygon':\r\n        return list_to_shapely_multipolygon(list_data)\r\n    \r\n    # Auto mode\r\n    elif geometry_type == 'auto':\r\n        detected_type = detect_geometry_type(list_data)\r\n        \r\n        if detected_type:\r\n            return convert_list_to_shapely(list_data, detected_type)\r\n        \r\n        if isinstance(list_data, list) and len(list_data) > 0:\r\n            if not is_coordinate(list_data) and not is_coordinate_list(list_data):\r\n                return [convert_list_to_shapely(item, 'auto') for item in list_data]\r\n    \r\n    return None\r\n\r\n# Dynamo Node\r\nif 'IN' in locals():\r\n    list_input = IN[0]\r\n    geo_type = IN[1] if len(IN) > 1 else 'auto'\r\n    \r\n    shapely_output = convert_list_to_shapely(list_input, geo_type)\r\n    \r\n    OUT = shapely_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "6cc0c2111dfa4ddea053b9ae3f5f4a84",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "783d0ca958474edcb7dc837466d6f742",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "37d44da5ff69413aa585c0e7785455b3",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9fda6dacbfa540ccad3e712a0ab7797a",
+      "End": "783d0ca958474edcb7dc837466d6f742",
+      "Id": "31d001b449d949c6905c279db732145f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "37d44da5ff69413aa585c0e7785455b3",
+      "End": "1bf24f81b1d24cf299436e4766c75733",
+      "Id": "1120880e26f14a7abff9ad992c2c6b81",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -22.81909465789795,
+      "EyeY": 19.70281410217285,
+      "EyeZ": 4.449169158935547,
+      "LookX": 0.4159412384033203,
+      "LookY": -19.50316047668457,
+      "LookZ": -5.070624351501465,
+      "UpX": 0.07910651713609695,
+      "UpY": 0.25241541862487793,
+      "UpZ": -0.9643799662590027
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "7e5f880121b94e249191d9df8c0ec8db",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -72.2857142857141,
+        "Y": -0.28571428571433444
+      },
+      {
+        "Id": "cb2cb94991e84293bcf9c5873822ca90",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 471.64339686924734,
+        "Y": 7.021342261778585
+      },
+      {
+        "Id": "6cc0c2111dfa4ddea053b9ae3f5f4a84",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 227.0,
+        "Y": -5.0
+      }
+    ],
+    "Annotations": [],
+    "X": 466.0,
+    "Y": 203.0,
+    "Zoom": 1.0
+  }
+}

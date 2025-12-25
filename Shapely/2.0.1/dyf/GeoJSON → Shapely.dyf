@@ -1,0 +1,261 @@
+{
+  "Uuid": "d2934efb-dad8-4db5-b384-a391d5eae5ec",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Conversion",
+  "Description": "Converts GeoJSON standard data to Shapely geometry. ",
+  "Name": "GeoJSON → Shapely",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_FilePath",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "b0f967318249458fa5e3996d9e22928b",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ef7f8981a27a491299c9cb995dc82b84",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "b10b3bfded10473ba525c5c6d5c38bcd",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "a442345145f14e74a74614a77b0c33bd",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "Id": "397c08449eb1455b83f106f5e32746c0",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "cac4071e1fbf464da03a21a4456fc379",
+          "Name": "path",
+          "Description": "Chemin d'accès au fichier sous forme de chaîne.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d8498e3c7a324679b29d9121f1c52ed9",
+          "Name": "file",
+          "Description": "Objet de fichier",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Crée un objet de fichier à partir du chemin d'accès donné"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "d0063138fca847ea94eb416d04bc8b9f",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "8be30f4bf79b4eb1b28689d2a9669b05",
+          "Name": "file",
+          "Description": "Objet de fichier à partir duquel lire le texte\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5342e9d70629475689a89c1353d391ac",
+          "Name": "string",
+          "Description": "Contenu du fichier texte.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Replication": "Auto",
+      "Description": "Lit un fichier texte et renvoie le contenu sous la forme d'une chaîne.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport sys\r\nimport os\r\n\r\n# PIP Instal Offlıne #\r\ndef load_embedded_packages():\r\n    package_name = \"Shapely\"\r\n    appdata = os.getenv(\"APPDATA\")\r\n    dynamo_root = os.path.join(appdata, \"Dynamo\", \"Dynamo Revit\")\r\n\r\n    if not os.path.exists(dynamo_root):\r\n        return False\r\n\r\n    found_lib_path = None\r\n    for version_dir in os.listdir(dynamo_root):\r\n        bin_path = os.path.join(\r\n            dynamo_root,\r\n            version_dir,\r\n            \"packages\",\r\n            package_name,\r\n            \"bin\"\r\n        )\r\n\r\n        shapely_path = os.path.join(bin_path, \"shapely_lib\")\r\n        numpy_path = os.path.join(bin_path, \"numpy_lib\")\r\n        geojson_path = os.path.join(bin_path, \"geojson_lib\")\r\n\r\n        if all(os.path.exists(p) for p in [shapely_path, numpy_path, geojson_path]):\r\n            found_lib_path = bin_path\r\n\r\n            for p in [numpy_path, shapely_path, geojson_path]:\r\n                if p not in sys.path:\r\n                    sys.path.insert(0, p)\r\n\r\n            # DLL \r\n            dll_path = os.path.join(shapely_path, \"shapely.libs\")\r\n            if os.path.exists(dll_path):\r\n                try:\r\n                    os.add_dll_directory(dll_path)\r\n                except AttributeError:\r\n                    pass\r\n                    \r\n            return True\r\n    return False\r\n\r\n\r\nis_loaded = load_embedded_packages()\r\n\r\n### -- -- -- -- -- - -- - -- - -- - - -- - - -- - - -- - - -##\r\n\r\n\r\nimport clr\r\nimport json\r\nimport math\r\n\r\ntry:\r\n    import shapely\r\n    from shapely import from_geojson\r\n    from shapely.ops import transform\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef latlon_to_meters(lon, lat):\r\n    lat = max(min(lat, 89.9), -89.9)\r\n    x = lon * 20037508.34 / 180\r\n    y = math.log(math.tan((90 + lat) * math.pi / 360)) / (math.pi / 180)\r\n    y = y * 20037508.34 / 180\r\n    return x, y\r\n\r\ndef ensure_closed_rings(geom_dict):\r\n    g_type = geom_dict.get(\"type\")\r\n    coords = geom_dict.get(\"coordinates\")\r\n    \r\n    if g_type == \"Polygon\":\r\n        for ring in coords:\r\n            if ring and ring[0] != ring[-1]:\r\n                ring.append(ring[0])\r\n    elif g_type == \"MultiPolygon\":\r\n        for polygon in coords:\r\n            for ring in polygon:\r\n                if ring and ring[0] != ring[-1]:\r\n                    ring.append(ring[0])\r\n    return geom_dict\r\n\r\ndef project_geometry(geom):\r\n    if geom is None: return None\r\n    try:\r\n        return transform(lambda x, y, z=None: latlon_to_meters(x, y), geom)\r\n    except:\r\n        return geom\r\n\r\ndef process_geojson_metric(data, apply_projection=True):\r\n    if isinstance(data, str):\r\n        try:\r\n            data = json.loads(data)\r\n        except:\r\n            return [], []\r\n\r\n    geoms = []\r\n    props = []\r\n\r\n    if isinstance(data, dict) and data.get(\"type\") == \"FeatureCollection\":\r\n        for feature in data.get(\"features\", []):\r\n            g_dict = feature.get(\"geometry\")\r\n            p_dict = feature.get(\"properties\", {})\r\n            \r\n            if g_dict:\r\n                g_dict = ensure_closed_rings(g_dict)\r\n                \r\n                try:\r\n                    geom_str = json.dumps(g_dict)\r\n                    geom = from_geojson(geom_str)\r\n                    \r\n                    if apply_projection:\r\n                        geom = project_geometry(geom)\r\n                    \r\n                    geoms.append(geom)\r\n                    props.append(p_dict)\r\n                except Exception as e:\r\n                    #print(\"Geometri okuma hatası: {}\".format(e))\r\n                    continue\r\n                    \r\n        return geoms, props\r\n    return [], []\r\n\r\nif 'IN' in locals():\r\n    geojson_input = IN[0]\r\n    should_project = True \r\n    \r\n    if geojson_input:\r\n        geometries, properties = process_geojson_metric(geojson_input, should_project)\r\n    else:\r\n        geometries, properties = [], []\r\n\r\n    OUT = [geometries, properties]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "d69fad17af6c46b986787f12291a941e",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "3203af22c7e54245b74e12ac02c585bc",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dd291818f412424b9529f7d7873f3bcd",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ef7f8981a27a491299c9cb995dc82b84",
+      "End": "cac4071e1fbf464da03a21a4456fc379",
+      "Id": "9dd55f79a6a54e03875a47890f18ad1a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d8498e3c7a324679b29d9121f1c52ed9",
+      "End": "8be30f4bf79b4eb1b28689d2a9669b05",
+      "Id": "95208bf1189946668671f79df579c875",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5342e9d70629475689a89c1353d391ac",
+      "End": "3203af22c7e54245b74e12ac02c585bc",
+      "Id": "3f093be526ed4258a56f7338bedacf92",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "dd291818f412424b9529f7d7873f3bcd",
+      "End": "a442345145f14e74a74614a77b0c33bd",
+      "Id": "2b4b7bccadff4db1b57f24e115080801",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "b0f967318249458fa5e3996d9e22928b",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -606.0,
+        "Y": 156.0
+      },
+      {
+        "Id": "b10b3bfded10473ba525c5c6d5c38bcd",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 365.0,
+        "Y": 164.0
+      },
+      {
+        "Id": "397c08449eb1455b83f106f5e32746c0",
+        "Name": "File From Path",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -311.0,
+        "Y": 159.0
+      },
+      {
+        "Id": "d0063138fca847ea94eb416d04bc8b9f",
+        "Name": "FileSystem.ReadText",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -96.79888240405035,
+        "Y": 160.52351391374395
+      },
+      {
+        "Id": "d69fad17af6c46b986787f12291a941e",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 153.0,
+        "Y": 170.0
+      }
+    ],
+    "Annotations": [],
+    "X": 889.0,
+    "Y": 277.0,
+    "Zoom": 1.0
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "Uuid": "1e868c02-e52f-4f5a-bf33-84b7dabdb091",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "rotates a geometry and simultaneously applies skew to it. This operation changes the position of the geometry while also providing a more complex transformation.",
+  "Name": "Shp_RotateSkew",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "a6ee18728bb749f5ada220e5234d9e5d",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "e2f7b1f8b49146c88caeb7130c1c82de",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Y",
+        "TypeName": "int",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0d0abf6d930443ffb62cc730879e4d54",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "34ecef485aef4ae597b6151946070628",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_X",
+        "TypeName": "int",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5e3f52010b984089b8119f94fec1b8e1",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d118e043136b4b25a6211972da9ef79d",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4615c94a70844170b98a3ad589a62254",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "70ccfe0523a846c4a064ca754aeea8b0",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import affinity\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_skew(geom, xs, ys, origin):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return affinity.skew(geom, xs=xs, ys=ys, origin=origin)\r\n\r\ndef get_shapely_skew(shapely_geometry, xs, ys, origin='centroid', return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_skew(item, xs, ys, origin, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_skew(g, xs, ys, origin) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_skew(shapely_geometry, xs, ys, origin)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_skew(shapely_geometry, xs, ys, origin)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    angle_x = IN[1] if IN[1] is not None else 0.0\r\n    angle_y = IN[2] if IN[2] is not None else 0.0\r\n    origin_point = IN[3] if len(IN) > 3 and IN[3] is not None else 'centroid'\r\n    return_indiv = IN[4] if len(IN) > 4 else False\r\n    \r\n    skew_output = get_shapely_skew(shp_input, angle_x, angle_y, origin_point, return_indiv)\r\n    \r\n    OUT = skew_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "10766149a3d84e3eabd7b26c5e5b3be2",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "d70cd8f46732429aaec876f11b4707cc",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d10612a562324172a2f6d53512835cb1",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2d17849554854e15a5ee87b29948b89d",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4cbbb0da2e9d4e419f982bffb00f5e24",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "34ecef485aef4ae597b6151946070628",
+      "End": "2d17849554854e15a5ee87b29948b89d",
+      "Id": "0bc7410607204a8aabb14d1d0f2ae166",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d118e043136b4b25a6211972da9ef79d",
+      "End": "d10612a562324172a2f6d53512835cb1",
+      "Id": "a2fbb2de5ac94be487bffc3788d5c07a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "70ccfe0523a846c4a064ca754aeea8b0",
+      "End": "d70cd8f46732429aaec876f11b4707cc",
+      "Id": "dee86306e5bc4fccbf61d65c4b5e1a22",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4cbbb0da2e9d4e419f982bffb00f5e24",
+      "End": "e2f7b1f8b49146c88caeb7130c1c82de",
+      "Id": "71e471e635e44386af8448c23d5b5608",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -22.367294311523438,
+      "EyeY": 24.069435119628906,
+      "EyeZ": 24.702009201049805,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "a6ee18728bb749f5ada220e5234d9e5d",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 329.0,
+        "Y": -140.0
+      },
+      {
+        "Id": "0d0abf6d930443ffb62cc730879e4d54",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -230.0,
+        "Y": 155.0
+      },
+      {
+        "Id": "5e3f52010b984089b8119f94fec1b8e1",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -230.0,
+        "Y": 7.5
+      },
+      {
+        "Id": "4615c94a70844170b98a3ad589a62254",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -230.0,
+        "Y": -140.0
+      },
+      {
+        "Id": "10766149a3d84e3eabd7b26c5e5b3be2",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 72.0,
+        "Y": -140.0
+      }
+    ],
+    "Annotations": [],
+    "X": 363.0,
+    "Y": 248.0,
+    "Zoom": 1.0
+  }
+}

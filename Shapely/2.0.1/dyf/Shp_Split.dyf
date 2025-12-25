@@ -1,0 +1,221 @@
+{
+  "Uuid": "7e53a2e9-989e-490f-91cf-501f46df6ba9",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "divides a geometry with a specified line. This operation divides a polygon or line into two separate parts relative to the given line.",
+  "Name": "Shp_Split",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "a9073e7eaf5d4a1b9fa341cf44266dc9",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f8c8d24b0e1c44799b282dffe65dfca4",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpLineString",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": " Inputs must be either \"LINESTRING\""
+      },
+      "Id": "7f0f3131dd8f4156a42f820ad2246fd6",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e89195e087804bb4ad8be0d41b80bcf3",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeomtry",
+      "Id": "e792bc6a37014d66a5c877563d239e13",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "979de3d5c1434be0ad78e2cbc7e305d7",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import split\r\n    from shapely.geometry import GeometryCollection\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_split(g1, g2):\r\n    if isinstance(g1, BaseGeometry) and isinstance(g2, BaseGeometry):\r\n        try:\r\n            result = split(g1, g2)\r\n            return list(result.geoms) \r\n        except:\r\n            return [g1]\r\n    return [g1]\r\n\r\ndef get_shapely_split(a, b):\r\n    if isinstance(a, list):\r\n        return [get_shapely_split(item, b) for item in a]\r\n    \r\n    if isinstance(b, list):\r\n        current_parts = [a]\r\n        for cutter in b:\r\n            new_parts = []\r\n            for part in current_parts:\r\n                split_res = safe_split(part, cutter)\r\n                new_parts.extend(split_res)\r\n            current_parts = new_parts\r\n        return current_parts\r\n    \r\n    return safe_split(a, b)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        output = get_shapely_split(input_a, input_b)\r\n    else:\r\n        output = input_a\r\n\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "42d39a1cc148454da65f900d1895b80f",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "fe50a534fe7a4a03a3a6f0a142532597",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b8f7345113a0455f9bdc2c875ac06d4a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0db9860a8d894ece9bea4ddd38442843",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f8c8d24b0e1c44799b282dffe65dfca4",
+      "End": "fe50a534fe7a4a03a3a6f0a142532597",
+      "Id": "e41f2f91b17c40779a8747059bbce9f8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e89195e087804bb4ad8be0d41b80bcf3",
+      "End": "b8f7345113a0455f9bdc2c875ac06d4a",
+      "Id": "472811c18aae4571aba7abbf40dba904",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0db9860a8d894ece9bea4ddd38442843",
+      "End": "979de3d5c1434be0ad78e2cbc7e305d7",
+      "Id": "b4cb7269da604cad82d24bae09666e84",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "a9073e7eaf5d4a1b9fa341cf44266dc9",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 323.9260298493483,
+        "Y": 17.25305085748863
+      },
+      {
+        "Id": "7f0f3131dd8f4156a42f820ad2246fd6",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 203.01431649516803,
+        "Y": 157.02877417564906
+      },
+      {
+        "Id": "e792bc6a37014d66a5c877563d239e13",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 931.3305218708433,
+        "Y": 17.25305085748863
+      },
+      {
+        "Id": "42d39a1cc148454da65f900d1895b80f",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 677.1282758600958,
+        "Y": 17.25305085748863
+      }
+    ],
+    "Annotations": [],
+    "X": 190.82191951660388,
+    "Y": 360.2939696950437,
+    "Zoom": 1.1047642563030273
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "Uuid": "12c54983-4ead-4e74-b9b9-cc1e7cd85221",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Removes duplicate points from a geometry. This operation is used for data cleaning and validation.",
+  "Name": "Shp_PruneDuplicated",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "9ba2205e56f34b64841afb89bed95294",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3b32c759b3fa41c099c28e7abcdc0027",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "904058042dc543efa12af93ff628ee0e",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "8178ae8f591f43bdabca048b750c30a4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "202f2fe75bdc42aaae59cbfe4f577208",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ef8d5c86fe704eb2a72ffa07e71f3372",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import remove_repeated_points \r\n\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_remove_repeated(geom, tolerance):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return remove_repeated_points(geom, tolerance=tolerance)\r\n\r\ndef get_shapely_remove_repeated(shapely_geometry, tolerance, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_remove_repeated(item, tolerance, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_remove_repeated(g, tolerance) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_remove_repeated(shapely_geometry, tolerance)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_remove_repeated(shapely_geometry, tolerance)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    tol = IN[1] if (IN[1] is not None and IN[1] >= 0) else 0.0\r\n    return_indiv = IN[2] if len(IN) > 2 else False\r\n    \r\n    cleaned_output = get_shapely_remove_repeated(shp_input, tol, return_indiv)\r\n    \r\n    OUT = cleaned_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "f10fc2a73d7546cf8ea9d682ba1940b6",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "27d10f1561934265a422f2c9d762bb52",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e538fd5033fc40d38471390916fe7411",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "800cc355e6914481abcf807892b39bb8",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3b32c759b3fa41c099c28e7abcdc0027",
+      "End": "27d10f1561934265a422f2c9d762bb52",
+      "Id": "a57cc5cd50f84c7ba1719ef1d44e3468",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ef8d5c86fe704eb2a72ffa07e71f3372",
+      "End": "e538fd5033fc40d38471390916fe7411",
+      "Id": "eabe6db33afc4962850aa7d34f50a04a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "800cc355e6914481abcf807892b39bb8",
+      "End": "8178ae8f591f43bdabca048b750c30a4",
+      "Id": "36758259b82a439aa6ffe2daf93d7b08",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "9ba2205e56f34b64841afb89bed95294",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -439.0,
+        "Y": -29.0
+      },
+      {
+        "Id": "904058042dc543efa12af93ff628ee0e",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 374.0,
+        "Y": -29.0
+      },
+      {
+        "Id": "202f2fe75bdc42aaae59cbfe4f577208",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -439.0,
+        "Y": 96.0
+      },
+      {
+        "Id": "f10fc2a73d7546cf8ea9d682ba1940b6",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 17.0,
+        "Y": -29.0
+      }
+    ],
+    "Annotations": [],
+    "X": 722.0,
+    "Y": 161.0,
+    "Zoom": 1.0
+  }
+}
