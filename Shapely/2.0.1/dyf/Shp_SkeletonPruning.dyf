@@ -1,0 +1,272 @@
+{
+  "Uuid": "520243c2-c014-4ef3-a1f2-e3425e0daf72",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "It uses the Topological Analysis method to clean the skeleton (centreline) of a polygon. It cleans the dead-end streets, known as ‘spurs’, which arise from Voronoi diagrams and are not connected to the main line.",
+  "Name": "Shp_SkeletonPruning",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpLine",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "58878e68a5944d339de1e7157a60cb41",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4aaeddec6f74483e99a65a481dce5e3d",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpLine",
+      "Id": "80b7a4a093074e15995fdf5104a8b0c7",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "0be607879d1d443ca2a04ea685bf3c0f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_MinLength",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ff5a3431f6274517961c4639f1f1d953",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d2934b7061da4c29876102dc71702197",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_MaxIteration",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "34797d1485e2469787660b52becfdf8e",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c55947d4d4104a6cad9239bcfb05272c",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import linemerge, unary_union\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n\r\ndef extract_lines(geom):\r\n    lines = []\r\n    if isinstance(geom, ShpLineString):\r\n        lines.append(geom)\r\n    elif hasattr(geom, 'geoms'): \r\n        for g in geom.geoms:\r\n            lines.extend(extract_lines(g))\r\n    return lines\r\n\r\ndef prune_skeleton(geometry, min_length=1.0, max_iterations=5):\r\n\r\n    if not isinstance(geometry, BaseGeometry) or geometry.is_empty:\r\n        return geometry\r\n\r\n    current_geom = geometry\r\n    iter_limit = int(max_iterations) \r\n\r\n    for i in range(iter_limit):\r\n        \r\n        input_lines = extract_lines(current_geom)\r\n        \r\n        if not input_lines:\r\n            break\r\n            \r\n        if len(input_lines) > 1:\r\n            try:\r\n                merged = linemerge(input_lines)\r\n            except ValueError:\r\n                merged = unary_union(input_lines)\r\n        else:\r\n            merged = input_lines[0]\r\n\r\n        lines_to_process = extract_lines(merged)\r\n        \r\n        node_counts = {}\r\n        for line in lines_to_process:\r\n            if not hasattr(line, 'coords') or len(line.coords) < 2: continue\r\n            \r\n            for pt in [line.coords[0], line.coords[-1]]:\r\n                node_counts[pt] = node_counts.get(pt, 0) + 1\r\n        \r\n        cleaned_lines = []\r\n        any_removed = False\r\n        \r\n        for line in lines_to_process:\r\n            if not hasattr(line, 'coords'): continue\r\n            \r\n            start_pt = line.coords[0]\r\n            end_pt = line.coords[-1]\r\n            \r\n            is_dead_end = (node_counts.get(start_pt, 0) == 1 or \r\n                           node_counts.get(end_pt, 0) == 1)\r\n            \r\n            if is_dead_end and line.length < min_length:\r\n                any_removed = True\r\n                continue \r\n            else:\r\n                cleaned_lines.append(line)\r\n        \r\n        current_geom = unary_union(cleaned_lines)\r\n        \r\n        if not any_removed:\r\n            break\r\n            \r\n    return current_geom\r\n\r\ndef get_skeleton_purge(input_data, min_length, max_iterations):\r\n    if isinstance(input_data, list):\r\n        return [get_skeleton_purge(item, min_length, max_iterations) for item in input_data]\r\n    \r\n    elif isinstance(input_data, BaseGeometry):\r\n        return prune_skeleton(input_data, min_length, max_iterations)\r\n        \r\n    return None\r\n\r\nif 'IN' in locals():\r\n    centerline_input = IN[0] \r\n    \r\n    threshold = IN[1] if (len(IN) > 1 and IN[1] is not None) else 1.0 \r\n    max_iter = IN[2] if (len(IN) > 2 and IN[2] is not None) else 10 \r\n    \r\n    OUT = get_skeleton_purge(centerline_input, threshold, max_iter)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1917e49d0e574115a685ea0e0d1f1240",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "dd1734bb950c4c28946a7fe90b858917",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dd8085c049c246798da032f6c43e6e47",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ef72a35b92bf4990b5603e0820c11909",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "25e929f81c9f41ff8958c190b1e85c65",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4aaeddec6f74483e99a65a481dce5e3d",
+      "End": "dd1734bb950c4c28946a7fe90b858917",
+      "Id": "074d8a27e85f47e0983a5e7e1caaeee3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d2934b7061da4c29876102dc71702197",
+      "End": "dd8085c049c246798da032f6c43e6e47",
+      "Id": "a5837e9a24c84db8a8707d85962c3088",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c55947d4d4104a6cad9239bcfb05272c",
+      "End": "ef72a35b92bf4990b5603e0820c11909",
+      "Id": "6234a19f478c49108168f1a9c34f0c92",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "25e929f81c9f41ff8958c190b1e85c65",
+      "End": "0be607879d1d443ca2a04ea685bf3c0f",
+      "Id": "6208b4d6626f4fb7ad39352abd17507d",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -32.64459991455078,
+      "EyeY": 4.154709815979004,
+      "EyeZ": 2.3309221267700195,
+      "LookX": 0.015117645263671875,
+      "LookY": -4.659202575683594,
+      "LookZ": -1.2588353157043457,
+      "UpX": 0.011618513613939285,
+      "UpY": 0.26084911823272705,
+      "UpZ": -0.9653096795082092
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "58878e68a5944d339de1e7157a60cb41",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 91.0
+      },
+      {
+        "Id": "80b7a4a093074e15995fdf5104a8b0c7",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 258.0,
+        "Y": 94.0
+      },
+      {
+        "Id": "ff5a3431f6274517961c4639f1f1d953",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 254.0
+      },
+      {
+        "Id": "34797d1485e2469787660b52becfdf8e",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -294.0,
+        "Y": 402.0
+      },
+      {
+        "Id": "1917e49d0e574115a685ea0e0d1f1240",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 21.0,
+        "Y": 95.0
+      }
+    ],
+    "Annotations": [],
+    "X": 553.0,
+    "Y": 215.0,
+    "Zoom": 1.0
+  }
+}

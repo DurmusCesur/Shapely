@@ -1,5 +1,5 @@
 {
-  "Uuid": "b77b51ba-da5c-4f2f-818f-1e3d2b6a4cd8",
+  "Uuid": "82ac74a6-d81e-4c6d-820a-f4975e5db8da",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Operation",
   "Description": "Calculates the inner boundaries (holes) and outer boundaries of a polygon. Inner boundaries are the voids within the polygon.",
@@ -19,12 +19,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "09710423ea0e4745a54e456401715a7b",
+      "Id": "c44497820c9c477ba90848d4a63c6be8",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "107bd6eab0ed478c837de47003434407",
+          "Id": "d10588d31b254090b2e650307abec183",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -40,11 +40,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
       "Symbol": "_ShpGeometry",
-      "Id": "ae8ef80672b44255b04d80e7aff2c576",
+      "Id": "62fb2677137a4e3ab54dd5685eea700f",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "71bfc3c4dc794948b25ce32211da2fe1",
+          "Id": "27acaf1a6cf4483484ddf79dfccb0fd0",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -59,14 +59,14 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import get_interior_ring\r\n\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_intring(geom,index):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return get_interior_ring(geom,index=index)\r\n\r\ndef get_shapely_intring(shapely_geometry,index=1.0):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_intring(item, index) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_intring(g, index) for g in shapely_geometry.geoms]\r\n        else:\r\n            return v(shapely_geometry, index, return_individual)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_intring(shapely_geometry, index)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    index_val = IN[1] if len(IN) > 1 and isinstance(IN[1], (float, int)) else 0.0\r\n    \r\n    intring_output = get_shapely_intring(shp_input, index_val)\r\n    \r\n    OUT = intring_output",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection\r\n    from shapely.geometry import LinearRing\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import get_interior_ring, get_num_interior_rings\r\n    \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n\r\ndef get_all_interiors(geom):\r\n    holes = []\r\n    \r\n    if isinstance(geom, ShpPolygon):\r\n        holes.extend(list(geom.interiors))\r\n        \r\n    elif isinstance(geom, ShpMultiPolygon):\r\n        for poly in geom.geoms:\r\n            holes.extend(list(poly.interiors))\r\n            \r\n    elif hasattr(geom, 'geoms'):\r\n        for g in geom.geoms:\r\n            holes.extend(get_all_interiors(g))\r\n            \r\n    return holes\r\n\r\ndef process_geometry_list(input_data):\r\n    if isinstance(input_data, list):\r\n        return [process_geometry_list(item) for item in input_data]\r\n    \r\n    elif isinstance(input_data, BaseGeometry):\r\n        return get_all_interiors(input_data)\r\n    \r\n    return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    \r\n    OUT = process_geometry_list(shp_input)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "86269c94fdc946e29dcfc36c44e5bdf9",
+      "Id": "885155b897e2480bb71949702f53d198",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "9a43dec9cbcd470c83eb44e7148396e9",
+          "Id": "10ce2a04224c4d65ba51771a150fbaa5",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -77,7 +77,7 @@
       ],
       "Outputs": [
         {
-          "Id": "48ee7184b3b24fe68dbc2375169df801",
+          "Id": "2f2a515828634c7bb8331e73ca12ce26",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -92,15 +92,15 @@
   ],
   "Connectors": [
     {
-      "Start": "107bd6eab0ed478c837de47003434407",
-      "End": "9a43dec9cbcd470c83eb44e7148396e9",
-      "Id": "dd89c767b6cf4606a26bff82ebf43a54",
+      "Start": "d10588d31b254090b2e650307abec183",
+      "End": "10ce2a04224c4d65ba51771a150fbaa5",
+      "Id": "4d1b0307201044bea969a9c2349faff7",
       "IsHidden": "False"
     },
     {
-      "Start": "48ee7184b3b24fe68dbc2375169df801",
-      "End": "71bfc3c4dc794948b25ce32211da2fe1",
-      "Id": "9075e67d303145599cafa5ad74dd441c",
+      "Start": "2f2a515828634c7bb8331e73ca12ce26",
+      "End": "27acaf1a6cf4483484ddf79dfccb0fd0",
+      "Id": "36cbbef24e0e4703b24273eccf638445",
       "IsHidden": "False"
     }
   ],
@@ -119,20 +119,20 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": -24.54258918762207,
-      "EyeY": 29.511737823486328,
-      "EyeZ": 44.33810997009277,
-      "LookX": 21.684537887573242,
-      "LookY": -30.5120792388916,
-      "LookZ": -23.923625946044922,
-      "UpX": 0.46126219630241394,
-      "UpY": 0.726819634437561,
-      "UpZ": -0.5088911056518555
+      "EyeX": -28.16596794128418,
+      "EyeY": 8.231160163879395,
+      "EyeZ": 5.8152642250061035,
+      "LookX": 0.03594779968261719,
+      "LookY": -8.866689682006836,
+      "LookZ": -2.9872751235961914,
+      "UpX": 0.011402030475437641,
+      "UpY": 0.31929802894592285,
+      "UpZ": -0.9475857019424438
     },
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "09710423ea0e4745a54e456401715a7b",
+        "Id": "c44497820c9c477ba90848d4a63c6be8",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -142,7 +142,7 @@
         "Y": 146.0
       },
       {
-        "Id": "ae8ef80672b44255b04d80e7aff2c576",
+        "Id": "62fb2677137a4e3ab54dd5685eea700f",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -152,14 +152,14 @@
         "Y": 146.0
       },
       {
-        "Id": "86269c94fdc946e29dcfc36c44e5bdf9",
+        "Id": "885155b897e2480bb71949702f53d198",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 169.0,
-        "Y": 146.0
+        "X": 170.0,
+        "Y": 141.0
       }
     ],
     "Annotations": [],

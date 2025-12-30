@@ -1,5 +1,5 @@
 {
-  "Uuid": "3353072a-b97d-4b70-9e15-00d5daf7c19a",
+  "Uuid": "280a37da-1a5d-4b12-87ed-bdaeb924461d",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Conversion",
   "Description": "Converts Dynamo geometry to Shapely geometry.",
@@ -19,12 +19,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "28cf3c67edf14ad5b4b73b961f162122",
+      "Id": "8fef70f40e88401d89f9b81ce1862bb2",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "54796cf0ec1f411caa8fb0ae2340c8e4",
+          "Id": "b2b1b9d3c21a46f5a06c8f08b0c5111d",
           "Name": "",
           "Description": "Données d'entrée",
           "UsingDefaultValue": false,
@@ -40,11 +40,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
       "Symbol": "_ShpGeometry;",
-      "Id": "973cf8c2b4c240d58d10c541b437125a",
+      "Id": "73ce876ac8fa4693b71700c2f76baa1a",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "f3fd8fcc115a4849944eda1b6828ffed",
+          "Id": "f42037e1dbf54d53b017e3f7200ff933",
           "Name": "",
           "Description": "Données de sortie",
           "UsingDefaultValue": false,
@@ -59,14 +59,14 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    \r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon , LinearRing\r\nexcept ImportError:\r\n    \r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef dynamo_point_to_shapely(dynamo_point):\r\n    \r\n    if isinstance(dynamo_point, Point):\r\n        return ShpPoint(dynamo_point.X, dynamo_point.Y, dynamo_point.Z)\r\n    return None\r\n\r\ndef dynamo_polygon_to_shapely(dynamo_polygon):\r\n    \r\n    if not isinstance(dynamo_polygon, Polygon):\r\n        return None\r\n    pts = dynamo_polygon.Points\r\n    if not pts or len(pts) < 3:\r\n        return None\r\n    coords = [(p.X, p.Y, p.Z) for p in pts]\r\n    if coords[0] != coords[-1]:\r\n        coords.append(coords[0])\r\n    return ShpPolygon(coords)\r\n\r\ndef dynamo_curve_to_shapely(dynamo_curve):\r\n    \r\n    if isinstance(dynamo_curve, Line):\r\n        start = dynamo_curve.StartPoint\r\n        end = dynamo_curve.EndPoint\r\n        coords = [(start.X, start.Y, start.Z), (end.X, end.Y, end.Z)]\r\n        \r\n        return ShpLineString(coords)\r\n        \r\n    elif isinstance(dynamo_curve, Arc):\r\n        \r\n        num_segments = 1000 \r\n        points = []\r\n        for i in range(num_segments + 1):\r\n            param = float(i) / num_segments\r\n            pt = dynamo_curve.PointAtParameter(param)\r\n            points.append((pt.X, pt.Y, pt.Z))\r\n        return ShpLineString(points)\r\n    return None\r\n\r\ndef dynamo_surface_to_shapely_with_holes(dynamo_surface):\r\n    \r\n    if not isinstance(dynamo_surface, Surface):\r\n        return None\r\n    \r\n    outer_coords = []\r\n    inner_rings = []\r\n    \r\n    try:\r\n        perimeter_curves = dynamo_surface.PerimeterCurves()\r\n        \r\n        for curve in perimeter_curves:\r\n            start_point = curve.StartPoint\r\n            outer_coords.append((start_point.X, start_point.Y, start_point.Z))\r\n        \r\n        if perimeter_curves:\r\n            last_end = perimeter_curves[-1].EndPoint\r\n            if outer_coords and outer_coords[0] != (last_end.X, last_end.Y, last_end.Z):\r\n                outer_coords.append((last_end.X, last_end.Y, last_end.Z))\r\n        \r\n        if outer_coords and outer_coords[0] != outer_coords[-1]:\r\n            outer_coords.append(outer_coords[0])\r\n            \r\n    except Exception as e:\r\n        return None\r\n        \r\n    try:\r\n        if hasattr(dynamo_surface, 'Faces'):\r\n            pass\r\n    except:\r\n        pass\r\n        \r\n    if len(outer_coords) < 4:\r\n        return None\r\n        \r\n    try:\r\n        if inner_rings:\r\n            return ShpPolygon(outer_coords, inner_rings)\r\n        else:\r\n            return ShpPolygon(outer_coords)\r\n    except Exception as e:\r\n        return None\r\n\r\ndef dynamo_polycurve_to_shapely(dynamo_polycurve):\r\n    \r\n    if not isinstance(dynamo_polycurve, PolyCurve):\r\n        return None\r\n    \r\n    try:\r\n        curves = dynamo_polycurve.Curves()\r\n    except:\r\n        try:\r\n            curves = dynamo_polycurve.Curves\r\n        except:\r\n            return None\r\n    \r\n    if not curves:\r\n        return None\r\n    \r\n    coords = []\r\n    \r\n    for curve in curves:\r\n        try:\r\n            sp = curve.StartPoint\r\n            coords.append((sp.X, sp.Y, sp.Z))\r\n        except:\r\n            continue\r\n    \r\n    if curves:\r\n        try:\r\n            ep = curves[-1].EndPoint\r\n            coords.append((ep.X, ep.Y, ep.Z))\r\n        except:\r\n            pass\r\n    \r\n    if len(coords) < 2:\r\n        return None\r\n    \r\n    return ShpLineString(coords)\r\n\r\ndef convert_dynamo_to_shapely(dynamo_geometry):\r\n    \r\n    if isinstance(dynamo_geometry, list):\r\n        return [convert_dynamo_to_shapely(item) for item in dynamo_geometry]\r\n\r\n    if isinstance(dynamo_geometry, Point):\r\n        return dynamo_point_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Surface):\r\n        return dynamo_surface_to_shapely_with_holes(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Polygon):\r\n        return dynamo_polygon_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, PolyCurve):\r\n        return dynamo_polycurve_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Line):\r\n        return dynamo_curve_to_shapely(dynamo_geometry)\r\n\r\n    else:\r\n        return None \r\n\r\nif 'IN' in locals():\r\n    dynamo_input = IN[0] \r\n\r\n    shapely_output = convert_dynamo_to_shapely(dynamo_input)\r\n\r\n    OUT = shapely_output",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport sys\r\nimport os\r\n\r\n# PIP Instal Offlıne #\r\ndef load_embedded_packages():\r\n    package_name = \"Shapely\"\r\n    appdata = os.getenv(\"APPDATA\")\r\n    dynamo_root = os.path.join(appdata, \"Dynamo\", \"Dynamo Revit\")\r\n\r\n    if not os.path.exists(dynamo_root):\r\n        return False\r\n\r\n    found_lib_path = None\r\n    for version_dir in os.listdir(dynamo_root):\r\n        bin_path = os.path.join(\r\n            dynamo_root,\r\n            version_dir,\r\n            \"packages\",\r\n            package_name,\r\n            \"bin\"\r\n        )\r\n\r\n        shapely_path = os.path.join(bin_path, \"shapely_lib\")\r\n        numpy_path = os.path.join(bin_path, \"numpy_lib\")\r\n        geojson_path = os.path.join(bin_path, \"geojson_lib\")\r\n\r\n        if all(os.path.exists(p) for p in [shapely_path, numpy_path, geojson_path]):\r\n            found_lib_path = bin_path\r\n\r\n            for p in [numpy_path, shapely_path, geojson_path]:\r\n                if p not in sys.path:\r\n                    sys.path.insert(0, p)\r\n\r\n            # DLL \r\n            dll_path = os.path.join(shapely_path, \"shapely.libs\")\r\n            if os.path.exists(dll_path):\r\n                try:\r\n                    os.add_dll_directory(dll_path)\r\n                except AttributeError:\r\n                    pass\r\n                    \r\n            return True\r\n    return False\r\n\r\n\r\nis_loaded = load_embedded_packages()\r\n\r\n### -- -- -- -- -- - -- - -- - -- - - -- - - -- - - -- - - -##\r\n\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    import shapely\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon , LinearRing\r\nexcept ImportError:\r\n    \r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef dynamo_point_to_shapely(dynamo_point):\r\n    \r\n    if isinstance(dynamo_point, Point):\r\n        return ShpPoint(dynamo_point.X, dynamo_point.Y, dynamo_point.Z)\r\n    return None\r\n\r\ndef dynamo_polygon_to_shapely(dynamo_polygon):\r\n    \r\n    if not isinstance(dynamo_polygon, Polygon):\r\n        return None\r\n    pts = dynamo_polygon.Points\r\n    if not pts or len(pts) < 3:\r\n        return None\r\n    coords = [(p.X, p.Y, p.Z) for p in pts]\r\n    if coords[0] != coords[-1]:\r\n        coords.append(coords[0])\r\n    return ShpPolygon(coords)\r\n\r\ndef dynamo_curve_to_shapely(dynamo_curve):\r\n    \r\n    if isinstance(dynamo_curve, Line):\r\n        start = dynamo_curve.StartPoint\r\n        end = dynamo_curve.EndPoint\r\n        coords = [(start.X, start.Y, start.Z), (end.X, end.Y, end.Z)]\r\n        \r\n        return ShpLineString(coords)\r\n        \r\n    elif isinstance(dynamo_curve, Arc):\r\n        \r\n        num_segments = 1000 \r\n        points = []\r\n        for i in range(num_segments + 1):\r\n            param = float(i) / num_segments\r\n            pt = dynamo_curve.PointAtParameter(param)\r\n            points.append((pt.X, pt.Y, pt.Z))\r\n        return ShpLineString(points)\r\n    return None\r\n\r\ndef dynamo_surface_to_shapely_with_holes(dynamo_surface):\r\n    \r\n    if not isinstance(dynamo_surface, Surface):\r\n        return None\r\n    \r\n    outer_coords = []\r\n    inner_rings = []\r\n    \r\n    try:\r\n        perimeter_curves = dynamo_surface.PerimeterCurves()\r\n        \r\n        for curve in perimeter_curves:\r\n            start_point = curve.StartPoint\r\n            outer_coords.append((start_point.X, start_point.Y, start_point.Z))\r\n        \r\n        if perimeter_curves:\r\n            last_end = perimeter_curves[-1].EndPoint\r\n            if outer_coords and outer_coords[0] != (last_end.X, last_end.Y, last_end.Z):\r\n                outer_coords.append((last_end.X, last_end.Y, last_end.Z))\r\n        \r\n        if outer_coords and outer_coords[0] != outer_coords[-1]:\r\n            outer_coords.append(outer_coords[0])\r\n            \r\n    except Exception as e:\r\n        return None\r\n        \r\n    try:\r\n        if hasattr(dynamo_surface, 'Faces'):\r\n            pass\r\n    except:\r\n        pass\r\n        \r\n    if len(outer_coords) < 4:\r\n        return None\r\n        \r\n    try:\r\n        if inner_rings:\r\n            return ShpPolygon(outer_coords, inner_rings)\r\n        else:\r\n            return ShpPolygon(outer_coords)\r\n    except Exception as e:\r\n        return None\r\n\r\ndef dynamo_polycurve_to_shapely(dynamo_polycurve):\r\n    \r\n    if not isinstance(dynamo_polycurve, PolyCurve):\r\n        return None\r\n    \r\n    try:\r\n        curves = dynamo_polycurve.Curves()\r\n    except:\r\n        try:\r\n            curves = dynamo_polycurve.Curves\r\n        except:\r\n            return None\r\n    \r\n    if not curves:\r\n        return None\r\n    \r\n    coords = []\r\n    \r\n    for curve in curves:\r\n        try:\r\n            sp = curve.StartPoint\r\n            coords.append((sp.X, sp.Y, sp.Z))\r\n        except:\r\n            continue\r\n    \r\n    if curves:\r\n        try:\r\n            ep = curves[-1].EndPoint\r\n            coords.append((ep.X, ep.Y, ep.Z))\r\n        except:\r\n            pass\r\n    \r\n    if len(coords) < 2:\r\n        return None\r\n    \r\n    return ShpLineString(coords)\r\n\r\ndef convert_dynamo_to_shapely(dynamo_geometry):\r\n    \r\n    if isinstance(dynamo_geometry, list):\r\n        return [convert_dynamo_to_shapely(item) for item in dynamo_geometry]\r\n\r\n    if isinstance(dynamo_geometry, Point):\r\n        return dynamo_point_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Surface):\r\n        return dynamo_surface_to_shapely_with_holes(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Polygon):\r\n        return dynamo_polygon_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, PolyCurve):\r\n        return dynamo_polycurve_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Line):\r\n        return dynamo_curve_to_shapely(dynamo_geometry)\r\n\r\n    else:\r\n        return None \r\n\r\nif 'IN' in locals():\r\n    dynamo_input = IN[0] \r\n\r\n    shapely_output = convert_dynamo_to_shapely(dynamo_input)\r\n\r\n    OUT = shapely_output",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "95d22c1de5604ad894a928438467d1cf",
+      "Id": "166fae9dcfbc44f0972539c801c928df",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "d13cb60c7e5042809bf052334561b2cb",
+          "Id": "e3ed7a2412604c48b918091a81f8fa9b",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -77,7 +77,7 @@
       ],
       "Outputs": [
         {
-          "Id": "38e5d5a327514075829dc04e918133c1",
+          "Id": "2e1a479811184edaa7a261b5329bf561",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -91,14 +91,14 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport sys\r\nimport os\r\n\r\n# PIP Instal Offlıne #\r\ndef load_embedded_packages():\r\n    package_name = \"Shapely\"\r\n    appdata = os.getenv(\"APPDATA\")\r\n    dynamo_root = os.path.join(appdata, \"Dynamo\", \"Dynamo Revit\")\r\n\r\n    if not os.path.exists(dynamo_root):\r\n        return False\r\n\r\n    found_lib_path = None\r\n    for version_dir in os.listdir(dynamo_root):\r\n        bin_path = os.path.join(\r\n            dynamo_root,\r\n            version_dir,\r\n            \"packages\",\r\n            package_name,\r\n            \"bin\"\r\n        )\r\n\r\n        shapely_path = os.path.join(bin_path, \"shapely_lib\")\r\n        numpy_path = os.path.join(bin_path, \"numpy_lib\")\r\n        geojson_path = os.path.join(bin_path, \"geojson_lib\")\r\n\r\n        if all(os.path.exists(p) for p in [shapely_path, numpy_path, geojson_path]):\r\n            found_lib_path = bin_path\r\n\r\n            for p in [numpy_path, shapely_path, geojson_path]:\r\n                if p not in sys.path:\r\n                    sys.path.insert(0, p)\r\n\r\n            # DLL \r\n            dll_path = os.path.join(shapely_path, \"shapely.libs\")\r\n            if os.path.exists(dll_path):\r\n                try:\r\n                    os.add_dll_directory(dll_path)\r\n                except AttributeError:\r\n                    pass\r\n                    \r\n            return True\r\n    return False\r\n\r\n\r\nis_loaded = load_embedded_packages()\r\n\r\n### -- -- -- -- -- - -- - -- - -- - - -- - - -- - - -- - - -##\r\n\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    import shapely\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon , LinearRing\r\nexcept ImportError:\r\n    \r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef dynamo_point_to_shapely(dynamo_point):\r\n    \r\n    if isinstance(dynamo_point, Point):\r\n        return ShpPoint(dynamo_point.X, dynamo_point.Y, dynamo_point.Z)\r\n    return None\r\n\r\ndef dynamo_polygon_to_shapely(dynamo_polygon):\r\n    \r\n    if not isinstance(dynamo_polygon, Polygon):\r\n        return None\r\n    pts = dynamo_polygon.Points\r\n    if not pts or len(pts) < 3:\r\n        return None\r\n    coords = [(p.X, p.Y, p.Z) for p in pts]\r\n    if coords[0] != coords[-1]:\r\n        coords.append(coords[0])\r\n    return ShpPolygon(coords)\r\n\r\ndef dynamo_curve_to_shapely(dynamo_curve):\r\n    \r\n    if isinstance(dynamo_curve, Line):\r\n        start = dynamo_curve.StartPoint\r\n        end = dynamo_curve.EndPoint\r\n        coords = [(start.X, start.Y, start.Z), (end.X, end.Y, end.Z)]\r\n        \r\n        return ShpLineString(coords)\r\n        \r\n    elif isinstance(dynamo_curve, Arc):\r\n        \r\n        num_segments = 1000 \r\n        points = []\r\n        for i in range(num_segments + 1):\r\n            param = float(i) / num_segments\r\n            pt = dynamo_curve.PointAtParameter(param)\r\n            points.append((pt.X, pt.Y, pt.Z))\r\n        return ShpLineString(points)\r\n    return None\r\n\r\ndef dynamo_surface_to_shapely_with_holes(dynamo_surface):\r\n    \r\n    if not isinstance(dynamo_surface, Surface):\r\n        return None\r\n    \r\n    outer_coords = []\r\n    inner_rings = []\r\n    \r\n    try:\r\n        perimeter_curves = dynamo_surface.PerimeterCurves()\r\n        \r\n        for curve in perimeter_curves:\r\n            start_point = curve.StartPoint\r\n            outer_coords.append((start_point.X, start_point.Y, start_point.Z))\r\n        \r\n        if perimeter_curves:\r\n            last_end = perimeter_curves[-1].EndPoint\r\n            if outer_coords and outer_coords[0] != (last_end.X, last_end.Y, last_end.Z):\r\n                outer_coords.append((last_end.X, last_end.Y, last_end.Z))\r\n        \r\n        if outer_coords and outer_coords[0] != outer_coords[-1]:\r\n            outer_coords.append(outer_coords[0])\r\n            \r\n    except Exception as e:\r\n        return None\r\n        \r\n    try:\r\n        if hasattr(dynamo_surface, 'Faces'):\r\n            pass\r\n    except:\r\n        pass\r\n        \r\n    if len(outer_coords) < 4:\r\n        return None\r\n        \r\n    try:\r\n        if inner_rings:\r\n            return ShpPolygon(outer_coords, inner_rings)\r\n        else:\r\n            return ShpPolygon(outer_coords)\r\n    except Exception as e:\r\n        return None\r\n\r\ndef dynamo_polycurve_to_shapely(dynamo_polycurve):\r\n    \r\n    if not isinstance(dynamo_polycurve, PolyCurve):\r\n        return None\r\n    \r\n    try:\r\n        curves = dynamo_polycurve.Curves()\r\n    except:\r\n        try:\r\n            curves = dynamo_polycurve.Curves\r\n        except:\r\n            return None\r\n    \r\n    if not curves:\r\n        return None\r\n    \r\n    coords = []\r\n    \r\n    for curve in curves:\r\n        try:\r\n            sp = curve.StartPoint\r\n            coords.append((sp.X, sp.Y, sp.Z))\r\n        except:\r\n            continue\r\n    \r\n    if curves:\r\n        try:\r\n            ep = curves[-1].EndPoint\r\n            coords.append((ep.X, ep.Y, ep.Z))\r\n        except:\r\n            pass\r\n    \r\n    if len(coords) < 2:\r\n        return None\r\n    \r\n    return ShpLineString(coords)\r\n\r\ndef convert_dynamo_to_shapely(dynamo_geometry):\r\n    \r\n    if isinstance(dynamo_geometry, list):\r\n        return [convert_dynamo_to_shapely(item) for item in dynamo_geometry]\r\n\r\n    if isinstance(dynamo_geometry, Point):\r\n        return dynamo_point_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Surface):\r\n        return dynamo_surface_to_shapely_with_holes(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Polygon):\r\n        return dynamo_polygon_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, PolyCurve):\r\n        return dynamo_polycurve_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Line):\r\n        return dynamo_curve_to_shapely(dynamo_geometry)\r\n\r\n    else:\r\n        return None \r\n\r\nif 'IN' in locals():\r\n    dynamo_input = IN[0] \r\n\r\n    shapely_output = convert_dynamo_to_shapely(dynamo_input)\r\n\r\n    OUT = shapely_output",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport sys\r\nimport os\r\n\r\n# PIP Instal Offlıne #\r\ndef load_embedded_packages():\r\n    package_name = \"Shapely\"\r\n    appdata = os.getenv(\"APPDATA\")\r\n    dynamo_root = os.path.join(appdata, \"Dynamo\", \"Dynamo Revit\")\r\n\r\n    if not os.path.exists(dynamo_root):\r\n        return False\r\n\r\n    found_lib_path = None\r\n    for version_dir in os.listdir(dynamo_root):\r\n        bin_path = os.path.join(\r\n            dynamo_root,\r\n            version_dir,\r\n            \"packages\",\r\n            package_name,\r\n            \"bin\"\r\n        )\r\n\r\n        shapely_path = os.path.join(bin_path, \"shapely_lib\")\r\n        numpy_path = os.path.join(bin_path, \"numpy_lib\")\r\n        geojson_path = os.path.join(bin_path, \"geojson_lib\")\r\n\r\n        if all(os.path.exists(p) for p in [shapely_path, numpy_path, geojson_path]):\r\n            found_lib_path = bin_path\r\n\r\n            for p in [numpy_path, shapely_path, geojson_path]:\r\n                if p not in sys.path:\r\n                    sys.path.insert(0, p)\r\n\r\n            # DLL \r\n            dll_path = os.path.join(shapely_path, \"shapely.libs\")\r\n            if os.path.exists(dll_path):\r\n                try:\r\n                    os.add_dll_directory(dll_path)\r\n                except AttributeError:\r\n                    pass\r\n                    \r\n            return True\r\n    return False\r\n\r\n\r\nis_loaded = load_embedded_packages()\r\n\r\n### -- -- -- -- -- - -- - -- - -- - - -- - - -- - - -- - - -##\r\n\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ntry:\r\n    import shapely\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon , LinearRing\r\nexcept ImportError:\r\n    \r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef dynamo_point_to_shapely(dynamo_point):\r\n    \r\n    if isinstance(dynamo_point, Point):\r\n        return ShpPoint(dynamo_point.X, dynamo_point.Y, dynamo_point.Z)\r\n    return None\r\n\r\ndef dynamo_polygon_to_shapely(dynamo_polygon):\r\n    \r\n    if not isinstance(dynamo_polygon, Polygon):\r\n        return None\r\n    pts = dynamo_polygon.Points\r\n    if not pts or len(pts) < 3:\r\n        return None\r\n    coords = [(p.X, p.Y, p.Z) for p in pts]\r\n    if coords[0] != coords[-1]:\r\n        coords.append(coords[0])\r\n    return ShpPolygon(coords)\r\n\r\ndef dynamo_curve_to_shapely(dynamo_curve):\r\n    \r\n    if isinstance(dynamo_curve, Line):\r\n        start = dynamo_curve.StartPoint\r\n        end = dynamo_curve.EndPoint\r\n        coords = [(start.X, start.Y, start.Z), (end.X, end.Y, end.Z)]\r\n        \r\n        return ShpLineString(coords)\r\n        \r\n    elif isinstance(dynamo_curve, Arc):\r\n        \r\n        num_segments = 1000 \r\n        points = []\r\n        for i in range(num_segments + 1):\r\n            param = float(i) / num_segments\r\n            pt = dynamo_curve.PointAtParameter(param)\r\n            points.append((pt.X, pt.Y, pt.Z))\r\n        return ShpLineString(points)\r\n    return None\r\n\r\ndef dynamo_surface_to_shapely_with_holes(dynamo_surface):\r\n    if not isinstance(dynamo_surface, Surface):\r\n        return None\r\n    \r\n    all_loops_coords = []\r\n    \r\n    try:\r\n        perimeter_curves = dynamo_surface.PerimeterCurves()\r\n        \r\n        if not perimeter_curves:\r\n            return None\r\n\r\n        TOLERANCE = 1e-5\r\n        \r\n        def p2t(point):\r\n            return (point.X, point.Y, point.Z)\r\n            \r\n        def are_points_close(p1, p2):\r\n            dist_sq = (p1.X - p2.X)**2 + (p1.Y - p2.Y)**2 + (p1.Z - p2.Z)**2\r\n            return dist_sq < TOLERANCE**2\r\n\r\n        remaining_curves = list(perimeter_curves)\r\n        loops = []\r\n        current_loop = []\r\n        \r\n        while remaining_curves:\r\n            if not current_loop:\r\n                current_loop.append(remaining_curves.pop(0))\r\n            else:\r\n                last_curve = current_loop[-1]\r\n                expected_start = last_curve.EndPoint\r\n                \r\n                found_next = False\r\n                for i, curve in enumerate(remaining_curves):\r\n                    if are_points_close(curve.StartPoint, expected_start):\r\n                        current_loop.append(remaining_curves.pop(i))\r\n                        found_next = True\r\n                        break\r\n                \r\n                if not found_next:\r\n                    loops.append(current_loop)\r\n                    current_loop = []\r\n        \r\n        if current_loop:\r\n            loops.append(current_loop)\r\n            \r\n        for loop_curves in loops:\r\n            coords = []\r\n            for curve in loop_curves:\r\n                coords.append(p2t(curve.StartPoint))\r\n            \r\n            last_end = loop_curves[-1].EndPoint\r\n            first_start = loop_curves[0].StartPoint\r\n            \r\n            if not are_points_close(last_end, first_start):\r\n                 coords.append(p2t(last_end))\r\n            \r\n            if coords and coords[0] != coords[-1]:\r\n                 coords.append(coords[0])\r\n\r\n            all_loops_coords.append(coords)\r\n            \r\n    except Exception as e:\r\n        # print(f\"Hata: {e}\")\r\n        return None\r\n\r\n    if not all_loops_coords:\r\n        return None\r\n    \r\n    candidate_polygons = []\r\n    for coords in all_loops_coords:\r\n        if len(coords) >= 4: #3\r\n             try:\r\n                 poly = ShpPolygon(coords)\r\n                 if not poly.is_valid:\r\n                     poly = poly.buffer(0) \r\n                 candidate_polygons.append(poly)\r\n             except:\r\n                 pass\r\n    \r\n    if not candidate_polygons:\r\n        return None\r\n        \r\n    candidate_polygons.sort(key=lambda p: p.area, reverse=True)\r\n    \r\n    outer_poly = candidate_polygons[0]\r\n    inner_polys = candidate_polygons[1:]\r\n    \r\n    outer_coords = list(outer_poly.exterior.coords)\r\n    \r\n    inner_rings_coords = [list(p.exterior.coords) for p in inner_polys]\r\n    \r\n    try:\r\n        if inner_rings_coords:\r\n            return ShpPolygon(outer_coords, inner_rings_coords)\r\n        else:\r\n            return ShpPolygon(outer_coords)\r\n    except Exception as e:\r\n        return None\r\n\r\n\r\ndef dynamo_polycurve_to_shapely(dynamo_polycurve):\r\n    \r\n    if not isinstance(dynamo_polycurve, PolyCurve):\r\n        return None\r\n    \r\n    try:\r\n        curves = dynamo_polycurve.Curves()\r\n    except:\r\n        try:\r\n            curves = dynamo_polycurve.Curves\r\n        except:\r\n            return None\r\n    \r\n    if not curves:\r\n        return None\r\n    \r\n    coords = []\r\n    \r\n    for curve in curves:\r\n        try:\r\n            sp = curve.StartPoint\r\n            coords.append((sp.X, sp.Y, sp.Z))\r\n        except:\r\n            continue\r\n    \r\n    if curves:\r\n        try:\r\n            ep = curves[-1].EndPoint\r\n            coords.append((ep.X, ep.Y, ep.Z))\r\n        except:\r\n            pass\r\n    \r\n    if len(coords) < 2:\r\n        return None\r\n    \r\n    return ShpLineString(coords)\r\n\r\ndef convert_dynamo_to_shapely(dynamo_geometry):\r\n    \r\n    if isinstance(dynamo_geometry, list):\r\n        return [convert_dynamo_to_shapely(item) for item in dynamo_geometry]\r\n\r\n    if isinstance(dynamo_geometry, Point):\r\n        return dynamo_point_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Surface):\r\n        return dynamo_surface_to_shapely_with_holes(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Polygon):\r\n        return dynamo_polygon_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, PolyCurve):\r\n        return dynamo_polycurve_to_shapely(dynamo_geometry)\r\n\r\n    elif isinstance(dynamo_geometry, Line):\r\n        return dynamo_curve_to_shapely(dynamo_geometry)\r\n\r\n    else:\r\n        return None \r\n\r\nif 'IN' in locals():\r\n    dynamo_input = IN[0] \r\n\r\n    shapely_output = convert_dynamo_to_shapely(dynamo_input)\r\n\r\n    OUT = shapely_output",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "96d67f1bf1f6404d889a8a2a1869a0ed",
+      "Id": "03d46b0c7e264b8690f06758abe2f8c8",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "a44e79a212ba416d981e4e3ed4298e1a",
+          "Id": "21e588e98b5a48fc83a64ca95384820b",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -109,7 +109,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e8a7030deb9342f1922f51aa1589fc5f",
+          "Id": "c6c82376590f4d1d84fd5e590129278b",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -124,15 +124,15 @@
   ],
   "Connectors": [
     {
-      "Start": "54796cf0ec1f411caa8fb0ae2340c8e4",
-      "End": "a44e79a212ba416d981e4e3ed4298e1a",
-      "Id": "02b6303e7108401e81381a81e09058a1",
+      "Start": "b2b1b9d3c21a46f5a06c8f08b0c5111d",
+      "End": "21e588e98b5a48fc83a64ca95384820b",
+      "Id": "f510f955620a4bd58f06775798689e11",
       "IsHidden": "False"
     },
     {
-      "Start": "e8a7030deb9342f1922f51aa1589fc5f",
-      "End": "f3fd8fcc115a4849944eda1b6828ffed",
-      "Id": "c7eeed55654b41898191acced04d5d05",
+      "Start": "c6c82376590f4d1d84fd5e590129278b",
+      "End": "f42037e1dbf54d53b017e3f7200ff933",
+      "Id": "e9432697c1cf4f9ea6276fee72d510bb",
       "IsHidden": "False"
     }
   ],
@@ -151,20 +151,20 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -22.81909465789795,
+      "EyeY": 19.70281410217285,
+      "EyeZ": 4.449169158935547,
+      "LookX": 0.4159412384033203,
+      "LookY": -19.50316047668457,
+      "LookZ": -5.070624351501465,
+      "UpX": 0.07910651713609695,
+      "UpY": 0.25241541862487793,
+      "UpZ": -0.9643799662590027
     },
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "28cf3c67edf14ad5b4b73b961f162122",
+        "Id": "8fef70f40e88401d89f9b81ce1862bb2",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -174,7 +174,7 @@
         "Y": 32.75914566358307
       },
       {
-        "Id": "973cf8c2b4c240d58d10c541b437125a",
+        "Id": "73ce876ac8fa4693b71700c2f76baa1a",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -184,24 +184,24 @@
         "Y": 32.955691870366934
       },
       {
-        "Id": "95d22c1de5604ad894a928438467d1cf",
+        "Id": "166fae9dcfbc44f0972539c801c928df",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": true,
         "ShowGeometry": true,
-        "X": -321.09656392830016,
-        "Y": -191.03073688213556
+        "X": -334.7227852029839,
+        "Y": -220.3795211660705
       },
       {
-        "Id": "96d67f1bf1f6404d889a8a2a1869a0ed",
+        "Id": "03d46b0c7e264b8690f06758abe2f8c8",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": -306.42217178633246,
-        "Y": 31.18148698194318
+        "X": -295.94046311349894,
+        "Y": 29.08514524737643
       }
     ],
     "Annotations": [],

@@ -1,5 +1,5 @@
 {
-  "Uuid": "2a3fedf6-4c84-498e-bbcb-7671a29c6562",
+  "Uuid": "7cc2a8dc-e1e5-4a00-a01e-45aea8201054",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Operation",
   "Description": "It divides a geometry into smaller segments. This process breaks down the geometry into smaller pieces for more precise analysis and calculations.",
@@ -19,12 +19,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "66f41a4a8b0a4a1490fef7358b9584e8",
+      "Id": "680f6b2f16664e229e9dbef82f692a27",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "5a27e2baf2e64987a7a6fed52103d243",
+          "Id": "f63e63e34b9d4bf88338e43c373904a6",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -39,18 +39,18 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "Parameter": {
-        "Name": "_Segment",
+        "Name": "_NSegment",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": ""
+        "Description": "The smaller it is, the more points there are."
       },
-      "Id": "b4865cf9367d470792e4a7deb73de4dd",
+      "Id": "bfa15a28bd3f4460a5d187fd9b64456a",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "0629a1bd9fe440cbaab9c0f1a1d13a75",
+          "Id": "e297f6bf8352451b841f69b3f47e79ea",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -65,12 +65,12 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
-      "Symbol": "_ShpGeometry",
-      "Id": "1f1775dc791c49ee87bfb2caa97a392a",
+      "Symbol": "_ShpPoint",
+      "Id": "d71319123c944ac78278cc99b0ab9119",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "d3784353dbd44cebb8170e1d8a2aaafe",
+          "Id": "d679ba4d662c41cfa501c43d5902f986",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -85,14 +85,14 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Shapely 2.0.1 \r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import segmentize\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_segmentize(geom, max_dist):\r\n    if isinstance(geom, ShpPoint):\r\n        return geom\r\n        \r\n    if not isinstance(geom, BaseGeometry) or max_dist <= 0:\r\n        return geom\r\n    \r\n    return segmentize(geom, max_segment_length=max_dist)\r\n\r\ndef get_shapely_segmentize(shapely_geometry, max_dist, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_segmentize(item, max_dist, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_segmentize(g, max_dist) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_segmentize(shapely_geometry, max_dist)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_segmentize(shapely_geometry, max_dist)\r\n    \r\n    return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    max_len = IN[1] if (IN[1] is not None and IN[1] > 0) else 0.0\r\n    indiv_mode = IN[2] if len(IN) > 2 else False\r\n    \r\n    segmentized_geoms = get_shapely_segmentize(shp_input, max_len, indiv_mode)\r\n    \r\n    \r\n    OUT = segmentized_geoms",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram \r\n\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import segmentize\r\n    from shapely.geometry import LinearRing\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n\r\n\r\ndef segmentize_ring(ring_coords, max_dist):\r\n    if len(ring_coords) < 2:\r\n        return [ShpPoint(c) for c in ring_coords]\r\n\r\n    line = ShpLineString(ring_coords)\r\n\r\n    segmented_line = segmentize(line, max_segment_length=max_dist)\r\n\r\n    points = [ShpPoint(c) for c in segmented_line.coords[:-1]]\r\n\r\n    return points\r\n\r\n\r\ndef extract_all_points_fixed(geom, max_dist):\r\n    result = {\r\n        'exterior': [],\r\n        'interiors': [],\r\n        'all': []\r\n    }\r\n\r\n    if hasattr(geom, 'geoms'):\r\n        for g in geom.geoms:\r\n            sub_result = extract_all_points_fixed(g, max_dist)\r\n            result['exterior'].extend(sub_result['exterior'])\r\n            result['interiors'].extend(sub_result['interiors'])\r\n            result['all'].extend(sub_result['all'])\r\n\r\n    elif isinstance(geom, ShpPolygon):\r\n        exterior_points = segmentize_ring(list(geom.exterior.coords), max_dist)\r\n        result['exterior'] = exterior_points\r\n        result['all'].extend(exterior_points)\r\n\r\n        for hole in geom.interiors:\r\n            hole_points = segmentize_ring(list(hole.coords), max_dist)\r\n            result['interiors'].append(hole_points)\r\n            result['all'].extend(hole_points)\r\n\r\n    elif isinstance(geom, ShpLineString):\r\n        segmented = segmentize(geom, max_segment_length=max_dist)\r\n        points = [ShpPoint(c) for c in segmented.coords]\r\n        result['all'] = points\r\n\r\n    elif hasattr(geom, 'coords'):\r\n        points = [ShpPoint(c) for c in geom.coords]\r\n        result['all'] = points\r\n\r\n    return result\r\n\r\n\r\ndef get_shapely_segmentize_points_fixed(shp_input, max_dist, return_separate=True):\r\n    if isinstance(shp_input, list):\r\n        results = []\r\n        for item in shp_input:\r\n            results.append(\r\n                get_shapely_segmentize_points_fixed(item, max_dist, return_separate)\r\n            )\r\n        return results\r\n\r\n    if (\r\n        isinstance(shp_input, ShpPoint)\r\n        or not isinstance(shp_input, BaseGeometry)\r\n        or max_dist <= 0\r\n    ):\r\n        if return_separate:\r\n            return [\r\n                ShpMultiPoint([shp_input] if isinstance(shp_input, ShpPoint) else []),\r\n                []\r\n            ]\r\n        return ShpMultiPoint([shp_input] if isinstance(shp_input, ShpPoint) else [])\r\n\r\n    result = extract_all_points_fixed(shp_input, max_dist)\r\n\r\n    if return_separate:\r\n        exterior_mp = (\r\n            ShpMultiPoint(result['exterior'])\r\n            if result['exterior']\r\n            else ShpMultiPoint([])\r\n        )\r\n        interior_mps = [ShpMultiPoint(hole) for hole in result['interiors']]\r\n        return [exterior_mp, interior_mps]\r\n    else:\r\n        return ShpMultiPoint(result['all'])\r\n\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    max_len = IN[1] if (IN[1] is not None and IN[1] > 0) else 1.0\r\n\r\n    return_separate = IN[2] if len(IN) > 2 and IN[2] is not None else False\r\n\r\n    result = get_shapely_segmentize_points_fixed(shp_input, max_len, return_separate)\r\n\r\n    OUT = result",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "b5b2df47a6414c46bef276b2c63abfa1",
+      "Id": "fd8ad94267264c00a6d1c59b3c495fc3",
       "NodeType": "PythonScriptNode",
       "Inputs": [
         {
-          "Id": "218c2465d6604cc39549c7633d3df1ea",
+          "Id": "74e88a82021b417fbf7db9152f6fdcca",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -101,7 +101,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "f84d987d9f994e99ad0b762f399d89d3",
+          "Id": "03871abe615c430f92d4dafdcdfd2df0",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -112,7 +112,7 @@
       ],
       "Outputs": [
         {
-          "Id": "688e9b1c020e45148ce29323fc113b77",
+          "Id": "7e2f19db8a05484da633b1f71a81a996",
           "Name": "OUT",
           "Description": "Résultat du script Python",
           "UsingDefaultValue": false,
@@ -127,21 +127,21 @@
   ],
   "Connectors": [
     {
-      "Start": "5a27e2baf2e64987a7a6fed52103d243",
-      "End": "218c2465d6604cc39549c7633d3df1ea",
-      "Id": "7c9f22d4c082408f879b8f624b3cd7bf",
+      "Start": "f63e63e34b9d4bf88338e43c373904a6",
+      "End": "74e88a82021b417fbf7db9152f6fdcca",
+      "Id": "c74be7070d7e4989a7ba0f58964610e5",
       "IsHidden": "False"
     },
     {
-      "Start": "0629a1bd9fe440cbaab9c0f1a1d13a75",
-      "End": "f84d987d9f994e99ad0b762f399d89d3",
-      "Id": "50cedf127fa04404be9b56de6b1c0599",
+      "Start": "e297f6bf8352451b841f69b3f47e79ea",
+      "End": "03871abe615c430f92d4dafdcdfd2df0",
+      "Id": "0fbf1fc725874ff59adf035cb289e4b5",
       "IsHidden": "False"
     },
     {
-      "Start": "688e9b1c020e45148ce29323fc113b77",
-      "End": "d3784353dbd44cebb8170e1d8a2aaafe",
-      "Id": "37fc320c3db34e9b83ceee27ef0c8a02",
+      "Start": "7e2f19db8a05484da633b1f71a81a996",
+      "End": "d679ba4d662c41cfa501c43d5902f986",
+      "Id": "68d7235009bf4a46a73819833df81889",
       "IsHidden": "False"
     }
   ],
@@ -160,20 +160,20 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": -17.883098602294922,
-      "EyeY": 24.24338722229004,
-      "EyeZ": 27.248048782348633,
-      "LookX": 10.044145584106445,
-      "LookY": -25.36865234375,
-      "LookZ": -15.956392288208008,
-      "UpX": 0.4275626540184021,
-      "UpY": 0.5965119004249573,
-      "UpZ": -0.6792375445365906
+      "EyeX": -32.64459991455078,
+      "EyeY": 4.154709815979004,
+      "EyeZ": 2.3309221267700195,
+      "LookX": 0.015117645263671875,
+      "LookY": -4.659202575683594,
+      "LookZ": -1.2588353157043457,
+      "UpX": 0.011618513613939285,
+      "UpY": 0.26084911823272705,
+      "UpZ": -0.9653096795082092
     },
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "66f41a4a8b0a4a1490fef7358b9584e8",
+        "Id": "680f6b2f16664e229e9dbef82f692a27",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -183,17 +183,17 @@
         "Y": -71.0
       },
       {
-        "Id": "b4865cf9367d470792e4a7deb73de4dd",
+        "Id": "bfa15a28bd3f4460a5d187fd9b64456a",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": -405.0,
-        "Y": 68.0
+        "X": -610.0,
+        "Y": 65.0
       },
       {
-        "Id": "1f1775dc791c49ee87bfb2caa97a392a",
+        "Id": "d71319123c944ac78278cc99b0ab9119",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -203,14 +203,14 @@
         "Y": -71.0
       },
       {
-        "Id": "b5b2df47a6414c46bef276b2c63abfa1",
+        "Id": "fd8ad94267264c00a6d1c59b3c495fc3",
         "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": -93.0,
-        "Y": -71.0
+        "X": -89.0,
+        "Y": -68.0
       }
     ],
     "Annotations": [],
