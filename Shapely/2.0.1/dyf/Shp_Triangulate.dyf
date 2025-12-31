@@ -1,5 +1,5 @@
 {
-  "Uuid": "598c5a35-923f-4601-aff3-01fe37066715",
+  "Uuid": "ba7878db-51b8-492c-94d7-a91683b68b7b",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Creates",
   "Description": "It divides a polygon or a set of points into non-overlapping triangles. This process allows geometry to be broken down into smaller and simpler parts and is widely used in computational geometry.",
@@ -24,12 +24,12 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "477f3145638d4c5296552a2518ffd1ac",
+      "Id": "053f8fc8ebd74ab181634bda20662b28",
       "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "0faedf636a6846a8b151fa9761b54436",
+          "Id": "53addce78bae4bffaccb94699f1a7c3a",
           "Name": "",
           "Description": "Symbole",
           "UsingDefaultValue": false,
@@ -42,46 +42,14 @@
       "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
     },
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import triangulate\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_convex_hull(geom):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    return triangulate(geom)\r\n\r\ndef get_shapely_convex_hull(shapely_geometry, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        if all(isinstance(x, ShpPoint) for x in shapely_geometry):\r\n            return shapely_generic_convex_hull(ShpMultiPoint(shapely_geometry))\r\n        \r\n        return [get_shapely_convex_hull(item, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_convex_hull(g) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_convex_hull(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_convex_hull(shapely_geometry)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    indiv_mode = IN[1] if len(IN) > 1 else False\r\n    \r\n    convex_hull_output = get_shapely_convex_hull(shp_input, indiv_mode)\r\n    OUT = convex_hull_output",
-      "Engine": "CPython3",
-      "VariableInputPorts": true,
-      "Id": "1b01cc6d3c7e4e6aa89123816f66d5a6",
-      "NodeType": "PythonScriptNode",
-      "Inputs": [
-        {
-          "Id": "94bc15f46efe4fdcbd2607a241811ba0",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "e4211923c933447eb360a80a41cfeeb4",
-          "Name": "OUT",
-          "Description": "Résultat du script Python",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Exécute un script Python intégré."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "ElementResolver": null,
       "Symbol": "_ShpGeometry",
-      "Id": "cda3adeab537445787fe1c5eabfcee80",
+      "Id": "c72143fdb5874424b579322a128982f0",
       "NodeType": "OutputNode",
       "Inputs": [
         {
-          "Id": "8caddcb407b5419db12e4f506904211b",
+          "Id": "a17a2f3b185b483fba8dbd3df02ff7f9",
           "Name": "",
           "Description": "Données de sortie",
           "UsingDefaultValue": false,
@@ -93,19 +61,92 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpClipGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5f0eae32bb7148199f1faeb8d0de88e7",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "22ec5f2dc13e4a41a43fd57287e040f1",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram \r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import triangulate\r\n    from shapely import prepare\r\nexcept ImportError:\r\n    pass\r\n\r\ndef shapely_triangulate_with_intersection(geom, clip_geometry=None):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    triangles = triangulate(geom)\r\n    \r\n    if clip_geometry is None:\r\n        return triangles\r\n    \r\n    if not isinstance(clip_geometry, (ShpPolygon, ShpMultiPolygon)):\r\n        return triangles\r\n    \r\n    if clip_geometry.is_empty or clip_geometry.area < 1e-10:\r\n        return triangles\r\n    \r\n    prepare(clip_geometry)\r\n    clipped_triangles = []\r\n    \r\n    for triangle in triangles:\r\n        if clip_geometry.contains(triangle):\r\n            clipped_triangles.append(triangle)\r\n        elif clip_geometry.intersects(triangle):\r\n            intersection_result = clip_geometry.intersection(triangle)\r\n            \r\n            if not intersection_result.is_empty:\r\n                if isinstance(intersection_result, ShpPolygon) and intersection_result.area > 1e-10:\r\n                    clipped_triangles.append(intersection_result)\r\n                elif isinstance(intersection_result, ShpMultiPolygon):\r\n                    for poly in intersection_result.geoms:\r\n                        if poly.area > 1e-10:\r\n                            clipped_triangles.append(poly)\r\n                elif hasattr(intersection_result, \"geoms\"):\r\n                     for geom in intersection_result.geoms:\r\n                         if isinstance(geom, ShpPolygon) and geom.area > 1e-10:\r\n                             clipped_triangles.append(geom)\r\n\r\n    return clipped_triangles\r\n\r\ndef handle_single_geometry(geom, clip, indiv_mode):\r\n    if isinstance(geom, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if indiv_mode:\r\n            results = []\r\n            for sub_g in geom.geoms:\r\n                actual_clip = sub_g if clip is None and isinstance(sub_g, ShpPolygon) else clip\r\n                results.append(shapely_triangulate_with_intersection(sub_g, actual_clip))\r\n            return results\r\n        else:\r\n            actual_clip = geom if clip is None and isinstance(geom, ShpMultiPolygon) else clip\r\n            return shapely_triangulate_with_intersection(geom, actual_clip)\r\n\r\n    elif isinstance(geom, ShpPolygon):\r\n        actual_clip = geom if clip is None else clip\r\n        return shapely_triangulate_with_intersection(geom, actual_clip)\r\n    \r\n    else:\r\n        return shapely_triangulate_with_intersection(geom, clip)\r\n\r\ndef process_lacing(geom_input, clip_input, indiv_mode):\r\n    current_geom = geom_input\r\n    if isinstance(geom_input, list) and len(geom_input) > 0 and all(isinstance(x, ShpPoint) for x in geom_input):\r\n        current_geom = ShpMultiPoint(geom_input)\r\n\r\n    if isinstance(current_geom, list) or isinstance(clip_input, list):\r\n        \r\n        list_g = current_geom if isinstance(current_geom, list) else [current_geom]\r\n        list_c = clip_input if isinstance(clip_input, list) else [clip_input]\r\n        \r\n        max_len = max(len(list_g), len(list_c))\r\n        results = []\r\n        \r\n        for i in range(max_len):\r\n            item_g = list_g[i] if i < len(list_g) else list_g[-1]\r\n            \r\n            if clip_input is None:\r\n                item_c = None\r\n            else:\r\n                item_c = list_c[i] if i < len(list_c) else list_c[-1]\r\n            \r\n            results.append(process_lacing(item_g, item_c, indiv_mode))\r\n            \r\n        return results\r\n\r\n    else:\r\n        return handle_single_geometry(current_geom, clip_input, indiv_mode)\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    clip_geom = IN[1] if len(IN) > 1 else None\r\n    indiv_mode = IN[2] if len(IN) > 2 else False\r\n\r\n    OUT = process_lacing(shp_input, clip_geom, indiv_mode)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "9fec059e22234cc5860999a3b15f7ebb",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "c63f19496e3942ffb05d0680a3089f52",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "29d2beda41034b178cca3b6d4f7dbfdf",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b3cdcd837b9443de848cfe7810b3a78c",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
     }
   ],
   "Connectors": [
     {
-      "Start": "0faedf636a6846a8b151fa9761b54436",
-      "End": "94bc15f46efe4fdcbd2607a241811ba0",
-      "Id": "423d7f04976341b0a13e8e9e1dc32533",
+      "Start": "53addce78bae4bffaccb94699f1a7c3a",
+      "End": "c63f19496e3942ffb05d0680a3089f52",
+      "Id": "cb96ade23429419a9233690539176f66",
       "IsHidden": "False"
     },
     {
-      "Start": "e4211923c933447eb360a80a41cfeeb4",
-      "End": "8caddcb407b5419db12e4f506904211b",
-      "Id": "e00463e9e4c74dba934754cf721d4fa7",
+      "Start": "22ec5f2dc13e4a41a43fd57287e040f1",
+      "End": "29d2beda41034b178cca3b6d4f7dbfdf",
+      "Id": "b4afd963f9b34afdbe10252601b29229",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b3cdcd837b9443de848cfe7810b3a78c",
+      "End": "a17a2f3b185b483fba8dbd3df02ff7f9",
+      "Id": "e4f2aa7cbc354a5ba082bbcd526e5f67",
       "IsHidden": "False"
     }
   ],
@@ -124,52 +165,62 @@
     },
     "Camera": {
       "Name": "_Aperçu en arrière-plan",
-      "EyeX": -17.883098602294922,
-      "EyeY": 24.24338722229004,
-      "EyeZ": 27.248048782348633,
-      "LookX": 10.044145584106445,
-      "LookY": -25.36865234375,
-      "LookZ": -15.956392288208008,
-      "UpX": 0.4275626540184021,
-      "UpY": 0.5965119004249573,
-      "UpZ": -0.6792375445365906
+      "EyeX": -33.67132568359375,
+      "EyeY": 13.082627296447754,
+      "EyeZ": 5.801991939544678,
+      "LookX": 0.06839752197265625,
+      "LookY": -13.3284330368042,
+      "LookZ": -5.690245628356934,
+      "UpX": 0.011069422587752342,
+      "UpY": 0.3926655650138855,
+      "UpZ": -0.9196147322654724
     },
     "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "477f3145638d4c5296552a2518ffd1ac",
+        "Id": "053f8fc8ebd74ab181634bda20662b28",
         "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
         "X": -408.0,
-        "Y": 318.6768562968042
+        "Y": 319.6945205968565
       },
       {
-        "Id": "1b01cc6d3c7e4e6aa89123816f66d5a6",
-        "Name": "Python Script",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -89.76876356471178,
-        "Y": 318.6768562968042
-      },
-      {
-        "Id": "cda3adeab537445787fe1c5eabfcee80",
+        "Id": "c72143fdb5874424b579322a128982f0",
         "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 129.46247287057645,
-        "Y": 318.6768562968042
+        "X": 134.5507943708376,
+        "Y": 325.80050639716984
+      },
+      {
+        "Id": "5f0eae32bb7148199f1faeb8d0de88e7",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -437.51226470151505,
+        "Y": 469.29117270453645
+      },
+      {
+        "Id": "9fec059e22234cc5860999a3b15f7ebb",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -77.84642063084766,
+        "Y": 315.2834223286663
       }
     ],
     "Annotations": [],
-    "X": 669.5408189910777,
-    "Y": -104.2908459727895,
-    "Zoom": 1.3775833525586678
+    "X": 701.495186700419,
+    "Y": 12.189169146957113,
+    "Zoom": 0.9826423113679652
   }
 }
