@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Creates",
   "Description": "It finds the boundaries of the geometry and divides it into the number of geometries specified by the user. Each divided piece is given as a “closed polygon”.",
-  "Name": "Shp_Polgonise",
+  "Name": "Shp_Polygonise",
   "ElementResolver": {
     "ResolutionMap": {
       "String": {
