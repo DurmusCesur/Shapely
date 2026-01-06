@@ -1,0 +1,221 @@
+{
+  "Uuid": "76e06b80-b41d-47a5-9a14-49bd5a8bcb72",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "The shortest path between two points is represented by a straight line.",
+  "Name": "Shp_ShortLine",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "6519285a80834bbe9da5b564f43bdb42",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1bed39af4e994dec9fba0b5b8469b3b2",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "12fca918c15247fd9991e0e4a3016604",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8555035cf83a4839a44c261bfa1b6a46",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpLine",
+      "Id": "8b0cd9f445a34b9f9cd3f12466dcc91f",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "9dafb81e196044a79cf8697e54410444",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import shortest_line\r\n    \r\n    \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef get_shortest_line(geometry_a, geometry_b):\r\n    if isinstance(geometry_a, list) and not isinstance(geometry_b, list):\r\n        return [get_shortest_line(a, geometry_b) for a in geometry_a]\r\n    \r\n    elif not isinstance(geometry_a, list) and isinstance(geometry_b, list):\r\n        return [get_shortest_line(geometry_a, b) for b in geometry_b]\r\n        \r\n    elif isinstance(geometry_a, list) and isinstance(geometry_b, list):\r\n        return [get_shortest_line(a, b) for a, b in zip(geometry_a, geometry_b)]\r\n    else:\r\n        if isinstance(geometry_a, BaseGeometry) and isinstance(geometry_b, BaseGeometry):\r\n            return shortest_line(geometry_a, geometry_b)\r\n        else:\r\n            return None\r\n\r\nif 'IN' in locals():\r\n    geom_a = IN[0]\r\n    geom_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if geom_a is not None and geom_b is not None:\r\n        shortest_line_output = get_shortest_line(geom_a, geom_b)\r\n    else:\r\n        shortest_line_output = None\r\n    \r\n    OUT = shortest_line_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1da06293fcf24fd4986287434e2b72b3",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "546488658c51484a8de0ed36afc69227",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5acf788c63b34b19aa5d870a6a2d6485",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4c7c94377ae6490492c866cf70ee8363",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "1bed39af4e994dec9fba0b5b8469b3b2",
+      "End": "546488658c51484a8de0ed36afc69227",
+      "Id": "f6d08b246f914293b2cb717df3f6274e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8555035cf83a4839a44c261bfa1b6a46",
+      "End": "5acf788c63b34b19aa5d870a6a2d6485",
+      "Id": "00a8fa27fc2d45e7a445649970e05b2d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4c7c94377ae6490492c866cf70ee8363",
+      "End": "9dafb81e196044a79cf8697e54410444",
+      "Id": "8f1ef65447ce4ba09afee391c8ef540d",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 9.16551399230957,
+      "EyeY": 23.130531311035156,
+      "EyeZ": 23.505817413330078,
+      "LookX": -5.491779327392578,
+      "LookY": -24.347124099731445,
+      "LookZ": -19.39377212524414,
+      "UpX": -0.20987114310264587,
+      "UpY": 0.6376994252204895,
+      "UpZ": -0.7411433458328247
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "6519285a80834bbe9da5b564f43bdb42",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -452.66666666666674,
+        "Y": -120.0
+      },
+      {
+        "Id": "12fca918c15247fd9991e0e4a3016604",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -455.33333333333337,
+        "Y": 11.333333333333371
+      },
+      {
+        "Id": "8b0cd9f445a34b9f9cd3f12466dcc91f",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 107.62633824809177,
+        "Y": -46.84248331519696
+      },
+      {
+        "Id": "1da06293fcf24fd4986287434e2b72b3",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -107.84723928195035,
+        "Y": -48.261126049206325
+      }
+    ],
+    "Annotations": [],
+    "X": 786.3245458333333,
+    "Y": 313.5845470392368,
+    "Zoom": 1.33823125
+  }
+}

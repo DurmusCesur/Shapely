@@ -1,0 +1,170 @@
+{
+  "Uuid": "82fff914-2c55-4b9a-91ca-6cf19f083d3c",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Conversion",
+  "Description": "Converts Shapely geometry to Numpy standards.",
+  "Name": "Shapely → Numpy",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "95185b50891743c099e04cef3af1fb1c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5ceb19e255c445aa984569b8ca2ded2e",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Numpy",
+      "Id": "1a9ba98fa7ac4fed840eb2b7cdfd8124",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "804dc14e42a04391a6d3de47a8c5ed74",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1 \r\n# Durmus Bayryam\r\nimport numpy as np\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely and Numpy package!\")\r\n    pass\r\n\r\ndef shapely_point_to_numpy(shp_point):\r\n    #ShpPoint → np.array([x, y, z])\r\n    \r\n    if not isinstance(shp_point, ShpPoint):\r\n        return None\r\n    \r\n    coords = shp_point.coords[0]\r\n    \r\n    if len(coords) == 2:\r\n        return np.array([coords[0], coords[1]])\r\n    else:\r\n        return np.array([coords[0], coords[1], coords[2]])\r\n\r\ndef shapely_linestring_to_numpy(shp_linestring):\r\n    # ShpLineString → np.array([[x1,y1,z1], [x2,y2,z2], ...])\r\n    \r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    \r\n    coords = list(shp_linestring.coords)\r\n    \r\n    if len(coords) < 2:\r\n        return None\r\n    \r\n    return np.array(coords)\r\n\r\ndef shapely_linearring_to_numpy(shp_ring):\r\n    # ShpLinearRing → np.array([[x1,y1,z1], ...])\r\n    \r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    \r\n    coords = list(shp_ring.coords)\r\n    \r\n    if len(coords) < 4:\r\n        return None\r\n    \r\n    return np.array(coords)\r\n\r\ndef shapely_polygon_to_numpy(shp_polygon, include_holes=True):\r\n    #ShpPolygon → dict{'exterior': np.array, 'interiors': [np.array, ...]}\r\n    \r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    \r\n    exterior_coords = np.array(list(shp_polygon.exterior.coords))\r\n    \r\n    if not include_holes or len(shp_polygon.interiors) == 0:\r\n        return exterior_coords\r\n    \r\n    interior_arrays = []\r\n    for interior in shp_polygon.interiors:\r\n        interior_coords = np.array(list(interior.coords))\r\n        interior_arrays.append(interior_coords)\r\n    \r\n    return {\r\n        'exterior': exterior_coords,\r\n        'interiors': interior_arrays\r\n    }\r\n\r\ndef shapely_multipoint_to_numpy(shp_multipoint):\r\n    # ShpMultiPoint → np.array([[x1,y1,z1], [x2,y2,z2], ...])\r\n    \r\n    if not isinstance(shp_multipoint, ShpMultiPoint):\r\n        return None\r\n    \r\n    coords = []\r\n    for pt in shp_multipoint.geoms:\r\n        coords.append(pt.coords[0])\r\n    \r\n    return np.array(coords)\r\n\r\ndef shapely_multilinestring_to_numpy(shp_multilinestring):\r\n    # ShpMultiLineString → List[np.array]\r\n    \r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n    \r\n    return [np.array(list(ls.coords)) for ls in shp_multilinestring.geoms]\r\n\r\ndef shapely_multipolygon_to_numpy(shp_multipolygon, include_holes=True):\r\n    # ShpMultiPolygon → List[dict] veya List[np.array]\r\n    \r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    return [shapely_polygon_to_numpy(poly, include_holes) for poly in shp_multipolygon.geoms]\r\n\r\ndef convert_shapely_to_numpy(shapely_geometry, include_holes=True):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [convert_shapely_to_numpy(item, include_holes) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, ShpPoint):\r\n        return shapely_point_to_numpy(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, ShpLinearRing):\r\n        return shapely_linearring_to_numpy(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, ShpLineString):\r\n        return shapely_linestring_to_numpy(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, ShpPolygon):\r\n        return shapely_polygon_to_numpy(shapely_geometry, include_holes)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiPoint):\r\n        return shapely_multipoint_to_numpy(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiLineString):\r\n        return shapely_multilinestring_to_numpy(shapely_geometry)\r\n    \r\n    elif isinstance(shapely_geometry, ShpMultiPolygon):\r\n        return shapely_multipolygon_to_numpy(shapely_geometry, include_holes)\r\n    \r\n    else:\r\n        return None\r\n        \r\n\r\nif 'IN' in locals():\r\n    dynamo_input = IN[0] \r\n\r\n    shapely_output = convert_shapely_to_numpy(dynamo_input)\r\n\r\n    OUT = shapely_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "70dc67bcd113416a9ed886fa17f48b37",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "95d6a77293d34c2abc73caf08bd297e4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5759307c263842f48f1d940e633fdd11",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5ceb19e255c445aa984569b8ca2ded2e",
+      "End": "95d6a77293d34c2abc73caf08bd297e4",
+      "Id": "b36cee5dc64f4f3ab47fb2c11717fc77",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5759307c263842f48f1d940e633fdd11",
+      "End": "804dc14e42a04391a6d3de47a8c5ed74",
+      "Id": "b33f85125d234c36b20fa3d7a65fc866",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 2247.888916015625,
+      "EyeY": 235.356201171875,
+      "EyeZ": 6215.4931640625,
+      "LookX": 23.823720932006836,
+      "LookY": -309.34429931640625,
+      "LookZ": -369.47314453125,
+      "UpX": 0.041257768869400024,
+      "UpY": 0.7673944234848022,
+      "UpZ": -0.6398467421531677
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "95185b50891743c099e04cef3af1fb1c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -123.04103671706264,
+        "Y": 290.9935205183585
+      },
+      {
+        "Id": "1a9ba98fa7ac4fed840eb2b7cdfd8124",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 410.7415406767457,
+        "Y": 287.0136789056876
+      },
+      {
+        "Id": "70dc67bcd113416a9ed886fa17f48b37",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 183.16702663786896,
+        "Y": 270.6421886249101
+      }
+    ],
+    "Annotations": [],
+    "X": 631.9841666666667,
+    "Y": 230.73166666666663,
+    "Zoom": 1.1575
+  }
+}

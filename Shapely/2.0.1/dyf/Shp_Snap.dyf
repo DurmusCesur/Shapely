@@ -1,0 +1,272 @@
+{
+  "Uuid": "61ff274a-f3fd-4b7e-af30-681a839087ae",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Creates",
+  "Description": "Aligns the corner points of one geometry with the corners of another geometry within a specified tolerance distance. This process is used to eliminate small gaps or misalignments between geometries.",
+  "Name": "Shp_Snap",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "a5cc2a5b9c4c4a7d86a8e1759ba07ae6",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "6a44555039824d8db967e5aafed3e24d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0c20db2457b54bbbab2edc6f3dcb3f25",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bf58be76efa3409b95d5540ef25506cf",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "7b7936cc78664abba2cd67ac71374031",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "51b3f86050a04745a9ce3595f7454908",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Tolerance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d2edecfd3cd9418ea524727fb62a2508",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3fe5ffa3677343d59c30c2f934c1bc5c",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import snap\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_snap(g1, g2, tol):\r\n    if isinstance(g1, BaseGeometry) and isinstance(g2, BaseGeometry):\r\n        try:\r\n            return snap(g1, g2, tolerance=tol)\r\n        except:\r\n            return g1\r\n    return g1\r\n\r\ndef get_shapely_snap(a, b, tol):\r\n    if isinstance(a, list):\r\n        return [get_shapely_snap(item, b, tol) for item in a]\r\n    \r\n    if isinstance(b, list):\r\n        result = a\r\n        for ref in b:\r\n            result = safe_snap(result, ref, tol)\r\n        return result\r\n    \r\n    return safe_snap(a, b, tol)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1]\r\n    tolerance = IN[2] if len(IN) > 2 and isinstance(IN[2], (float, int)) else 0.0\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        output = get_shapely_snap(input_a, input_b, tolerance)\r\n    else:\r\n        output = input_a\r\n\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "8f23cbb90a1449f0a234c17a9220c4a5",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "3e1be15116ff4b5bbc16cf7e3f46bc66",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3bbd57df12ef458c9aac0575cec11a56",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "205738a746b74163adf9da84a9a7d1fd",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2e7b29e35b2745fca08e11451121c471",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bf58be76efa3409b95d5540ef25506cf",
+      "End": "3bbd57df12ef458c9aac0575cec11a56",
+      "Id": "ac13a42b893644c1bfa64a94b7e7cfa5",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "51b3f86050a04745a9ce3595f7454908",
+      "End": "3e1be15116ff4b5bbc16cf7e3f46bc66",
+      "Id": "ffe3c53e3acc4c0ab1c2f800c8d7c2fe",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3fe5ffa3677343d59c30c2f934c1bc5c",
+      "End": "205738a746b74163adf9da84a9a7d1fd",
+      "Id": "7c75bf06ff194a8db71b75a57f9337f7",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2e7b29e35b2745fca08e11451121c471",
+      "End": "6a44555039824d8db967e5aafed3e24d",
+      "Id": "5e8c416255744f3682e1de086e4234c1",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "a5cc2a5b9c4c4a7d86a8e1759ba07ae6",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 502.0,
+        "Y": -94.0
+      },
+      {
+        "Id": "0c20db2457b54bbbab2edc6f3dcb3f25",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -93.0,
+        "Y": 43.5
+      },
+      {
+        "Id": "7b7936cc78664abba2cd67ac71374031",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -92.0,
+        "Y": -94.0
+      },
+      {
+        "Id": "d2edecfd3cd9418ea524727fb62a2508",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -91.0,
+        "Y": 181.0
+      },
+      {
+        "Id": "8f23cbb90a1449f0a234c17a9220c4a5",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 233.0,
+        "Y": -76.0
+      }
+    ],
+    "Annotations": [],
+    "X": 144.0,
+    "Y": 158.0,
+    "Zoom": 1.0
+  }
+}

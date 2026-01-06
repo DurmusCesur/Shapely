@@ -1,0 +1,221 @@
+{
+  "Uuid": "3b6ddd8b-fd2e-4afd-8f82-ddeb19e1c420",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Determines the common paths (or intersections of paths) between two geometries. This operation is used to find common edges or connections.",
+  "Name": "Shp_SharedPaths",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5f79a974eb2a46af9c79706ed6bbbf11",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "adabd28fa91a4af686b9a4f3a14da734",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "28b0edc0f75e4258a540a936ea0334f1",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "959e3c44ee884848a03c873133178393",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "44d7219c9c30409291749ee4be19bf6a",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e66cea3ff8974495967b91615a8e3843",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.ops import shared_paths\r\n    from shapely.geometry import (\r\n        GeometryCollection, LineString, MultiLineString, \r\n        Polygon, MultiPolygon, Point, MultiPoint\r\n    )\r\nexcept ImportError:\r\n    pass\r\n\r\ndef prepare_geometry(g):\r\n    if not isinstance(g, BaseGeometry):\r\n        return None\r\n    \r\n    if g.geom_type in ['LineString', 'MultiLineString']:\r\n        return g\r\n    \r\n    if g.geom_type in ['Polygon', 'MultiPolygon']:\r\n        return g.boundary\r\n    \r\n    if g.geom_type == 'GeometryCollection':\r\n        lines = [prepare_geometry(sub) for sub in g.geoms if prepare_geometry(sub) is not None]\r\n        if lines:\r\n            return MultiLineString(lines)\r\n            \r\n    return None\r\n\r\ndef safe_shared_paths(g1, g2):\r\n    try:\r\n        geom1 = prepare_geometry(g1)\r\n        geom2 = prepare_geometry(g2)\r\n\r\n        if geom1 is not None and geom2 is not None:\r\n            try:\r\n                return shared_paths(geom1, geom2)\r\n            except:\r\n                return GeometryCollection() \r\n        return GeometryCollection() \r\n    except:\r\n        return GeometryCollection()\r\n\r\ndef process_lacing(a, b):\r\n    if not isinstance(a, list) and not isinstance(b, list):\r\n        return safe_shared_paths(a, b)\r\n    \r\n    list_a = a if isinstance(a, list) else [a]\r\n    list_b = b if isinstance(b, list) else [b]\r\n    \r\n    max_len = max(len(list_a), len(list_b))\r\n    results = []\r\n    \r\n    for i in range(max_len):\r\n        item_a = list_a[i] if i < len(list_a) else list_a[-1]\r\n        item_b = list_b[i] if i < len(list_b) else list_b[-1]\r\n        \r\n        if isinstance(item_a, list) or isinstance(item_b, list):\r\n            results.append(process_lacing(item_a, item_b))\r\n        else:\r\n            results.append(safe_shared_paths(item_a, item_b))\r\n            \r\n    return results\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        OUT = process_lacing(input_a, input_b)\r\n    else:\r\n        OUT = None",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "892371bd1926403c91eca563240984b3",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "ee1f81e769bd4cd99c834f144987c163",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8942dbb3e2e5465c99669e5b9f428a3b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f94549122c394f529939c27e85a730b2",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "adabd28fa91a4af686b9a4f3a14da734",
+      "End": "ee1f81e769bd4cd99c834f144987c163",
+      "Id": "155cf4e8a61448c39b35f8b426dbb8ab",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e66cea3ff8974495967b91615a8e3843",
+      "End": "8942dbb3e2e5465c99669e5b9f428a3b",
+      "Id": "5f1f2b9907e047d78a35f41661d2bf4e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f94549122c394f529939c27e85a730b2",
+      "End": "959e3c44ee884848a03c873133178393",
+      "Id": "8fb7c4e7b2004cd69556a9db20474f0c",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 4.271585941314697,
+      "EyeY": 65.42207336425781,
+      "EyeZ": 18.223230361938477,
+      "LookX": 0.6002769470214844,
+      "LookY": -57.11745071411133,
+      "LookZ": -20.352806091308594,
+      "UpX": 0.025001060217618942,
+      "UpY": 0.5299190282821655,
+      "UpZ": -0.847679615020752
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "5f79a974eb2a46af9c79706ed6bbbf11",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 91.0
+      },
+      {
+        "Id": "28b0edc0f75e4258a540a936ea0334f1",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 353.0,
+        "Y": 92.0
+      },
+      {
+        "Id": "44d7219c9c30409291749ee4be19bf6a",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 253.0
+      },
+      {
+        "Id": "892371bd1926403c91eca563240984b3",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 60.0,
+        "Y": 86.0
+      }
+    ],
+    "Annotations": [],
+    "X": 553.0,
+    "Y": 215.0,
+    "Zoom": 1.0
+  }
+}

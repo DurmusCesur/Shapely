@@ -1,0 +1,221 @@
+{
+  "Uuid": "762aa228-95d9-4f4f-91d2-2e7d3e9d4188",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Calculates the shortest distance between two geometries.",
+  "Name": "Shp_Distance",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1bf067a8082741c2a14877b9c962f754",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "196761c42d4e4c8b8d82f80a649d2000",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1aad7fd772234538b35c0ef640ae9b1e",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e4b4a7a5874c4ae09a7262f3f46cdb7f",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Distance",
+      "Id": "d9722aacc24a4d398bd2ead5059428e8",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "6cf1c9a4122b493e96016f4fa4e4c037",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import distance\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_distance(g1, g2):\r\n    if isinstance(g1, BaseGeometry) and isinstance(g2, BaseGeometry):\r\n        return distance(g1, g2)\r\n    return None\r\n\r\ndef get_shapely_distance(a, b):\r\n    if isinstance(a, list):\r\n        return [get_shapely_distance(item, b) for item in a]\r\n    \r\n    if isinstance(b, list):\r\n        return [get_shapely_distance(a, item) for item in b]\r\n    \r\n    return safe_distance(a, b)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    if input_a is not None and input_b is not None:\r\n        output = get_shapely_distance(input_a, input_b)\r\n    else:\r\n        output = None\r\n\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "359726dc4624460abf657b2604307dd9",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "9e0d8efb07ac44669235147bc9dff20d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "be252f9816a1470b991a464a1e33b29d",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e5b12c4119bc4faf8947329037905cd2",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "196761c42d4e4c8b8d82f80a649d2000",
+      "End": "9e0d8efb07ac44669235147bc9dff20d",
+      "Id": "f8758d273d4a47a18e8b8cfffb25269e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e4b4a7a5874c4ae09a7262f3f46cdb7f",
+      "End": "be252f9816a1470b991a464a1e33b29d",
+      "Id": "0a82ade85ec5488ea571e677f99ef23b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e5b12c4119bc4faf8947329037905cd2",
+      "End": "6cf1c9a4122b493e96016f4fa4e4c037",
+      "Id": "7a37e690337d4258b0a52d6c8b7f42f2",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "1bf067a8082741c2a14877b9c962f754",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -428.0,
+        "Y": -113.0
+      },
+      {
+        "Id": "1aad7fd772234538b35c0ef640ae9b1e",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -434.0,
+        "Y": 15.0
+      },
+      {
+        "Id": "d9722aacc24a4d398bd2ead5059428e8",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 173.0,
+        "Y": -113.0
+      },
+      {
+        "Id": "359726dc4624460abf657b2604307dd9",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -83.0,
+        "Y": -82.0
+      }
+    ],
+    "Annotations": [],
+    "X": 619.0,
+    "Y": 295.0,
+    "Zoom": 1.0
+  }
+}

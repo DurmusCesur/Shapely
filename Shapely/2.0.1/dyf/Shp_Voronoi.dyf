@@ -1,0 +1,221 @@
+{
+  "Uuid": "e783c807-f5e2-43a8-9cd2-4ab6a44319c2",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Creates",
+  "Description": "It generates a Voronoi diagram based on the given set of points. Each Voronoi cell represents the area belonging to the nearest point.",
+  "Name": "Shp_Voronoi",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpPoint",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ccc5a0a95ccc46ac864ba81f98ab43cd",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4d30b03159b54938a445c3bed113bf55",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "f2e98b64ab124c00a84520f8f67b90ae",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "7a39cd4eae4042e989a328e7b4ed2c07",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Density",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "080e2853c9f34888bfd68c071297818d",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "83bdc7fa0a6d430ca5d0a4849f80d7b1",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import voronoi_polygons\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n\r\ndef get_vertices_as_multipoint(geom):\r\n\r\n    if isinstance(geom, ShpMultiPoint):\r\n        return geom\r\n        \r\n    points = []\r\n    if isinstance(geom, ShpPolygon):\r\n        points.extend([ShpPoint(c) for c in geom.exterior.coords])\r\n        for hole in geom.interiors:\r\n            points.extend([ShpPoint(c) for c in hole.coords])\r\n            \r\n    elif hasattr(geom, 'coords'): # LineString, Point\r\n        points.extend([ShpPoint(c) for c in geom.coords])\r\n        \r\n    elif hasattr(geom, 'geoms'): # MultiLineString vb.\r\n        for g in geom.geoms:\r\n             if hasattr(g, 'coords'):\r\n                points.extend([ShpPoint(c) for c in g.coords])\r\n\r\n    if not points:\r\n        return None\r\n        \r\n    return ShpMultiPoint(points)\r\n\r\ndef core_voronoi_calc(geom, tolerance, only_edges):\r\n\r\n    try:\r\n        mp = get_vertices_as_multipoint(geom)\r\n        if mp is None: return None\r\n        return voronoi_polygons(mp, tolerance=tolerance, only_edges=only_edges)\r\n    except:\r\n        return None\r\n\r\ndef process_voronoi_recursive(data, tolerance, only_edges):\r\n    if isinstance(data, list):\r\n        if not data: return None\r\n        \r\n        if isinstance(data[0], ShpPoint):\r\n            mp = ShpMultiPoint(data)\r\n            return voronoi_polygons(mp, tolerance=tolerance, only_edges=only_edges)\r\n            \r\n        else:\r\n            return [process_voronoi_recursive(item, tolerance, only_edges) for item in data]\r\n\r\n    elif isinstance(data, BaseGeometry):\r\n        return core_voronoi_calc(data, tolerance, only_edges)\r\n        \r\n    return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0] \r\n    tolerance_val = IN[1] if len(IN) > 1 and IN[1] is not None else 0.0\r\n    only_edges_val = IN[2] if len(IN) > 2 and IN[2] is not None else True\r\n    \r\n    OUT = process_voronoi_recursive(shp_input, tolerance_val, only_edges_val)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "b6c8776e05dc460ea2bd0192a03ed8cd",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "d2860519aa2d41cc9638d7715575cf38",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7da413cdaa284d2ca86fd74455558b80",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9e0293569b25496789e3bcf54f01af2a",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4d30b03159b54938a445c3bed113bf55",
+      "End": "d2860519aa2d41cc9638d7715575cf38",
+      "Id": "cfdbff1751484090bfe814f7b73bc7fb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "83bdc7fa0a6d430ca5d0a4849f80d7b1",
+      "End": "7da413cdaa284d2ca86fd74455558b80",
+      "Id": "36f3ab980da64587b88792075f467b20",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9e0293569b25496789e3bcf54f01af2a",
+      "End": "7a39cd4eae4042e989a328e7b4ed2c07",
+      "Id": "37063ebf45204dd485fc1a37d45caa81",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -28.16596794128418,
+      "EyeY": 8.231160163879395,
+      "EyeZ": 5.8152642250061035,
+      "LookX": 0.03594779968261719,
+      "LookY": -8.866689682006836,
+      "LookZ": -2.9872751235961914,
+      "UpX": 0.011402030475437641,
+      "UpY": 0.31929802894592285,
+      "UpZ": -0.9475857019424438
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "ccc5a0a95ccc46ac864ba81f98ab43cd",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 91.0
+      },
+      {
+        "Id": "f2e98b64ab124c00a84520f8f67b90ae",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 258.0,
+        "Y": 94.0
+      },
+      {
+        "Id": "080e2853c9f34888bfd68c071297818d",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 253.0
+      },
+      {
+        "Id": "b6c8776e05dc460ea2bd0192a03ed8cd",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 9.0,
+        "Y": 97.0
+      }
+    ],
+    "Annotations": [],
+    "X": 553.0,
+    "Y": 215.0,
+    "Zoom": 1.0
+  }
+}

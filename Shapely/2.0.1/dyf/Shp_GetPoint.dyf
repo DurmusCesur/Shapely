@@ -1,0 +1,221 @@
+{
+  "Uuid": "2a2d759b-c1be-428c-be4f-df4dd5cbd843",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "It is used to find a specific point on the geometry. The user is expected to enter the unit of length.",
+  "Name": "Shp_GetPoint",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpLine",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "PolyCurve and Curve"
+      },
+      "Id": "281230c8d50d4365b2f5910ccc2d5f57",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bd49411553c0430db6740e47a21d8796",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Length",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "20ec4c9cbd094b71b97bd9cc554b937c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8759d192b5994e0ea866fbc5107e858d",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpPoint",
+      "Id": "13a6e92e17a54a62bfe0e10acab51c2c",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "8d85a923fa7445b281975e8e47e2e128",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely.geometry import line_interpolate_point\r\n    from shapely import GeometryCollection as ShpGeometryCollection\r\n    \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_linestring_interpolate_point(\r\n        shp_linestring,\r\n        distance,\r\n        normalized=False ):\r\n            \r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    return shp_linestring.line_interpolate_point(distance, normalized=normalized)\r\n\r\ndef shapely_linearring_interpolate_point(\r\n        shp_ring,\r\n        distance,\r\n        normalized=False ):\r\n    \r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    return shp_ring.line_interpolate_point(distance, normalized=normalized)\r\n\r\ndef shapely_multilinestring_interpolate_point(\r\n        shp_multilinestring,\r\n        distance,\r\n        normalized=False,\r\n        return_individual=False ):\r\n    \r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n        \r\n    if return_individual:\r\n        return [\r\n            line.line_interpolate_point(distance, normalized=normalized)\r\n            for line in shp_multilinestring.geoms ]\r\n    else:\r\n        return shp_multilinestring.line_interpolate_point(distance, normalized=normalized)\r\n\r\ndef get_shapely_interpolate_point(\r\n        shapely_geometry,\r\n        distance,\r\n        normalized=False,\r\n        return_individual=False ):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [\r\n            get_shapely_interpolate_point(\r\n                item,\r\n                distance,\r\n                normalized,\r\n                return_individual )\r\n            for item in shapely_geometry ]\r\n    \r\n    # LineString\r\n    if isinstance(shapely_geometry, ShpLineString):\r\n        return shapely_linestring_interpolate_point(\r\n            shapely_geometry,\r\n            distance,\r\n            normalized )\r\n    \r\n    # LinearRing\r\n    elif isinstance(shapely_geometry, ShpLinearRing):\r\n        return shapely_linearring_interpolate_point(\r\n            shapely_geometry,\r\n            distance,\r\n            normalized )\r\n    \r\n    # MultiLineString\r\n    elif isinstance(shapely_geometry, ShpMultiLineString):\r\n        return shapely_multilinestring_interpolate_point(\r\n            shapely_geometry,\r\n            distance,\r\n            normalized,\r\n            return_individual )\r\n            \r\n    else:\r\n        return None\r\n\r\n\r\nif 'IN' in locals():\r\n    shapely_input   = IN[0]\r\n    distance        = IN[1]\r\n    normalized      = IN[2] if len(IN) > 2 else False\r\n    return_individual = IN[3] if len(IN) > 3 else False\r\n    \r\n    OUT = get_shapely_interpolate_point(\r\n        shapely_input,\r\n        distance,\r\n        normalized,\r\n        return_individual )",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "7cb9da2d7b1340cc9e7bd640c921d8d9",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "0bda7f8faa1f4714843301968dea7e97",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7952d4fda8604893bb14201b7766288c",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f129433d802e40f59620d74aafceded7",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bd49411553c0430db6740e47a21d8796",
+      "End": "0bda7f8faa1f4714843301968dea7e97",
+      "Id": "e6f31021456341d883596635eda9e3d1",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8759d192b5994e0ea866fbc5107e858d",
+      "End": "7952d4fda8604893bb14201b7766288c",
+      "Id": "55de1c57b51341e4b8cc46025301be77",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f129433d802e40f59620d74aafceded7",
+      "End": "8d85a923fa7445b281975e8e47e2e128",
+      "Id": "b3a386519fd4431ebf8506667000e320",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -7.791597843170166,
+      "EyeY": 21.359296798706055,
+      "EyeZ": 21.836410522460938,
+      "LookX": 3.853363513946533,
+      "LookY": -24.037952423095703,
+      "LookZ": -17.11351203918457,
+      "UpX": 0.17744098603725433,
+      "UpY": 0.589485228061676,
+      "UpZ": -0.7880493402481079
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "281230c8d50d4365b2f5910ccc2d5f57",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -53.158260015993335,
+        "Y": -28.646488407965933
+      },
+      {
+        "Id": "20ec4c9cbd094b71b97bd9cc554b937c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -46.97184213998969,
+        "Y": 116.08428196917185
+      },
+      {
+        "Id": "13a6e92e17a54a62bfe0e10acab51c2c",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 454.6909894321841,
+        "Y": 37.939929547893996
+      },
+      {
+        "Id": "7cb9da2d7b1340cc9e7bd640c921d8d9",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 243.40097806959898,
+        "Y": 36.012184759299544
+      }
+    ],
+    "Annotations": [],
+    "X": 271.38278328921064,
+    "Y": 424.0324178896125,
+    "Zoom": 1.0542982150113263
+  }
+}
