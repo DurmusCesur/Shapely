@@ -24,7 +24,7 @@ Once installed, you can access Shapely functions directly within the Dynamo work
 
 ## Documentation
 
-For detailed usage instructions, visit the **Shapely Docs** **https://shapely.mintlify.app/** to explore all available nodes, features, and examples.
+For detailed usage instructions, visit the **[Shapely Docs](https://shapely.mintlify.app/)** to explore all available nodes, features, and examples.
 
 ## License
 
