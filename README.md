@@ -1,9 +1,8 @@
 # Shapely
 
-Shapely is a great Python library that helps us analyse and manipulate geometries. 
+Shapely is a great Python library that helps us analyse and manipulate geometries.
 
-Shapely is an open-source package designed to bring the power of the Shapely Python library to Revit users. 
-Shapely is a widely-used library for the manipulation and analysis of geometric objects, providing powerful functions for spatial analysis. With this package, Dynamo users can seamlessly work with Shapely’s geometry features directly within the Dynamo environment.
+Shapely is an open-source package that brings the power of the Shapely Python library to Revit users. Shapely is a widely used library for manipulating and analysing geometric objects, providing powerful functions for spatial analysis. This package enables Dynamo users to work seamlessly with Shapely geometry features directly within the Dynamo environment
 
 ## Features
 
