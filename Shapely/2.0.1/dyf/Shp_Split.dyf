@@ -2,7 +2,7 @@
   "Uuid": "7e53a2e9-989e-490f-91cf-501f46df6ba9",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Modifier",
-  "Description": "divides a geometry with a specified line. This operation divides a polygon or line into two separate parts relative to the given line.",
+  "Description": "Divides a geometry with a specified line. This operation divides a polygon or line into two separate parts relative to the given line.",
   "Name": "Shp_Split",
   "ElementResolver": {
     "ResolutionMap": {}

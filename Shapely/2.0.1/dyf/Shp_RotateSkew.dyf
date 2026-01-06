@@ -2,7 +2,7 @@
   "Uuid": "1e868c02-e52f-4f5a-bf33-84b7dabdb091",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Modifier",
-  "Description": "rotates a geometry and simultaneously applies skew to it. This operation changes the position of the geometry while also providing a more complex transformation.",
+  "Description": "Rotates a geometry and simultaneously applies skew to it. This operation changes the position of the geometry while also providing a more complex transformation.",
   "Name": "Shp_RotateSkew",
   "ElementResolver": {
     "ResolutionMap": {

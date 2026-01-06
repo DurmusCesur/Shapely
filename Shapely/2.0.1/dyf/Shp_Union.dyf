@@ -2,7 +2,7 @@
   "Uuid": "c9219c9a-4a37-47a5-a597-5cf57726c338",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Modifier",
-  "Description": "It divides a polygon or a set of points into non-overlapping triangles. This process allows geometry to be broken down into smaller and simpler parts and is widely used in computational geometry.",
+  "Description": "It combines all geometries provided in the input with each other and produces a single polygon that encompasses all geometries.",
   "Name": "Shp_Union",
   "ElementResolver": {
     "ResolutionMap": {}

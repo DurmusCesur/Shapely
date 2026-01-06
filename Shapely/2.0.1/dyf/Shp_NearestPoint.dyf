@@ -2,7 +2,7 @@
   "Uuid": "e8e82f19-218d-42e0-acc6-05fc20d4a210",
   "IsCustomNode": true,
   "Category": "Shapely.Geometry.Operation",
-  "Description": "rotates the other geometry closest to a given geometry. This operation is used to find the shortest distance between two geometries.",
+  "Description": "Rotates the other geometry closest to a given geometry. This operation is used to find the shortest distance between two geometries.",
   "Name": "Shp_NearestPoint",
   "ElementResolver": {
     "ResolutionMap": {
