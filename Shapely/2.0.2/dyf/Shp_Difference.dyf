@@ -1,0 +1,221 @@
+{
+  "Uuid": "9dbf933a-8c85-42ba-a6b3-2a98f2fe854d",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "It calculates the difference between two geometries. It subtracts the area where the second geometry intersects from the first geometry. This operation is used to see the difference between one geometry and other geometries.",
+  "Name": "Shp_Difference",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "55b61405368546c8b60b41ec4766f456",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "3356fa35a02d4be0875cd2d15b181d6a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0af640bc321846d5b65afb9e3134614d",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1e1e548bef1a4115865850ce71048cf9",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "64ab6f8c5104444db7a3cfea78763562",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7780b42351f7499d814f04b2a4925571",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import difference, unary_union\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_difference(geom_a, geom_b):\r\n    if not isinstance(geom_a, BaseGeometry) or not isinstance(geom_b, BaseGeometry):\r\n        return geom_a\r\n    \r\n    return difference(geom_a, geom_b)\r\n\r\ndef prepare_cutter(geom_b):\r\n    if isinstance(geom_b, list):\r\n        valid_b = [b for b in geom_b if isinstance(b, BaseGeometry)]\r\n        return unary_union(valid_b) if valid_b else None\r\n    return geom_b if isinstance(geom_b, BaseGeometry) else None\r\n\r\ndef get_shapely_difference(geom_a, cutter):\r\n    \r\n    if isinstance(geom_a, list):\r\n        return [get_shapely_difference(item, cutter) for item in geom_a]\r\n    \r\n    return safe_difference(geom_a, cutter)\r\n\r\nif 'IN' in locals():\r\n    input_a = IN[0]\r\n    input_b = IN[1] if len(IN) > 1 else None\r\n    \r\n    prepared_b = prepare_cutter(input_b)\r\n    \r\n    if input_a is not None and prepared_b is not None:\r\n        output = get_shapely_difference(input_a, prepared_b)\r\n    else:\r\n        output = input_a \r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "b1febf90b02d48409d0433f6b7894d04",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "b5c8265653ec4e46bc67f94b72803105",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "65e50220c1b44243934f087760bf497e",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "61f22d5542254ca89fcb251326dab568",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "1e1e548bef1a4115865850ce71048cf9",
+      "End": "b5c8265653ec4e46bc67f94b72803105",
+      "Id": "3ef6ae0a980c47a0ae9126cdf4b01056",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7780b42351f7499d814f04b2a4925571",
+      "End": "65e50220c1b44243934f087760bf497e",
+      "Id": "1461cdb818844e60bfdb9c2c6ef7c4a8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "61f22d5542254ca89fcb251326dab568",
+      "End": "3356fa35a02d4be0875cd2d15b181d6a",
+      "Id": "d0d9c9149a204430880495973aca9a3d",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "55b61405368546c8b60b41ec4766f456",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 731.0,
+        "Y": 53.0
+      },
+      {
+        "Id": "0af640bc321846d5b65afb9e3134614d",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -15.0,
+        "Y": 53.0
+      },
+      {
+        "Id": "64ab6f8c5104444db7a3cfea78763562",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -15.0,
+        "Y": 209.0
+      },
+      {
+        "Id": "b1febf90b02d48409d0433f6b7894d04",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 339.0,
+        "Y": 53.0
+      }
+    ],
+    "Annotations": [],
+    "X": 419.0,
+    "Y": 276.0,
+    "Zoom": 1.0
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "Uuid": "69fc623c-d377-4b7d-84c5-9a20e77b2201",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Analysis",
+  "Description": "",
+  "Name": "Mean Absolute Error",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_PredictionError",
+      "Id": "e85707f5ec11421a8aafb97bd7090d2d",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "79fde1a284ae44159b28f9295ab5172a",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_TrueValeur",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4abef33cb8c04b4b8f58086c229ad6ef",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "67c7e0ec6fd546a88d72ba4f6d75b6f8",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Prediction",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "a791928dc6b340fc8bb582dc54c68599",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fe931c7ed8194aa9b08aea857b66540d",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# Mean Absolute Error\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ntry:\r\n    from sklearn.metrics import mean_absolute_error\r\nexcept ImportError:\r\n    pass\r\n\r\n# INPUTS\r\ny_true = IN[0]\r\ny_pred = IN[1]\r\n\r\nif y_true and y_pred:\r\n    try:\r\n        true_arr = np.array(y_true).flatten()\r\n        pred_arr = np.array(y_pred).flatten()\r\n                \r\n        mae = round(mean_absolute_error(true_arr, pred_arr), 2)\r\n        \r\n        OUT = mae\r\n        \r\n    except Exception as e:\r\n        OUT = [0, 0, 0, f\"Error: {str(e)}\"]\r\nelse:\r\n    OUT = [0, 0, 0, \"No Data\"]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "cc593a3806f341b7883934cee1f70321",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "6daf49ebbe1d4cec919b9a6a4c836f0a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "82e2204b08494f0d9bdbff33777132c6",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5989fb6eea3f4563b6f2a96c90d5bbbc",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "67c7e0ec6fd546a88d72ba4f6d75b6f8",
+      "End": "6daf49ebbe1d4cec919b9a6a4c836f0a",
+      "Id": "11c65e44a047492c9c4557204224bda0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "fe931c7ed8194aa9b08aea857b66540d",
+      "End": "82e2204b08494f0d9bdbff33777132c6",
+      "Id": "848c7cf77f2c4030abd023b265fd5691",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5989fb6eea3f4563b6f2a96c90d5bbbc",
+      "End": "79fde1a284ae44159b28f9295ab5172a",
+      "Id": "327b12d6c50e460e969d6a470a59f285",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 9406.8974609375,
+      "EyeY": 35894.875,
+      "EyeZ": 58760.875,
+      "LookX": 11474.7236328125,
+      "LookY": -42772.0390625,
+      "LookZ": -58007.6875,
+      "UpX": 0.11373072862625122,
+      "UpY": 0.8102514743804932,
+      "UpZ": -0.5749416947364807
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "e85707f5ec11421a8aafb97bd7090d2d",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 475.0,
+        "Y": -54.00000000000006
+      },
+      {
+        "Id": "4abef33cb8c04b4b8f58086c229ad6ef",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -67.0,
+        "Y": -98.00000000000006
+      },
+      {
+        "Id": "a791928dc6b340fc8bb582dc54c68599",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -70.0,
+        "Y": 57.99999999999994
+      },
+      {
+        "Id": "cc593a3806f341b7883934cee1f70321",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 244.0,
+        "Y": -57.0
+      }
+    ],
+    "Annotations": [],
+    "X": 718.0,
+    "Y": 483.0,
+    "Zoom": 1.0
+  }
+}

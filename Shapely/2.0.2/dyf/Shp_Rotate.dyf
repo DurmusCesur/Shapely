@@ -1,0 +1,226 @@
+{
+  "Uuid": "74f654cf-3704-46f9-a704-cd01c10a6226",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Modifier",
+  "Description": "Rotates a geometry by the specified angle.",
+  "Name": "Shp_Rotate",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "fee359e7f103485c803ffd3c79f934b1",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "d14e2bf788a841c49442be64e2d87a7a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Angle",
+        "TypeName": "int",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "6cb0aaf4d9004d57a8114dd2073b7d21",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e6bd9554ac574bcb9d7b169583a95cc5",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "14a21fde328e47098c33128055b96862",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "13390db4b7d34c61a318b2ae57966bdf",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import affinity \r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_generic_rotate(geom, angle, origin):\r\n    if not isinstance(geom, BaseGeometry):\r\n        return None\r\n    \r\n    return affinity.rotate(geom, angle=angle, origin=origin)\r\n\r\ndef get_shapely_rotate(shapely_geometry, angle, origin, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_rotate(item, angle, origin, return_individual) for item in shapely_geometry]\r\n    \r\n    if isinstance(shapely_geometry, (ShpMultiPoint, ShpMultiLineString, ShpMultiPolygon)):\r\n        if return_individual:\r\n            return [shapely_generic_rotate(g, angle, origin) for g in shapely_geometry.geoms]\r\n        else:\r\n            return shapely_generic_rotate(shapely_geometry, angle, origin)\r\n    \r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_generic_rotate(shapely_geometry, angle, origin)\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    angle_val = IN[1] if IN[1] is not None else 0.0\r\n    origin_val = IN[2] if len(IN) > 2 and IN[2] is not None else 'centroid'\r\n    indiv_mode = IN[3] if len(IN) > 3 else False\r\n    \r\n    rotate_output = get_shapely_rotate(shp_input, angle_val, origin_val, indiv_mode)\r\n    \r\n    OUT = rotate_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "aced1b409fa948daba9e17b60a284139",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "786221c89c184a4caa87b326461d693e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fab526535b5f46d0817c81f5a9ffef56",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0ecc46b990ab4e1a8e3f9b26854f3e5d",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e6bd9554ac574bcb9d7b169583a95cc5",
+      "End": "fab526535b5f46d0817c81f5a9ffef56",
+      "Id": "d77bf5089a784bc8b0b5b62bb02c8570",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "13390db4b7d34c61a318b2ae57966bdf",
+      "End": "786221c89c184a4caa87b326461d693e",
+      "Id": "3c2195eb6d5a4aef998f61ae6b249019",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0ecc46b990ab4e1a8e3f9b26854f3e5d",
+      "End": "d14e2bf788a841c49442be64e2d87a7a",
+      "Id": "d934c93cf1154337b38a8830e69e6ff0",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -17.883098602294922,
+      "EyeY": 24.24338722229004,
+      "EyeZ": 27.248048782348633,
+      "LookX": 10.044145584106445,
+      "LookY": -25.36865234375,
+      "LookZ": -15.956392288208008,
+      "UpX": 0.4275626540184021,
+      "UpY": 0.5965119004249573,
+      "UpZ": -0.6792375445365906
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "fee359e7f103485c803ffd3c79f934b1",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 743.0,
+        "Y": 171.0
+      },
+      {
+        "Id": "6cb0aaf4d9004d57a8114dd2073b7d21",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -13.0,
+        "Y": 321.0
+      },
+      {
+        "Id": "14a21fde328e47098c33128055b96862",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -59.0,
+        "Y": 171.0
+      },
+      {
+        "Id": "aced1b409fa948daba9e17b60a284139",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 388.0,
+        "Y": 171.0
+      }
+    ],
+    "Annotations": [],
+    "X": 482.0,
+    "Y": 162.0,
+    "Zoom": 1.0
+  }
+}

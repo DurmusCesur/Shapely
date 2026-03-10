@@ -1,0 +1,243 @@
+{
+  "Uuid": "488300eb-6c88-45e2-a1c4-06ae915808d2",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.PreProcessing",
+  "Description": "",
+  "Name": "Feature Joiner",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Data",
+      "Id": "92567994beec4cc9acdf2eb01e59b784",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "ce737badc57f4d5794d175f2ef744e3e",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "8cceee77b22f4e18b8e3fe58dc1100a0",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "69c12530a77d449f99569e417e094b63",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "61db7ad55dda4807ad431c335c21aee7",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "182bb1c232064378b76cd4512e364660",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ndef ensure_2d_array(data, name=\"Input\"):\r\n    try:\r\n        # Gelen veriyi dogrudan numpy float dizisine ceviriyoruz\r\n        arr = np.array(data, dtype=np.float64)\r\n        \r\n        # Eger tek boyutluysa (Orn: [3, 3, 3...] gibi etiket listesi)\r\n        if arr.ndim == 1:\r\n            # 1 Satir N Sutun DEGIL (1, -1)\r\n            # N Satir 1 Sutun yapmaliyiz (-1, 1) -> Butun sorun buradaydi!\r\n            arr = arr.reshape(-1, 1)\r\n            \r\n        return arr\r\n\r\n    except Exception as e:\r\n        return f\"Error in {name}: {str(e)}\"\r\n\r\n# INPUTS\r\nraw_a = IN[0] # Features\r\nraw_b = IN[1] # OneHot veya Label\r\n\r\n# PROCESS\r\nmat_a = ensure_2d_array(raw_a, \"Matrix A (Geometry)\")\r\nmat_b = ensure_2d_array(raw_b, \"Matrix B (OneHot)\")\r\n\r\nresult = []\r\n\r\n# Eger matris olustururken hata mesajina donustuyse (String ise)\r\nif isinstance(mat_a, str) or isinstance(mat_b, str):\r\n    OUT = [mat_a, mat_b]\r\nelse:\r\n    try:\r\n        rows_a = mat_a.shape[0]\r\n        rows_b = mat_b.shape[0]\r\n        \r\n        if rows_a != rows_b:\r\n            result = f\"Mismatch Error: Matrix A has {rows_a} rows, Matrix B has {rows_b} rows.\"\r\n        else:\r\n            # Matrisleri yan yana yapistir (axis=1)\r\n            joined_matrix = np.concatenate((mat_a, mat_b), axis=1)\r\n            \r\n            # Dynamo'nun rahat okumasi icin tekrar Python listesine cevir\r\n            result = joined_matrix\r\n            \r\n    except Exception as e:\r\n        result = f\"Join Error: {str(e)}\"\r\n\r\n# OUTPUT\r\nOUT = result",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "63ab71014d6b44ed9446d4f5055cd85a",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "9f9b7510beed471d86087251ee1eb5e6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "34ae5a77d50443eca2b87a82233d1928",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "20dbe83654644f7c8aa7eee5db075701",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "69c12530a77d449f99569e417e094b63",
+      "End": "9f9b7510beed471d86087251ee1eb5e6",
+      "Id": "7b9b99a3f6b54096962e5cb5f0940cd1",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "182bb1c232064378b76cd4512e364660",
+      "End": "34ae5a77d50443eca2b87a82233d1928",
+      "Id": "98f3fcc4c4924cb6be36628221f52c31",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "20dbe83654644f7c8aa7eee5db075701",
+      "End": "ce737badc57f4d5794d175f2ef744e3e",
+      "Id": "1e5378b7ab9149a4bea1169d6ef69249",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -1.6687405109405518,
+      "EyeY": 19.329681396484375,
+      "EyeZ": 16.503747940063477,
+      "LookX": 0.2915785312652588,
+      "LookY": -22.0911808013916,
+      "LookZ": -9.886747360229492,
+      "UpX": 0.026905890554189682,
+      "UpY": 0.4086433947086334,
+      "UpZ": -0.9122974872589111
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "92567994beec4cc9acdf2eb01e59b784",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 475.0,
+        "Y": -102.00000000000006
+      },
+      {
+        "Id": "8cceee77b22f4e18b8e3fe58dc1100a0",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -52.0,
+        "Y": -109.00000000000006
+      },
+      {
+        "Id": "61db7ad55dda4807ad431c335c21aee7",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -52.0,
+        "Y": 103.0
+      },
+      {
+        "Id": "63ab71014d6b44ed9446d4f5055cd85a",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 228.0,
+        "Y": -122.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "6403d2c14b4745bfb95de3d528ecf8ef",
+        "Title": "Feature Joiner",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 266.0,
+        "Top": -172.0,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "63ab71014d6b44ed9446d4f5055cd85a"
+      }
+    ],
+    "X": 718.0,
+    "Y": 483.0,
+    "Zoom": 1.0
+  }
+}

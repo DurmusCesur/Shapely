@@ -1,0 +1,170 @@
+{
+  "Uuid": "a9fb7ef8-d507-491a-b664-f6c037517e1c",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Model.Density",
+  "Description": "",
+  "Name": "Isolation Forest",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Labels",
+      "Id": "e27c36992eb0445fbcd1cc54ee9f368e",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "6700286d677443278eba649cb3a0499c",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "c89e3df694ab447fb2e898a2ad8facb7",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c743cba2cb864d93be5ab87dbd28e81e",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# IsolationForest\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ntry:\r\n    from sklearn.ensemble import IsolationForest\r\nexcept ImportError:\r\n    pass\r\n\r\n# INPUTS\r\ndata = IN[0]\r\ncontamination = IN[1] if (len(IN) > 1 and IN[1] is not None) else 'auto'\r\n\r\nif data and len(data) > 0:\r\n    try:\r\n        X = np.array(data)\r\n        \r\n        clf = IsolationForest(contamination=contamination, random_state=42)\r\n        clf.fit(X)\r\n        \r\n        # -1: Anomaly\r\n        # 1: Normal\r\n        labels = clf.predict(X).tolist()\r\n        scores = clf.decision_function(X).tolist()\r\n        \r\n        OUT = labels\r\n        \r\n    except Exception as e:\r\n        OUT = f\"Error: {str(e)}\"\r\nelse:\r\n    OUT = \"No Data\"",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "c1af8a6aef0e4801bed1a5328cdfbb6e",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "1825130d026d4042b405d0e512827d06",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3dc1a26d566e4600a8d55c7371a53b89",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c743cba2cb864d93be5ab87dbd28e81e",
+      "End": "1825130d026d4042b405d0e512827d06",
+      "Id": "da06c5fc836843fba925abc0d2b17137",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3dc1a26d566e4600a8d55c7371a53b89",
+      "End": "6700286d677443278eba649cb3a0499c",
+      "Id": "53ca2b9d400f427bbcce450a8d5bca43",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 7.84182596206665,
+      "EyeY": 31.352319717407227,
+      "EyeZ": 22.686025619506836,
+      "LookX": 0.8542766571044922,
+      "LookY": -34.29494857788086,
+      "LookZ": -15.331348419189453,
+      "UpX": 0.0507778525352478,
+      "UpY": 0.40864357352256775,
+      "UpZ": -0.9112805128097534
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "e27c36992eb0445fbcd1cc54ee9f368e",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 514.946313073204,
+        "Y": -112.07084400671926
+      },
+      {
+        "Id": "c89e3df694ab447fb2e898a2ad8facb7",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -46.08188861146925,
+        "Y": -114.00000000000006
+      },
+      {
+        "Id": "c1af8a6aef0e4801bed1a5328cdfbb6e",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 275.8604718012764,
+        "Y": -114.11722591250765
+      }
+    ],
+    "Annotations": [],
+    "X": 616.2765571380596,
+    "Y": 424.1614416037128,
+    "Zoom": 1.0792537289518347
+  }
+}

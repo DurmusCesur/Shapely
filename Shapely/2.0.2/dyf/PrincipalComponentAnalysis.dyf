@@ -1,0 +1,472 @@
+{
+  "Uuid": "7a478dd4-1bd5-4563-8e9e-42d16b11c3ee",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Analysis",
+  "Description": "",
+  "Name": "PCA",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Image",
+      "Id": "27a457190f8c4e089cc6f78d03ef707f",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "7b6c343d0745465581eba1f02ca7994c",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "759371a9d3e649059108e20d78b3b91c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8dc53d1e08ad4310badbd815da6f1089",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Analysis",
+      "Id": "4345cd0b73074ad9a82d1bef343cc16b",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "7e58eba24c49483485b706cd067756e1",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Score",
+      "Id": "f9a6df014ede406e9728ab1bd0234bb9",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "c8394f9d1d7e4ecb865acd4ab37dad5d",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "05b6f586d2994a69af0e125050230e4e",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "e70471c557934e7ca58b644bd4c5c0a7",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9c14a200dd504e5693e51a208be8c81b",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 0)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4f0bfbbcd31a4bd8a27b5e3589e61da4",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 1)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "16a213c2605b45fcaf982a71d4f3978b",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 2)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permet de créer le code DesignScript directement",
+      "Code": "x[0];\nx[1];\nx[2];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Type",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "MinMaxScaler\t: True\nStandardScaler\t: False"
+      },
+      "Id": "b6a22f547aca45368969a3a6c1471742",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "75cd70eb972a4645996ae64bc4383f80",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "Id": "522dba70449549ed828100aff8671240",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "450c63b922694f038f5fde6869c50660",
+          "Name": "path",
+          "Description": "Chemin d'accès au fichier sous forme de chaîne.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1c970dc54c2043678383607a4395d75b",
+          "Name": "file",
+          "Description": "Objet de fichier",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Crée un objet de fichier à partir du chemin d'accès donné"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "35d46132b4234ba0b596df594e22f337",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "f409f7442e134335844a71d40cf0b2a0",
+          "Name": "file",
+          "Description": "Charger l'image depuis cet objet de fichier\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0f30a795f01643b6bdc99e0a6b88cb9a",
+          "Name": "image",
+          "Description": "Objet d'image obtenu à partir du fichier",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "DSCore.IO.Image.ReadFromFile@var",
+      "Replication": "Auto",
+      "Description": "Charger le fichier en tant que bitmap.\n\nImage.ReadFromFile (file: var): var"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# PCA Analysis\r\n\r\nimport sys\r\nimport numpy as np\r\nimport tempfile\r\nimport os\r\nimport clr\r\n\r\nclr.AddReference('System.Drawing')\r\nfrom System.Drawing import Bitmap, Graphics, Color, Pen, SolidBrush, Font, FontFamily, StringFormat, StringAlignment\r\nfrom System.Drawing.Imaging import ImageFormat\r\n\r\ntry:\r\n    from sklearn.decomposition import PCA\r\n    from sklearn.preprocessing import StandardScaler, MinMaxScaler\r\nexcept ImportError:\r\n    raise Exception(\"Sklearn libraries not found.\")\r\n\r\n# Plotter\r\nclass NativeDashboard:\r\n    def __init__(self, width=1200, height=600):\r\n        self.width = width\r\n        self.height = height\r\n        self.bmp = Bitmap(width, height)\r\n        self.g = Graphics.FromImage(self.bmp)\r\n        self.g.Clear(Color.White)\r\n        self.g.SmoothingMode = 2 \r\n        \r\n        self.font_title = Font(FontFamily.GenericSansSerif, 12, 1) \r\n        self.font_label = Font(FontFamily.GenericSansSerif, 9)\r\n        self.pen_axis = Pen(Color.Black, 2)\r\n        self.pen_grid = Pen(Color.LightGray, 1)\r\n        self.pen_grid.DashStyle = 2 # Dash Line\r\n        self.brush_text = SolidBrush(Color.Black)\r\n        \r\n        self.fmt_center = StringFormat()\r\n        self.fmt_center.Alignment = StringAlignment.Center\r\n        self.fmt_center.LineAlignment = StringAlignment.Center\r\n\r\n    def _map(self, val, src_min, src_max, dst_min, dst_max):\r\n        if src_max == src_min: return dst_min\r\n        return (val - src_min) * (dst_max - dst_min) / (src_max - src_min) + dst_min\r\n\r\n    def draw_scatter_panel(self, x_data, y_data, title, xlabel, ylabel, rect):\r\n        # Scatter Plot\r\n        rx, ry, rw, rh = rect\r\n        pad = 60\r\n        \r\n        # Cizim Alani\r\n        plot_x = rx + pad\r\n        plot_y = ry + pad\r\n        plot_w = rw - (2 * pad)\r\n        plot_h = rh - (2 * pad)\r\n        \r\n        # Data\r\n        x_min, x_max = min(x_data), max(x_data)\r\n        y_min, y_max = min(y_data), max(y_data)\r\n        \r\n        # Margin\r\n        x_span = x_max - x_min if x_max != x_min else 1.0\r\n        y_span = y_max - y_min if y_max != y_min else 1.0\r\n        x_min -= x_span * 0.1; x_max += x_span * 0.1\r\n        y_min -= y_span * 0.1; y_max += y_span * 0.1\r\n        \r\n        # Chart\r\n        self.g.DrawRectangle(self.pen_axis, plot_x, plot_y, plot_w, plot_h)\r\n\r\n        # Point\r\n        brush_pt = SolidBrush(Color.FromArgb(100, 0, 0, 255)) \r\n        pt_size = 10\r\n        \r\n        for x, y in zip(x_data, y_data):\r\n            px = self._map(x, x_min, x_max, plot_x, plot_x + plot_w)\r\n            py = self._map(y, y_min, y_max, plot_y + plot_h, plot_y)\r\n            self.g.FillEllipse(brush_pt, px - pt_size/2, py - pt_size/2, pt_size, pt_size)\r\n            self.g.DrawEllipse(Pen(Color.Black, 1), px - pt_size/2, py - pt_size/2, pt_size, pt_size)\r\n\r\n        # Legend\r\n        self.g.DrawString(title, self.font_title, self.brush_text, rx + rw/2, ry + 40, self.fmt_center)\r\n\r\n    def draw_bar_panel(self, values, title, xlabel, ylabel, rect):\r\n        # Bar Chart\r\n        rx, ry, rw, rh = rect\r\n        pad = 60\r\n        \r\n        plot_x = rx + pad \r\n        plot_y = ry + pad\r\n        plot_w = rw - (1.2 * pad)\r\n        plot_h = rh - (2 * pad)\r\n        \r\n        count = len(values)\r\n        max_val = max(values) * 1.1\r\n        \r\n        # Chart\r\n        bar_width = (plot_w / count) * 0.5\r\n        gap = (plot_w / count) * 1\r\n        \r\n        brush_bar = SolidBrush(Color.FromArgb(150, 0, 0, 255))\r\n        \r\n        for i, val in enumerate(values):\r\n            # X\r\n            px = plot_x + (i * (plot_w / count)) + (gap / 2)\r\n            \r\n            # Y\r\n            bar_h = self._map(val, 0, max_val, 0, plot_h)\r\n            py = (plot_y + plot_h) - bar_h\r\n            \r\n            # Bar\r\n            self.g.FillRectangle(brush_bar, px, py, bar_width, bar_h)\r\n            self.g.DrawRectangle(Pen(Color.Black, 2), px, py, bar_width, bar_h)\r\n            \r\n            # %label\r\n            txt = f\"{val:.1f}%\"\r\n            self.g.DrawString(txt, self.font_label, self.brush_text, px + bar_width/2, py - 20, self.fmt_center)\r\n            \r\n            # (PC1, PC2...)\r\n            self.g.DrawString(str(i+1), self.font_label, self.brush_text, px + bar_width/2, plot_y + plot_h + 20, self.fmt_center)\r\n\r\n        # Legend\r\n        self.g.DrawString(title, self.font_title, self.brush_text, rx + rw/1.5, ry + 40, self.fmt_center)\r\n\r\n\r\n    def save(self, path):\r\n        self.bmp.Save(path, ImageFormat.Png)\r\n        self.g.Dispose()\r\n        self.bmp.Dispose()\r\n        return path\r\n\r\n# Base\r\ndef visualize_pca_dashboard(data, n_components=2, use_minmax=True):\r\n    X = np.array(data)\r\n    \r\n    # 1. Scaler\r\n    if use_minmax:\r\n        scaler = MinMaxScaler()\r\n    else:\r\n        scaler = StandardScaler()\r\n        \r\n    X_scaled = scaler.fit_transform(X)\r\n    \r\n    # 2. PCA\r\n    pca = PCA(n_components=n_components)\r\n    principal_components = pca.fit_transform(X_scaled)\r\n    \r\n    explained_variance_ratio = pca.explained_variance_ratio_\r\n    total_variance = np.sum(explained_variance_ratio) * 100\r\n    \r\n    # Visualization\r\n    dash = NativeDashboard(1200, 600)\r\n    \r\n    # Panel\r\n    dash.draw_scatter_panel(\r\n        x_data=principal_components[:, 0],\r\n        y_data=principal_components[:, 1],\r\n        title=f\"PCA Projection (Total: {total_variance:.1f}%)\",\r\n        xlabel=f\"PC 1 ({explained_variance_ratio[0]*100:.1f}%)\",\r\n        ylabel=f\"PC 2 ({explained_variance_ratio[1]*100:.1f}%)\",\r\n        rect=(0, 0, 950, 600)\r\n    )\r\n    \r\n    # Bar\r\n    dash.draw_bar_panel(\r\n        values=explained_variance_ratio * 100,\r\n        title=\"Explained Variance\",\r\n        xlabel=\"Principal Components\",\r\n        ylabel=\"Variance (%)\",\r\n        rect=(800, 0, 400, 600)\r\n    )\r\n    \r\n    # 4. Save\r\n    temp_dir = tempfile.gettempdir()\r\n    file_name = \"PCA_Analysis.png\"\r\n    path_out = os.path.join(temp_dir, file_name)\r\n    \r\n    if os.path.exists(path_out):\r\n        try: os.remove(path_out)\r\n        except: pass\r\n            \r\n    dash.save(path_out)\r\n    \r\n    return path_out, total_variance, principal_components\r\n\r\n# OUTPUT\r\nif 'IN' in locals():\r\n    raw_data = IN[0]\r\n    valiable_scaler = IN[1]\r\n    \r\n    if raw_data:\r\n        try:\r\n            image_path, variance_score, pca_data = visualize_pca_dashboard(raw_data, n_components=3, use_minmax=valiable_scaler)\r\n            OUT = [image_path, pca_data, variance_score]\r\n        except Exception as e:\r\n            OUT = [f\"Error: {str(e)}\", None, None]\r\n    else:\r\n        OUT = [\"No Data\", None, None]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "444eb08de6924d8bbfad0c63d9d6ab3f",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "61615fdf014845b9bd9664d4b53d6254",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fec6f7223f0e46318d4bada29b3b1437",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fdfa0d0d2a5c4584984ee3906df5c2c5",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8dc53d1e08ad4310badbd815da6f1089",
+      "End": "61615fdf014845b9bd9664d4b53d6254",
+      "Id": "702e69fa009a4ec589b3ec1b9a9653bc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9c14a200dd504e5693e51a208be8c81b",
+      "End": "450c63b922694f038f5fde6869c50660",
+      "Id": "c67182204e204df6b7eeb8a45b50fb7b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4f0bfbbcd31a4bd8a27b5e3589e61da4",
+      "End": "7e58eba24c49483485b706cd067756e1",
+      "Id": "44fa280bfa6a4a5c8a052bf8f0b544dc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "16a213c2605b45fcaf982a71d4f3978b",
+      "End": "c8394f9d1d7e4ecb865acd4ab37dad5d",
+      "Id": "0baea77cf93c45a5a1007721075e32a2",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "75cd70eb972a4645996ae64bc4383f80",
+      "End": "fec6f7223f0e46318d4bada29b3b1437",
+      "Id": "31e35eb7ae31455e9c521d88f61561c8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "1c970dc54c2043678383607a4395d75b",
+      "End": "f409f7442e134335844a71d40cf0b2a0",
+      "Id": "efa27d399e8a4763b371a01f759ccd4f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0f30a795f01643b6bdc99e0a6b88cb9a",
+      "End": "7b6c343d0745465581eba1f02ca7994c",
+      "Id": "c1273a026b324a5ca0bb60efacd784e4",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "fdfa0d0d2a5c4584984ee3906df5c2c5",
+      "End": "e70471c557934e7ca58b644bd4c5c0a7",
+      "Id": "0a5da5d3f8af4554b1b16bfec1e90f80",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 9406.8974609375,
+      "EyeY": 35894.875,
+      "EyeZ": 58760.875,
+      "LookX": 11474.7236328125,
+      "LookY": -42772.0390625,
+      "LookZ": -58007.6875,
+      "UpX": 0.11373072862625122,
+      "UpY": 0.8102514743804932,
+      "UpZ": -0.5749416947364807
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "27a457190f8c4e089cc6f78d03ef707f",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1186.0,
+        "Y": -186.00000000000006
+      },
+      {
+        "Id": "759371a9d3e649059108e20d78b3b91c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -106.0,
+        "Y": -109.00000000000006
+      },
+      {
+        "Id": "4345cd0b73074ad9a82d1bef343cc16b",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1189.0,
+        "Y": -31.50000000000003
+      },
+      {
+        "Id": "f9a6df014ede406e9728ab1bd0234bb9",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1189.0,
+        "Y": 136.0
+      },
+      {
+        "Id": "05b6f586d2994a69af0e125050230e4e",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 480.0,
+        "Y": -106.0
+      },
+      {
+        "Id": "b6a22f547aca45368969a3a6c1471742",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -172.0,
+        "Y": 49.0
+      },
+      {
+        "Id": "522dba70449549ed828100aff8671240",
+        "Name": "File From Path",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 700.7282685095443,
+        "Y": -189.5380853538952
+      },
+      {
+        "Id": "35d46132b4234ba0b596df594e22f337",
+        "Name": "Image.ReadFromFile",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 919.0363359261546,
+        "Y": -186.07617070779042
+      },
+      {
+        "Id": "444eb08de6924d8bbfad0c63d9d6ab3f",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": false,
+        "X": 228.0,
+        "Y": -107.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "883c8a6670d3453d9dd669e7f4f071bf",
+        "Title": "PCA",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 290.0,
+        "Top": -157.0,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "444eb08de6924d8bbfad0c63d9d6ab3f"
+      }
+    ],
+    "X": 213.0,
+    "Y": 527.0,
+    "Zoom": 1.0
+  }
+}

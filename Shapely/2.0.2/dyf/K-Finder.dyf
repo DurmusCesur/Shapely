@@ -1,0 +1,192 @@
+{
+  "Uuid": "4c15eb43-2788-47cd-99bb-efb972e1dafa",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Analysis",
+  "Description": "",
+  "Name": "K-Finder",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_NCluster",
+      "Id": "383fed40004f40499ce6d00d97089f59",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "e18a154dc2bf4acd9d139469051be98e",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5d77542c9bb34b628c96cc5034faf703",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c9ddef20995349eb90f1cb0a97f10125",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# K-Finder\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ntry:\r\n    from sklearn.cluster import KMeans\r\nexcept ImportError as e:\r\n    raise Exception(f\"Failed: {e}\")\r\n\r\ndef find_optimal_k(data, max_k=10):\r\n    X = np.array(data)\r\n    inertias = []\r\n    k_values = list(range(1, max_k + 1))\r\n    \r\n    for k in k_values:\r\n        model = KMeans(n_clusters=k, random_state=42, n_init='auto')\r\n        model.fit(X)\r\n        inertias.append(model.inertia_)\r\n\r\n    x = np.array(k_values)\r\n    y = np.array(inertias)\r\n\r\n    x_norm = (x - x.min()) / (x.max() - x.min())\r\n    denom = (y.max() - y.min())\r\n    if denom == 0:\r\n        return 1, k_values, inertias\r\n    y_norm = (y - y.min()) / denom\r\n\r\n    p1 = np.array([x_norm[0], y_norm[0]])\r\n    p2 = np.array([x_norm[-1], y_norm[-1]])\r\n\r\n    distances = []\r\n    for i in range(len(x_norm)):\r\n        p = np.array([x_norm[i], y_norm[i]])\r\n        distance = np.abs(np.cross(p2 - p1, p1 - p)) / np.linalg.norm(p2 - p1)\r\n        distances.append(distance)\r\n\r\n    best_index = np.argmax(distances)\r\n    optimal_k = k_values[best_index]\r\n\r\n    return optimal_k\r\n\r\n\r\n# OUTPUT\r\nif 'IN' in locals():\r\n    data = IN[0]\r\n    max_k = IN[1] if (len(IN) > 1 and IN[1] is not None) else 20\r\n    suggested_k = find_optimal_k(data, max_k)\r\n    OUT = suggested_k",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "c192427ca78a40e3af215195de44aa4b",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "bd44ddc95e3b43c1b38b1febdb85e87e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c4ef1f480e87437fa73a0f64f52d14d4",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c9ddef20995349eb90f1cb0a97f10125",
+      "End": "bd44ddc95e3b43c1b38b1febdb85e87e",
+      "Id": "9a87f1f9c8d44e899259a2b13ac82346",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c4ef1f480e87437fa73a0f64f52d14d4",
+      "End": "e18a154dc2bf4acd9d139469051be98e",
+      "Id": "1042431f3b054d10bf2e8dc73f24d3da",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -1.4050214290618896,
+      "EyeY": 14.613317489624023,
+      "EyeZ": 15.085907936096191,
+      "LookX": 0.2083876132965088,
+      "LookY": -16.630615234375,
+      "LookZ": -10.03786563873291,
+      "UpX": 0.017768878489732742,
+      "UpY": 0.5168271660804749,
+      "UpZ": -0.8559053540229797
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "383fed40004f40499ce6d00d97089f59",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 470.0,
+        "Y": -95.00000000000006
+      },
+      {
+        "Id": "5d77542c9bb34b628c96cc5034faf703",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -69.0,
+        "Y": -96.00000000000006
+      },
+      {
+        "Id": "c192427ca78a40e3af215195de44aa4b",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": false,
+        "X": 237.0,
+        "Y": -97.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "25b7c4857e7e4ff9bb8cab9db7464b2f",
+        "Title": "K-Finder",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 289.5,
+        "Top": -147.0,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "c192427ca78a40e3af215195de44aa4b"
+      }
+    ],
+    "X": 718.0,
+    "Y": 483.0,
+    "Zoom": 1.0
+  }
+}

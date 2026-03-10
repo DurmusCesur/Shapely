@@ -1,0 +1,221 @@
+{
+  "Uuid": "301dc9fd-b8ab-4d6d-a0e5-662cdc9de296",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "After various operations, the orientation of geometries may sometimes change. The ‘Oriented’ input reorders all geometries within it as CCW/CW and corrects their orientation as desired by the user. It does not alter the geometry itself, only its orientation.",
+  "Name": "Shp_Oriented",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "7d02375a48ec464692a6aca51a935ca5",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2dec66cbf46a4e92992f1b339fcd54c9",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "ac2885dde94f4ce7b40efb4d3a44744e",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "ddd4bdd8673e4d2e979e7bc933318f2f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry import GeometryCollection as ShpGeometryCollection \r\n    from shapely.ops import orient\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_orient(geom, sign):\r\n    # Polygon\r\n    if isinstance(geom, ShpPolygon):\r\n        return orient(geom, sign=sign)\r\n        \r\n    # MultiPolygon\r\n    elif isinstance(geom, ShpMultiPolygon):\r\n        return ShpMultiPolygon([orient(p, sign=sign) for p in geom.geoms])\r\n\r\n    # GeometryCollection\r\n    elif isinstance(geom, ShpGeometryCollection):\r\n        return ShpGeometryCollection([safe_orient(g, sign) for g in geom.geoms])\r\n        \r\n    return geom\r\n\r\ndef get_shapely_orient(input_data, sign=1.0):\r\n    if isinstance(input_data, list):\r\n        return [get_shapely_orient(item, sign) for item in input_data]\r\n    \r\n    return safe_orient(input_data, sign)\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    sign_val = IN[1] if len(IN) > 1 and IN[1] is not None else 1.0\r\n    \r\n    output = get_shapely_orient(shp_input, sign_val)\r\n    \r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "f2383f0cfb2a4210829905f446a91643",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "8c0222b33ebd4ad892bcbe244926be69",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "29173d676a33436d81516eeb2a7bb207",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c4f192e6afa24fea86118737ff561268",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Orient",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "tTypedIdent0",
+        "Description": "CW=-1 \nCCW=+1"
+      },
+      "Id": "1e0cbadb2b1348a29517af2195438ada",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "779f8548d1394a8788c00d905628a42e",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2dec66cbf46a4e92992f1b339fcd54c9",
+      "End": "8c0222b33ebd4ad892bcbe244926be69",
+      "Id": "fc22da4d947249be848778c92240bd3f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c4f192e6afa24fea86118737ff561268",
+      "End": "ddd4bdd8673e4d2e979e7bc933318f2f",
+      "Id": "76c0f5d79e6c4761902b499cd198c97f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "779f8548d1394a8788c00d905628a42e",
+      "End": "29173d676a33436d81516eeb2a7bb207",
+      "Id": "55270374bdb64a3c83079ba98f872dee",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -29.21791172027588,
+      "EyeY": 27.036039352416992,
+      "EyeZ": 19.59807014465332,
+      "LookX": 1.1629295349121094,
+      "LookY": -28.124242782592773,
+      "LookZ": -20.870073318481445,
+      "UpX": 0.044653989374637604,
+      "UpY": 0.5965122580528259,
+      "UpZ": -0.8013608455657959
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "7d02375a48ec464692a6aca51a935ca5",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 92.0
+      },
+      {
+        "Id": "ac2885dde94f4ce7b40efb4d3a44744e",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 258.0,
+        "Y": 94.0
+      },
+      {
+        "Id": "f2383f0cfb2a4210829905f446a91643",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 16.0,
+        "Y": 87.0
+      },
+      {
+        "Id": "1e0cbadb2b1348a29517af2195438ada",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -290.1841758057038,
+        "Y": 235.17591525724652
+      }
+    ],
+    "Annotations": [],
+    "X": 713.958006015625,
+    "Y": 15.848568828125053,
+    "Zoom": 1.545620359375
+  }
+}

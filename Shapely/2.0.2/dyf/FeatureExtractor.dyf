@@ -1,0 +1,192 @@
+{
+  "Uuid": "fec8bb37-0c75-4da8-82e5-51cfc0b0ea23",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.PreProcessing",
+  "Description": "",
+  "Name": "Feature Extractor",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Data",
+      "Id": "9d3ac4c441424ccb8f0cfc8e0950892e",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "8930b01457344c318bce676bb8cf75b9",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "2bc8ed33d7ba4187bf1b443a8fc8e167",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "91fca0dade7d499fa5db3dde8785c0ba",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n\r\nimport sys\r\nimport numpy as np\r\nimport math\r\n\r\ntry:\r\n    from sklearn.preprocessing import StandardScaler\r\n    from shapely.geometry import Point, MultiPoint\r\n    from shapely.geometry import LineString, MultiLineString\r\n    from shapely.geometry import Polygon, MultiPolygon\r\n    from shapely.geometry import GeometryCollection\r\n    from shapely.geometry.base import BaseGeometry\r\nexcept ImportError as e:\r\n    raise Exception(f\"Failed: {e}\")\r\n\r\nclass MathUtils: \r\n    @staticmethod   \r\n    def calculate_compactness(area, perimeter):\r\n        # Polsby-Popper (4 * pi * Area) / Perimeter^2\r\n        if perimeter <= 0: return 0.0\r\n        val = (4 * np.pi * area) / (perimeter ** 2)\r\n        return min(max(val, 0.0), 1.0)\r\n\r\n    @staticmethod\r\n    def calculate_aspect_ratio(bounds):\r\n        minx, miny, maxx, maxy = bounds\r\n        width = maxx - minx\r\n        height = maxy - miny\r\n        if width <= 0.000001 or height <= 0.000001: return 0.0\r\n        return max(width, height) / min(width, height)\r\n\r\n    @staticmethod\r\n    def calculate_solidity(geom, area):\r\n        # Convex Hull\r\n        if area <= 0: return 0.0\r\n        convex_area = geom.convex_hull.area\r\n        if convex_area <= 0: return 0.0\r\n        return area / convex_area\r\n\r\n    @staticmethod\r\n    def calculate_rectangularity(area, bounds):\r\n        # Bounding Box\r\n        minx, miny, maxx, maxy = bounds\r\n        bbox_area = (maxx - minx) * (maxy - miny)\r\n        if bbox_area <= 0: return 0.0\r\n        return area / bbox_area\r\n\r\ndef flatten_data(input_data):\r\n    if isinstance(input_data, list):\r\n        for item in input_data:\r\n            yield from flatten_data(item)\r\n    else:\r\n        yield input_data\r\n\r\ndef extract_features(geom):\r\n    # [Area, Compactness, AspectRatio, Solidity, Rectangularity, CentroidX, CentroidY]\r\n    if geom is None or not isinstance(geom, BaseGeometry) or geom.is_empty:\r\n        return [0.0] * 7\r\n        \r\n    area = 0.0\r\n    perimeter = 0.0\r\n    aspect_ratio = 0.0\r\n    compactness = 0.0\r\n    solidity = 0.0\r\n    rectangularity = 0.0\r\n    c_x = 0.0\r\n    c_y = 0.0\r\n    \r\n    try:\r\n        bounds = geom.bounds\r\n        aspect_ratio = MathUtils.calculate_aspect_ratio(bounds)\r\n        \r\n        if geom.centroid:\r\n            c_x = geom.centroid.x\r\n            c_y = geom.centroid.y\r\n\r\n        if isinstance(geom, (Polygon, MultiPolygon)):\r\n            area = geom.area\r\n            perimeter = geom.length\r\n            compactness = MathUtils.calculate_compactness(area, perimeter)\r\n            solidity = MathUtils.calculate_solidity(geom, area)\r\n            rectangularity = MathUtils.calculate_rectangularity(area, bounds)\r\n            \r\n        elif isinstance(geom, (LineString, MultiLineString)):\r\n            perimeter = geom.length\r\n            \r\n        elif isinstance(geom, (Point, MultiPoint)):\r\n            compactness = 1.0 \r\n            aspect_ratio = 1.0\r\n            solidity = 1.0\r\n            rectangularity = 1.0\r\n            \r\n        elif isinstance(geom, GeometryCollection):\r\n            area = geom.area\r\n            perimeter = geom.length\r\n            compactness = MathUtils.calculate_compactness(area, perimeter)\r\n\r\n    except Exception:\r\n        return [0.0] * 7\r\n\r\n    return [area, compactness, aspect_ratio, solidity, rectangularity, c_x, c_y]\r\n\r\ndef process_pipeline(raw_input):\r\n    flat_geometry_list = list(flatten_data(raw_input))\r\n    \r\n    feature_matrix = []\r\n    for geom in flat_geometry_list:\r\n        features = extract_features(geom)\r\n        feature_matrix.append(features)\r\n    \r\n    if not feature_matrix:\r\n        return []\r\n\r\n    X = np.array(feature_matrix, dtype=np.float64)\r\n\r\n    return X \r\n\r\n# OUTPUT\r\nif 'IN' in locals():\r\n    shapely_input = IN[0]\r\n    result_matrix = process_pipeline(shapely_input)\r\n    OUT = result_matrix",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "9c76b7e43d6949d9a3bfa071ad253919",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "c604414309b7481ca7a0d9b341aa65e3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3151bf2059e44daf9d95d2d51b77df77",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "91fca0dade7d499fa5db3dde8785c0ba",
+      "End": "c604414309b7481ca7a0d9b341aa65e3",
+      "Id": "fa3c5569b9d940258120fe1c5b2a1022",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3151bf2059e44daf9d95d2d51b77df77",
+      "End": "8930b01457344c318bce676bb8cf75b9",
+      "Id": "767c453e901649029f8e72252bce46b5",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -1.4050214290618896,
+      "EyeY": 14.613317489624023,
+      "EyeZ": 15.085907936096191,
+      "LookX": 0.2083876132965088,
+      "LookY": -16.630615234375,
+      "LookZ": -10.03786563873291,
+      "UpX": 0.017768878489732742,
+      "UpY": 0.5168271660804749,
+      "UpZ": -0.8559053540229797
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "9d3ac4c441424ccb8f0cfc8e0950892e",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 412.0,
+        "Y": -108.00000000000006
+      },
+      {
+        "Id": "2bc8ed33d7ba4187bf1b443a8fc8e167",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -164.0,
+        "Y": -107.00000000000006
+      },
+      {
+        "Id": "9c76b7e43d6949d9a3bfa071ad253919",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 155.66666666666666,
+        "Y": -107.212490443197
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "6514afe3a02a4a79be04939b18caa254",
+        "Title": "Feature Extraction",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 183.16666666666666,
+        "Top": -157.212490443197,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "9c76b7e43d6949d9a3bfa071ad253919"
+      }
+    ],
+    "X": 718.0,
+    "Y": 483.0,
+    "Zoom": 1.0
+  }
+}

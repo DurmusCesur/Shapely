@@ -1,0 +1,410 @@
+{
+  "Uuid": "39c98236-a424-4f11-9059-8aa17910373c",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Model.Classifier",
+  "Description": "",
+  "Name": "KNN Classifier",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Predictions",
+      "Id": "a3a3339ddee64d45baa09ffbc277657a",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "b84e63d7839544878e5d26aef1ca0c33",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_TrainData",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "3536875a6fdf4fb8b770bf3741c0eedc",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5d4cf706ddc84b3eb0e0bf9c1c333add",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Model",
+      "Id": "93e9aefb5f1749a9a8db1a49bbad1da0",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "b44bfea07e514d6e89ca6e753aa73eee",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "bedd4a522c19461cbfdad8b62dfc5b90",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "2c7b118f4d5e466390f5e032befad077",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "819947f764f04125b136b144d6d0b6e3",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 0)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c8d8ea6625ad45bdb4e67c02028a256e",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 1)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e6c86142a769455dbb03b14c42d24b13",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 2)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permet de créer le code DesignScript directement",
+      "Code": "x[0];\nx[1];\nx[2];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_TrainLabels",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "26b3ba65ff20495a9c37af719fa5dcf5",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "624f1e721b7e4f478892b01398b22de4",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_TestData",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "590c8075c9ff4266b606a809504cef93",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a1e0158a9dd64c7ab51049830ee26fb0",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Score",
+      "Id": "e4673be1457d48859e7db502fd70d5f1",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "e763b354a7b744e6a636a9aba25d4da5",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# KNN Classifier (Supervised)\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ntry:\r\n    from sklearn.neighbors import KNeighborsClassifier\r\n    from sklearn.model_selection import train_test_split        \r\nexcept ImportError:\r\n    raise Exception(\"Scikit-learn not found.\")\r\n\r\n# INPUTS\r\ntrain_x = IN[0]\r\ntrain_y = IN[1]\r\ntest_x = IN[2]\r\n\r\nif train_x and train_y and test_x:\r\n    try:\r\n        x_train = np.array(train_x)\r\n        y_train = np.array(train_y).flatten()\r\n        x_test = np.array(test_x)\r\n        k_neighbors = 5\r\n        \r\n        if x_test.ndim == 1:\r\n            x_test = x_test.reshape(1, -1)\r\n            \r\n        # Test Split\r\n        X_train, X_val, Y_train, Y_val = train_test_split(\r\n            x_train, y_train, \r\n            test_size=0.2, \r\n            shuffle=True, \r\n            random_state=42\r\n        )\r\n                \r\n        # Model\r\n        model = KNeighborsClassifier(n_neighbors=k_neighbors, weights='distance')\r\n        \r\n        # Fit\r\n        model.fit(X_train, Y_train)\r\n        \r\n        # Prediction\r\n        predictions = model.predict(x_test).tolist()\r\n        \r\n        # Score\r\n        probs = model.predict_proba(x_test)\r\n        score = [max(p) for p in probs]\r\n                \r\n        # OUTPUT\r\n        OUT = [predictions, model, score]\r\n\r\n    except Exception as e:\r\n        OUT = [None, None, None, f\"KNN Error: {str(e)}\"]\r\nelse:\r\n    OUT = [None, None, None, \"Waiting for Training and New Data...\"]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "e0839eaa0cf342d0ae0763a42b9d8725",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "cc42170c954848d7b1333111fdae02af",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "86ade5ea29994635b5f61a3880e9d181",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "33af57a499554ddd8c0f2f7092d9967e",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f19059010545441e90cf17397f4a8c19",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5d4cf706ddc84b3eb0e0bf9c1c333add",
+      "End": "cc42170c954848d7b1333111fdae02af",
+      "Id": "7cccf700d2b94d6abc65e434dee738e8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "819947f764f04125b136b144d6d0b6e3",
+      "End": "b84e63d7839544878e5d26aef1ca0c33",
+      "Id": "58f2008d8a8d4c59bf6a0d01a99907dd",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c8d8ea6625ad45bdb4e67c02028a256e",
+      "End": "b44bfea07e514d6e89ca6e753aa73eee",
+      "Id": "e3c241c4b80f4664b66773058631eb9d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e6c86142a769455dbb03b14c42d24b13",
+      "End": "e763b354a7b744e6a636a9aba25d4da5",
+      "Id": "7694244013a1418888254cfd0300b21f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "624f1e721b7e4f478892b01398b22de4",
+      "End": "86ade5ea29994635b5f61a3880e9d181",
+      "Id": "0df5ff2eab064baca225eb36f73bd3dc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "a1e0158a9dd64c7ab51049830ee26fb0",
+      "End": "33af57a499554ddd8c0f2f7092d9967e",
+      "Id": "db01be3b72834ea0b8d67bdb07ca5245",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f19059010545441e90cf17397f4a8c19",
+      "End": "2c7b118f4d5e466390f5e032befad077",
+      "Id": "663a04e827ac4b58ac600173f89c7fee",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 9406.8974609375,
+      "EyeY": 35894.875,
+      "EyeZ": 58760.875,
+      "LookX": 11474.7236328125,
+      "LookY": -42772.0390625,
+      "LookZ": -58007.6875,
+      "UpX": 0.11373072862625122,
+      "UpY": 0.8102514743804932,
+      "UpZ": -0.5749416947364807
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "a3a3339ddee64d45baa09ffbc277657a",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 689.0,
+        "Y": -131.00000000000006
+      },
+      {
+        "Id": "3536875a6fdf4fb8b770bf3741c0eedc",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -53.0,
+        "Y": -109.00000000000006
+      },
+      {
+        "Id": "93e9aefb5f1749a9a8db1a49bbad1da0",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 697.0,
+        "Y": 44.0
+      },
+      {
+        "Id": "bedd4a522c19461cbfdad8b62dfc5b90",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 465.0,
+        "Y": 29.0
+      },
+      {
+        "Id": "26b3ba65ff20495a9c37af719fa5dcf5",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -48.0,
+        "Y": 62.0
+      },
+      {
+        "Id": "590c8075c9ff4266b606a809504cef93",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -56.0,
+        "Y": 237.99999999999994
+      },
+      {
+        "Id": "e4673be1457d48859e7db502fd70d5f1",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 698.0,
+        "Y": 207.0
+      },
+      {
+        "Id": "e0839eaa0cf342d0ae0763a42b9d8725",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 270.0,
+        "Y": 26.0
+      }
+    ],
+    "Annotations": [],
+    "X": 393.0,
+    "Y": 511.0,
+    "Zoom": 1.0
+  }
+}

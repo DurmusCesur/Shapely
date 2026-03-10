@@ -1,0 +1,395 @@
+{
+  "Uuid": "014e83d4-781e-48c4-a984-3757f0bd6c0e",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.PreProcessing",
+  "Description": "",
+  "Name": "Feature Scaler",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Data",
+      "Id": "d8a099bfd72b4b66b5a4fb683b21d55e",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "6f2010ba8b7e41049832e4bcb8c53967",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "dff2e95cc813497b93fe1069d42cd697",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "019fc8b61cf845129a9137527443f752",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Type",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "MinMaxScaler\t: True\nStandardScaler\t: False"
+      },
+      "Id": "f7333c1634dd468b9b4235704b36bbf9",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9ba6cce44b8b4cb88b2d2b2afe4515aa",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n\r\nimport sys\r\nimport numpy as np\r\n\r\ntry:\r\n    from sklearn.preprocessing import StandardScaler, MinMaxScaler\r\nexcept ImportError as e:\r\n    raise Exception(f\"Failed: {e}\")\r\n\r\n# INPUT\r\nif 'IN' in locals():\r\n    input_data = IN[0]\r\n    method = IN[1]\r\n\r\n    data = np.array(input_data, dtype=np.float64)\r\n\r\n    # Scaler\r\n    if method == True:\r\n        scaler = MinMaxScaler()\r\n    else:\r\n        scaler = StandardScaler()\r\n    \r\n    # Fit & Transform\r\n    scaled_data = scaler.fit_transform(data)\r\n    OUT = scaled_data, scaler",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "d80fe3bc22324f79ad2bb044c8199c33",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "e61af337e984438898b33f03ec684d1d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e2211679888f4c9794fd2bf56ae72e25",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d0e6a9722a374efb84622efcb502677b",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Scaler",
+      "Id": "7899efb4ef8c463b8a0fd95f9864ee2b",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "0fe82ac8e9054df88dc92db4d72c3503",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "d12aadcf668545a080f64c9a98692af6",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "980985f72b4746489ad33dc9a487d36b",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3b4a6a1563104ca69e3c6bd85f1e62e1",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 0)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3a3f692162f54e49a5e3e73150cbb253",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(x, 1)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permet de créer le code DesignScript directement",
+      "Code": "x[0];\nx[1];"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "019fc8b61cf845129a9137527443f752",
+      "End": "e61af337e984438898b33f03ec684d1d",
+      "Id": "91609387767a43de8470865aadbe44da",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9ba6cce44b8b4cb88b2d2b2afe4515aa",
+      "End": "e2211679888f4c9794fd2bf56ae72e25",
+      "Id": "432e88cf0f4f4e26bb545e8c39f68904",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d0e6a9722a374efb84622efcb502677b",
+      "End": "980985f72b4746489ad33dc9a487d36b",
+      "Id": "65c6d68d5c474453a5932ecf97f2a844",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3b4a6a1563104ca69e3c6bd85f1e62e1",
+      "End": "6f2010ba8b7e41049832e4bcb8c53967",
+      "Id": "6a5d57b99f974a2887ff349b2f0e3796",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3a3f692162f54e49a5e3e73150cbb253",
+      "End": "0fe82ac8e9054df88dc92db4d72c3503",
+      "Id": "d09e577c2fbb4f43a7f9f23f13ecfa8e",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -1.4050214290618896,
+      "EyeY": 14.613317489624023,
+      "EyeZ": 15.085907936096191,
+      "LookX": 0.2083876132965088,
+      "LookY": -16.630615234375,
+      "LookZ": -10.03786563873291,
+      "UpX": 0.017768878489732742,
+      "UpY": 0.5168271660804749,
+      "UpZ": -0.8559053540229797
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "d8a099bfd72b4b66b5a4fb683b21d55e",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 682.0,
+        "Y": -170.00000000000006
+      },
+      {
+        "Id": "dff2e95cc813497b93fe1069d42cd697",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -132.0,
+        "Y": -108.00000000000006
+      },
+      {
+        "Id": "f7333c1634dd468b9b4235704b36bbf9",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -133.0,
+        "Y": 46.0
+      },
+      {
+        "Id": "d80fe3bc22324f79ad2bb044c8199c33",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 241.61079663441546,
+        "Y": -108.05656660544872
+      },
+      {
+        "Id": "7899efb4ef8c463b8a0fd95f9864ee2b",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 684.0,
+        "Y": -25.000000000000057
+      },
+      {
+        "Id": "d12aadcf668545a080f64c9a98692af6",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 450.0,
+        "Y": -107.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "aefc41fc09754f70bd89996b2c21abc2",
+        "Title": "Scaler",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 301.11079663441546,
+        "Top": -158.05656660544872,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "d80fe3bc22324f79ad2bb044c8199c33"
+      },
+      {
+        "Id": "693b6da21c014d07820e13865125a13a",
+        "Title": "Scaler",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 301.11079663441546,
+        "Top": -158.05656660544872,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "8b8d585563f346b991180c21a6e7f747",
+        "Title": "Scaler",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 301.11079663441546,
+        "Top": -158.05656660544872,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "6d443792d9c04442ae6c56750c4da7d2",
+        "Title": "Scaler",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 301.11079663441546,
+        "Top": -158.05656660544872,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 360.0,
+    "Y": 482.0,
+    "Zoom": 1.0
+  }
+}

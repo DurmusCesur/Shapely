@@ -1,0 +1,345 @@
+{
+  "Uuid": "329370a0-d283-4465-a7ce-a741f172923d",
+  "IsCustomNode": true,
+  "Category": "Shapely.MachineLearning.Serialization",
+  "Description": "",
+  "Name": "Model → Save",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_Msg",
+      "Id": "8d593fbf34154e089e140c28bcdf4697",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "2c8faa9916b84ffbacc250c150cfa2ab",
+          "Name": "",
+          "Description": "Données de sortie",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Model",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "22f420346c23431eb5604248c3ae0bc8",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bc850f19d9e142188600d1bfc4bd02bf",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Scaler",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "\"Auto\"",
+        "Description": ""
+      },
+      "Id": "6971216fb2084ba4941152175843bb1c",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "52d2ff1508bc429698943daed65b9eac",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_Encoder",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "\"Auto\"",
+        "Description": ""
+      },
+      "Id": "2af9601fddc649b18e428e9849d4c4a4",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9bd76a1307764b478bec2da2bdf9b31a",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_DirectoryPath",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0d94b748c799461b9936d2c4dc1b25ac",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2f2d3e10693a49f5a818b60b935c472e",
+          "Name": "",
+          "Description": "Données d'entrée",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Copyright(c) 2026\r\n# Durmus Bayryam\r\n# Model Saver\r\n\r\nimport sys\r\nimport os\r\n\r\ntry:\r\n    import joblib\r\nexcept ImportError:\r\n    import pickle as joblib\r\n\r\n# Input\r\nmodel_input = IN[0]\r\nscaler_input = IN[1]\r\nencoder_input = IN[2]\r\nraw_path = IN[3]\r\n\r\nresult = \"\"\r\nmodel_to_save = None\r\n\r\nif hasattr(model_input, 'model'):\r\n    model_to_save = model_input.model\r\nelse:\r\n    model_to_save = model_input\r\n\r\nif model_to_save is None:\r\n    result = \"Error: Model input is Null.\"\r\nelif raw_path is None or raw_path == \"\":\r\n    result = \"Error: Invalid File Path.\"\r\nelse:\r\n    try:\r\n        file_path = os.path.normpath(raw_path)\r\n        \r\n        if os.path.isdir(file_path):\r\n            file_path = os.path.join(file_path, \"trained_model.pkl\")\r\n        elif not os.path.splitext(file_path)[1]:\r\n             file_path += \".pkl\"\r\n             \r\n        folder = os.path.dirname(file_path)\r\n        if folder and not os.path.exists(folder):\r\n            os.makedirs(folder)\r\n\r\n        bundle = {\r\n            \"model_object\": model_to_save,   \r\n            \"scaler_object\": scaler_input,   \r\n            \"encoder_object\": encoder_input, \r\n            \"meta_data\": \"Created with ML Package v1.0\"\r\n        }\r\n\r\n        joblib.dump(bundle, file_path)\r\n        \r\n        saved_components = [\"Model\"]\r\n        if scaler_input: saved_components.append(\"Scaler\")\r\n        if encoder_input: saved_components.append(\"Encoder\")\r\n        \r\n        result = f\"Success! Saved ({', '.join(saved_components)}) to: {file_path}\"\r\n\r\n    except Exception as e:\r\n        result = f\"Save Error: {str(e)}\"\r\n\r\n# OUTPUT\r\nOUT = result",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "a76a7bc0f5c34607b02b30ec8a4b0b1a",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "7a035f271c894c46b80096ee2b273dbb",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c55e43b6590a4b19b7e8c04ff4630294",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "67d8170d1889496a8e0f87cb6cf3944d",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3cb6252004b0437c912efbf778d4efee",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4ec58373b84740efaa1069b1f3efe332",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bc850f19d9e142188600d1bfc4bd02bf",
+      "End": "7a035f271c894c46b80096ee2b273dbb",
+      "Id": "3b43fb93d52941d7b33ccc6466e7c0f3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "52d2ff1508bc429698943daed65b9eac",
+      "End": "c55e43b6590a4b19b7e8c04ff4630294",
+      "Id": "2b91f29c07154e8a837e0225d8a670d3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9bd76a1307764b478bec2da2bdf9b31a",
+      "End": "67d8170d1889496a8e0f87cb6cf3944d",
+      "Id": "26a51cd5a6dd412d81fdbebb29e13597",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2f2d3e10693a49f5a818b60b935c472e",
+      "End": "3cb6252004b0437c912efbf778d4efee",
+      "Id": "2450a48da8db4ac4b7f0885bf5546a0b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4ec58373b84740efaa1069b1f3efe332",
+      "End": "2c8faa9916b84ffbacc250c150cfa2ab",
+      "Id": "4acd05b5372b4070bf4095be3d0bbced",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.6.1.9895",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": 9406.8974609375,
+      "EyeY": 35894.875,
+      "EyeZ": 58760.875,
+      "LookX": 11474.7236328125,
+      "LookY": -42772.0390625,
+      "LookZ": -58007.6875,
+      "UpX": 0.11373072862625122,
+      "UpY": 0.8102514743804932,
+      "UpZ": -0.5749416947364807
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "8d593fbf34154e089e140c28bcdf4697",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 462.0,
+        "Y": -102.00000000000006
+      },
+      {
+        "Id": "22f420346c23431eb5604248c3ae0bc8",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -100.0,
+        "Y": -246.00000000000006
+      },
+      {
+        "Id": "6971216fb2084ba4941152175843bb1c",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -100.0,
+        "Y": -112.0
+      },
+      {
+        "Id": "2af9601fddc649b18e428e9849d4c4a4",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -100.0,
+        "Y": 22.0
+      },
+      {
+        "Id": "0d94b748c799461b9936d2c4dc1b25ac",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -100.0,
+        "Y": 164.0
+      },
+      {
+        "Id": "a76a7bc0f5c34607b02b30ec8a4b0b1a",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": false,
+        "X": 233.0,
+        "Y": -108.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "cbc0cedf98354e67938618ffdb6aea28",
+        "Title": "Model Saver",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 275.0,
+        "Top": -158.0,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676",
+        "PinnedNode": "a76a7bc0f5c34607b02b30ec8a4b0b1a"
+      }
+    ],
+    "X": 482.0,
+    "Y": 463.0,
+    "Zoom": 1.0
+  }
+}

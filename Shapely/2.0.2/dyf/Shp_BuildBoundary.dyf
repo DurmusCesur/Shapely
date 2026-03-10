@@ -1,0 +1,170 @@
+{
+  "Uuid": "271fc29e-e4d1-483b-9bec-78b76ab6b092",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "Creates a geometry that defines the area surrounding it. This process is used to define the area covered by the geometry.",
+  "Name": "Shp_BuildBoundary",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "66505a0a2be3455fa6343118f1599184",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1218373f19804b21aa3815067e13716e",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "8582d609ec4c417abb09d3514a9cf966",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "c4b534848e1140c3860d1d69be0a191f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayram\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import GeometryCollection, Polygon, LineString, LinearRing, MultiPolygon, MultiLineString, MultiPoint\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import build_area, make_valid\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef safe_build_area(geoms):\r\n    try:\r\n        if not isinstance(geoms, list):\r\n            geoms = [geoms]\r\n        \r\n        processed_geoms = []\r\n        for g in geoms:\r\n            if not isinstance(g, BaseGeometry): continue\r\n            \r\n            if not g.is_valid:\r\n                g = make_valid(g)\r\n            \r\n            if isinstance(g, (Polygon, MultiPolygon)):\r\n                processed_geoms.append(g.boundary)\r\n            else:\r\n                processed_geoms.append(g)\r\n            \r\n        if not processed_geoms:\r\n            return None\r\n            \r\n        collection = GeometryCollection(processed_geoms)\r\n        result = build_area(collection)\r\n        \r\n        if (result is None or result.is_empty) and len(geoms) == 1:\r\n            return geoms[0]\r\n            \r\n        return result if not result.is_empty else None\r\n    except:\r\n        return None\r\n\r\ndef get_shapely_buildarea(input_data):\r\n    if not isinstance(input_data, list):\r\n        return safe_build_area(input_data)\r\n\r\n    if len(input_data) > 0 and isinstance(input_data[0], list):\r\n        return [get_shapely_buildarea(item) for item in input_data]\r\n    \r\n    return safe_build_area(input_data)\r\n\r\nif 'IN' in locals():\r\n    shp_input = IN[0]\r\n    \r\n    output = get_shapely_buildarea(shp_input)\r\n    OUT = output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "124aa209738f484790e7620fd6400284",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "bb4934b10d734c84906d652ada337cac",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fc095b4e1331489c94eec549291533a2",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "1218373f19804b21aa3815067e13716e",
+      "End": "bb4934b10d734c84906d652ada337cac",
+      "Id": "1f87f6af99d64722ae5857d0436b2ce9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "fc095b4e1331489c94eec549291533a2",
+      "End": "c4b534848e1140c3860d1d69be0a191f",
+      "Id": "0e670cba30954eae84cef637866ab0fb",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -24.54258918762207,
+      "EyeY": 29.511737823486328,
+      "EyeZ": 44.33810997009277,
+      "LookX": 21.684537887573242,
+      "LookY": -30.5120792388916,
+      "LookZ": -23.923625946044922,
+      "UpX": 0.46126219630241394,
+      "UpY": 0.726819634437561,
+      "UpZ": -0.5088911056518555
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "66505a0a2be3455fa6343118f1599184",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -135.0,
+        "Y": -14.0
+      },
+      {
+        "Id": "8582d609ec4c417abb09d3514a9cf966",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 526.0,
+        "Y": -14.0
+      },
+      {
+        "Id": "124aa209738f484790e7620fd6400284",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 221.0,
+        "Y": -14.0
+      }
+    ],
+    "Annotations": [],
+    "X": 566.0,
+    "Y": 394.0,
+    "Zoom": 1.0
+  }
+}

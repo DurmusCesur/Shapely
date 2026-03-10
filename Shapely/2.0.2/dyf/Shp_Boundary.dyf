@@ -1,0 +1,170 @@
+{
+  "Uuid": "a52e4c79-a3e7-4335-973c-7b753c39b26c",
+  "IsCustomNode": true,
+  "Category": "Shapely.Geometry.Operation",
+  "Description": "It provides the edges that define a geometry. For polygons, this function returns a line representing the boundaries of the geometry.",
+  "Name": "Shp_Boundary",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "_ShpGeometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "fd3a5ce019e24db591ef9ce54ae2e95a",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cc0267b423a84a5fb278ac7b2772ae6f",
+          "Name": "",
+          "Description": "Symbole",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un paramètre de fonction, utiliser avec des noeuds personnalisés.\r\n\r\nVous pouvez spécifier le type et la valeur par défaut du paramètre. Par exemple,\r\n\r\nentrée: var[]..[]\r\nvaleur: bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "_ShpGeometry",
+      "Id": "733f427e469647ddb7f54cb16ef82507",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "ec669da7a18a48fc82762cb89b67fef8",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Sortie de fonction, utiliser avec les noeuds personnalisés"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# Shapely 2.0.1\r\n# Durmus Bayryam\r\nimport clr\r\n\r\ntry:\r\n    from shapely.geometry import Point as ShpPoint\r\n    from shapely.geometry import LineString as ShpLineString\r\n    from shapely.geometry import Polygon as ShpPolygon\r\n    from shapely.geometry import LinearRing as ShpLinearRing\r\n    from shapely.geometry import MultiPoint as ShpMultiPoint\r\n    from shapely.geometry import MultiLineString as ShpMultiLineString\r\n    from shapely.geometry import MultiPolygon as ShpMultiPolygon\r\n    from shapely.geometry.base import BaseGeometry\r\n    from shapely import GeometryCollection as ShpGeometryCollection\r\nexcept ImportError:\r\n    print(\"\\n Please install Shapely package!\")\r\n    pass\r\n\r\ndef shapely_point_boundary(shp_point):\r\n    # ShpPoint → Boundary \r\n    \r\n    if not isinstance(shp_point, ShpPoint):\r\n        return None\r\n    return shp_point.boundary\r\n\r\ndef shapely_linestring_boundary(shp_linestring):\r\n    # ShpLineString → Boundary \r\n    \r\n    if not isinstance(shp_linestring, ShpLineString):\r\n        return None\r\n    return shp_linestring.boundary\r\n\r\ndef shapely_linearring_boundary(shp_ring):\r\n    # ShpLinearRing → Boundary \r\n    \r\n    if not isinstance(shp_ring, ShpLinearRing):\r\n        return None\r\n    return shp_ring.boundary\r\n\r\ndef shapely_polygon_boundary(shp_polygon):\r\n    # ShpPolygon → Boundary = LinearRing \r\n    \r\n    if not isinstance(shp_polygon, ShpPolygon):\r\n        return None\r\n    return shp_polygon.boundary\r\n\r\ndef shapely_multipoint_boundary(shp_multipoint):\r\n    # ShpMultiPoint → Boundary \r\n    \r\n    if not isinstance(shp_multipoint, ShpMultiPoint):\r\n        return None\r\n    return shp_multipoint.boundary\r\n\r\ndef shapely_multilinestring_boundary(shp_multilinestring):\r\n    # ShpMultiLineString → Boundary \r\n    \r\n    if not isinstance(shp_multilinestring, ShpMultiLineString):\r\n        return None\r\n    return shp_multilinestring.boundary\r\n\r\ndef shapely_multipolygon_boundary(shp_multipolygon, return_individual=False):\r\n    # ShpMultiPolygon → Boundary\r\n    \r\n    if not isinstance(shp_multipolygon, ShpMultiPolygon):\r\n        return None\r\n    \r\n    if return_individual:\r\n        return [poly.boundary for poly in shp_multipolygon.geoms]\r\n    else:\r\n        return shp_multipolygon.boundary\r\n\r\ndef shapely_geometrycollection_boundary(shp_gc, return_individual=False):\r\n    # ShpGeometryCollection -> Boundary\r\n    \r\n    if not isinstance(shp_gc, ShpGeometryCollection):\r\n        return None\r\n        \r\n    if return_individual:\r\n        return [get_shapely_boundary(geom, return_individual) for geom in shp_gc.geoms]\r\n    else:\r\n        return shp_gc.boundary\r\n\r\ndef get_shapely_boundary(shapely_geometry, return_individual=False):\r\n    \r\n    if isinstance(shapely_geometry, list):\r\n        return [get_shapely_boundary(item, return_individual) for item in shapely_geometry]\r\n    \r\n    # Point\r\n    if isinstance(shapely_geometry, ShpPoint):\r\n        return shapely_point_boundary(shapely_geometry)\r\n    \r\n    # LinearRing\r\n    elif isinstance(shapely_geometry, ShpLinearRing):\r\n        return shapely_linearring_boundary(shapely_geometry)\r\n    \r\n    # LineString\r\n    elif isinstance(shapely_geometry, ShpLineString):\r\n        return shapely_linestring_boundary(shapely_geometry)\r\n    \r\n    # Polygon\r\n    elif isinstance(shapely_geometry, ShpPolygon):\r\n        return shapely_polygon_boundary(shapely_geometry)\r\n    \r\n    # MultiPoint\r\n    elif isinstance(shapely_geometry, ShpMultiPoint):\r\n        return shapely_multipoint_boundary(shapely_geometry)\r\n    \r\n    # MultiLineString\r\n    elif isinstance(shapely_geometry, ShpMultiLineString):\r\n        return shapely_multilinestring_boundary(shapely_geometry)\r\n    \r\n    # MultiPolygon\r\n    elif isinstance(shapely_geometry, ShpMultiPolygon):\r\n        return shapely_multipolygon_boundary(shapely_geometry, return_individual)\r\n        \r\n    # GeometryCollection\r\n    elif isinstance(shapely_geometry, ShpGeometryCollection):\r\n        return shapely_geometrycollection_boundary(shapely_geometry, return_individual)\r\n    \r\n    # Genel BaseGeometry\r\n    elif isinstance(shapely_geometry, BaseGeometry):\r\n        return shapely_geometry.boundary\r\n    \r\n    else:\r\n        return None\r\n\r\nif 'IN' in locals():\r\n    shapely_input = IN[0]\r\n    return_individual = IN[1] if len(IN) > 1 else False\r\n    \r\n    boundary_output = get_shapely_boundary(shapely_input, return_individual)\r\n    \r\n    OUT = boundary_output",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "c754ea7a3dab480eb2c3c6b79c888522",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "11365138e9bc4affab6db94eb3270ce9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "59a03adf0efb4b999f6238f41cb39dc2",
+          "Name": "OUT",
+          "Description": "Résultat du script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Exécute un script Python intégré."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cc0267b423a84a5fb278ac7b2772ae6f",
+      "End": "11365138e9bc4affab6db94eb3270ce9",
+      "Id": "796b655eacaa4250a991d1cc1b78c162",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "59a03adf0efb4b999f6238f41cb39dc2",
+      "End": "ec669da7a18a48fc82762cb89b67fef8",
+      "Id": "e8e76cd7e75a475db982b8b13c492b41",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "Durmus Bayryam",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Aperçu en arrière-plan",
+      "EyeX": -45.636985778808594,
+      "EyeY": 8.817451477050781,
+      "EyeZ": 6.0603718757629395,
+      "LookX": 0.017780303955078125,
+      "LookY": -9.217339515686035,
+      "LookZ": -1.4796581268310547,
+      "UpX": 0.011878477409482002,
+      "UpY": 0.15851075947284698,
+      "UpZ": -0.987285852432251
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "fd3a5ce019e24db591ef9ce54ae2e95a",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -297.0,
+        "Y": 33.0
+      },
+      {
+        "Id": "733f427e469647ddb7f54cb16ef82507",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 215.0,
+        "Y": 41.0
+      },
+      {
+        "Id": "c754ea7a3dab480eb2c3c6b79c888522",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 3.7764726067618994,
+        "Y": 30.020426402501045
+      }
+    ],
+    "Annotations": [],
+    "X": 719.2642858665233,
+    "Y": 231.45558661003906,
+    "Zoom": 1.7835993623828124
+  }
+}
